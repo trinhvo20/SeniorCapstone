@@ -3,10 +3,10 @@ package com.example.itin
 import android.location.Location
 import java.util.*
 
-data class Trip (
+class Trip (
     val name : String,
     val location : String,
     val startDate: String,
     val endDate : String,
-    val countdown : Int
 )
+// need to implement a function to calculate countdown from startDate and endDate.

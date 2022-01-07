@@ -1,5 +1,6 @@
 package com.example.itin
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +23,11 @@ class MainActivity : AppCompatActivity() {
         // determine how items are arrange in our list
         rvTripList.layoutManager = LinearLayoutManager(this)
 
-        // what happen when click on AddTodo button (implement later because Idk yet, maybe call another activity?)
+        // what happen when click on AddTodo button (call the CreateTrip activity)
+        btAddTrip.setOnClickListener() {
+            Intent(this, CreateTripActivity::class.java).also {
+                startActivity(it)
+            }
+        }
     }
 }

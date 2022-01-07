@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Itin">
         <activity
-            android:name=".CreateTrip"
+            android:name=".CreateTripActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
