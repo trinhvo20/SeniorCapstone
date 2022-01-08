@@ -33,11 +33,11 @@ class TripAdapter(
             tvLocation.text = curTrip.location
             tvStartDate.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
-            tvCountdown.text = curTrip.countdown.toString()
         }
     }
 
     override fun getItemCount(): Int {
         return trips.size
     }
+
 }

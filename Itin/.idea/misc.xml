@@ -3,9 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/activity_create_trip.xml" value="0.2546875" />
+        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable-anydpi/ic_add.xml" value="0.2708333333333333" />
+        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable/shape_background.xml" value="0.2708333333333333" />
+        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/activity_create_trip.xml" value="0.1" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/activity_main.xml" value="0.240625" />
+        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/create_trip.xml" value="0.268" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/trip.xml" value="0.2546875" />
+        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/trip_item.xml" value="0.268" />
       </map>
     </option>
   </component>
