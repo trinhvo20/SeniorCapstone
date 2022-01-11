@@ -1,7 +1,9 @@
 package com.example.itin
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.Toast
@@ -10,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
     private lateinit var tripAdapter : TripAdapter
     private lateinit var trips : MutableList<Trip>
@@ -22,24 +24,36 @@ class MainActivity : AppCompatActivity() {
         // set trip list
         trips = mutableListOf()
 
-        // initiate a new object of class TripAdapter, pass in a empty mutable list
-        tripAdapter = TripAdapter(trips)
+        // initiate a new object of class TripAdapter, pass in trips list as parameter
+        tripAdapter = TripAdapter(trips, this)
 
-        // attach tripAdapter to our recyclerView
+        // assign adapter for our RecyclerView
         rvTripList.adapter = tripAdapter
 
         // determine how items are arrange in our list
         rvTripList.layoutManager = LinearLayoutManager(this)
 
-        // what happen when click on AddTodo button
+        // what happen when click on AddTodo button -> call the addTrip function
         btAddTrip.setOnClickListener() { addTrip() }
 
     }
 
+    // This function handles RecyclerView that lead you to TripDetails page
+    override fun onItemClick(position: Int) {
+        // intent with ItineraryActivity
+        Intent(this, ItineraryActivity::class.java).also {
+            // pass the current trip object between activities
+            it.putExtra("EXTRA_TRIP", trips[position])
+            // start ItineraryActivity
+            startActivity(it)
+        }
+    }
+
+    // This function will be called when you click the AddTrip button,
+    // a dialog will show up for you to create a new trip
     private fun addTrip() {
         val view = LayoutInflater.from(this).inflate(R.layout.create_trip, null)
 
-        val etName = view.findViewById<EditText>(R.id.etName)
         val etLocation = view.findViewById<EditText>(R.id.etLocation)
         val etStartDate = view.findViewById<EditText>(R.id.etStartDate)
         val etEndDate = view.findViewById<EditText>(R.id.etEndDate)
@@ -48,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         newDialog.setView(view)
 
         newDialog.setPositiveButton("Add") { dialog, _ ->
-            val name = etName.text.toString()
+            val name = "Trip to " + etLocation.text.toString()
             val location = etLocation.text.toString()
             val startDate = etStartDate.text.toString()
             val endDate = etEndDate.text.toString()
@@ -69,4 +83,6 @@ class MainActivity : AppCompatActivity() {
         newDialog.create()
         newDialog.show()
     }
+
+
 }
