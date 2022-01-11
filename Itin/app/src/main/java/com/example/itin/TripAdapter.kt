@@ -5,9 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.trip_item.view.*
+import java.security.PrivateKey
 
 class TripAdapter(
-    private val trips: MutableList<Trip> // parameter: a mutable list of trip items
+    private val trips: MutableList<Trip>, // parameter: a mutable list of trip items
+    private val listener: OnItemClickListener
 ) : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
 
     // create a view holder: holds a layout of a specific item
@@ -30,14 +32,24 @@ class TripAdapter(
         holder.itemView.apply{
             // get the data from our trips list and put them in the corresponding TextView in trip_item.xml
             tvName.text = curTrip.name
-            tvLocation.text = curTrip.location
             tvStartDate.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
         }
+
+        // handle RecyclerView clickable
+        holder.itemView.setOnClickListener {
+            listener.onItemClick(position)
+        }
+
     }
 
     override fun getItemCount(): Int {
         return trips.size
+    }
+
+    // this interface will handle the RecyclerView clickable
+    interface  OnItemClickListener {
+        fun onItemClick(position: Int)
     }
 
 }
