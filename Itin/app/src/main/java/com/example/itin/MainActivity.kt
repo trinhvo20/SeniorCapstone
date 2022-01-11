@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_main.*
 
+// Toggle Debugging
+const val DEBUG_TOGGLE : Boolean = true
+
 class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
     private lateinit var tripAdapter : TripAdapter
@@ -34,7 +37,15 @@ class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         rvTripList.layoutManager = LinearLayoutManager(this)
 
         // what happen when click on AddTodo button -> call the addTrip function
-        btAddTrip.setOnClickListener() { addTrip() }
+        btAddTrip.setOnClickListener { addTrip() }
+
+        //Creating Testing Trip ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        if(DEBUG_TOGGLE) {
+            val trip = Trip("TEST", "TEST", "1/1/1", "2/2/2")
+            trips.add(trip)
+            tripAdapter.notifyDataSetChanged()
+        }
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     }
 

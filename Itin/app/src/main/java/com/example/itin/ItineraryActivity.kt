@@ -15,5 +15,6 @@ class ItineraryActivity : AppCompatActivity() {
         val trip = intent.getSerializableExtra("EXTRA_TRIP") as Trip
 
         tvName.text = trip.name
+        tvDateRange.text = "From: ${trip.startDate}\nTo: ${trip.endDate}"
     }
 }
