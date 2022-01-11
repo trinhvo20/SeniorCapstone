@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         //Creating Testing Trip ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if(DEBUG_TOGGLE) {
-            val trip = Trip("TEST", "TEST", "1/1/1", "2/2/2")
+            val trip = Trip("Trip to TEST", "TEST", "1/1/1", "2/2/2")
             trips.add(trip)
             tripAdapter.notifyDataSetChanged()
         }
