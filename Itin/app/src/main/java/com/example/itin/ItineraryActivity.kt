@@ -7,10 +7,14 @@ import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_itinerary.*
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class ItineraryActivity : AppCompatActivity() {
+    private lateinit var dayAdapter : DayAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_itinerary)
@@ -19,53 +23,23 @@ class ItineraryActivity : AppCompatActivity() {
         val trip = intent.getSerializableExtra("EXTRA_TRIP") as Trip
 
         tvName.text = trip.name
-        tvDateRange.text = "From: ${trip.startDate}\nTo: ${trip.endDate}"
+        tvDateRange.text = "From: ${trip.startDate}     To: ${trip.endDate}"
 
-        bEditTrip?.setOnClickListener{
-            editTrip(trip)
-        }
+        var days = trip.days
 
-    }
+        // initiate a new object of class TripAdapter, pass in trips list as parameter
+        dayAdapter = DayAdapter(days)
 
-    // repurposed addTrip to edit trip info
-    private fun editTrip(trip : Trip) {
-        val view = LayoutInflater.from(this).inflate(R.layout.create_trip, null)
+        // assign adapter for our RecyclerView
+        rvActivityList.adapter = dayAdapter
 
-        val etLocation = view.findViewById<EditText>(R.id.etLocation)
-        val etStartDate = view.findViewById<EditText>(R.id.etStartDate)
-        val etEndDate = view.findViewById<EditText>(R.id.etEndDate)
+        // determine how items are arrange in our list
+        rvActivityList.layoutManager = LinearLayoutManager(this)
 
-        // auto fill dialog boxes
-        etLocation.setText(trip.location)
-        etStartDate.setText(trip.startDate)
-        etEndDate.setText(trip.endDate)
+        val day = Day("1")
+        days.add(day)
+        dayAdapter.notifyDataSetChanged()
 
-        val newDialog = AlertDialog.Builder(this)
-        newDialog.setView(view)
-
-        newDialog.setPositiveButton("Update") { dialog, _ ->
-            trip.name = "Trip to " + etLocation.text.toString()
-            trip.location = etLocation.text.toString()
-            trip.startDate = etStartDate.text.toString()
-            trip.endDate = etEndDate.text.toString()
-
-            Toast.makeText(this, "Trip Updated", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
-
-            // reload activity to update text
-            finish()
-            overridePendingTransition( 0, 0)
-            startActivity(intent)
-            overridePendingTransition( 0, 0)
-        }
-
-        newDialog.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.dismiss()
-            Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
-        }
-
-        newDialog.create()
-        newDialog.show()
     }
 
 }
