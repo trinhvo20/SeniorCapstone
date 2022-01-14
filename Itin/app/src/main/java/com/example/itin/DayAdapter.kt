@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.trip_item.view.*
-import java.security.PrivateKey
 
 class DayAdapter(
     private val days: List<Day>, // parameter: a mutable list of trip items
@@ -16,7 +15,7 @@ class DayAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DayViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val v  = inflater.inflate(R.layout.trip_activity_item,parent,false)
+        val v  = inflater.inflate(R.layout.trip_day_item,parent,false)
         return DayViewHolder(v)
     }
 
@@ -25,8 +24,6 @@ class DayAdapter(
         holder.itemView.apply{
             // get the data from our trips list and put them in the corresponding TextView in trip_item.xml
             tvName.text = curday.daynumber
-            tvStartDate.text = "0"
-            tvEndDate.text = "0"
         }
     }
 

@@ -1,6 +1,6 @@
 package com.example.itin
 
-class TripActivity (
+class Activity (
     var name : String,
     var time : String,
 )
