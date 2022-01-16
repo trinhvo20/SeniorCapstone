@@ -8,7 +8,9 @@ import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -36,6 +38,31 @@ class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // what happen when click on AddTodo button -> call the addTrip function
         btAddTrip.setOnClickListener() { addTrip() }
 
+
+
+        var bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavView_Bar)
+        var menu = bottomNavigationView.menu
+        var menuItem = menu.getItem(0)
+        menuItem.setChecked(true)
+
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.ic_trips -> {
+
+                }
+                R.id.ic_profile -> {
+                    Intent(this, Profile::class.java).also {
+                        startActivity(it)
+                    }
+                }
+                R.id.ic_settings -> {
+                    Intent(this, Settings::class.java).also {
+                        startActivity(it)
+                    }
+                }
+            }
+            true
+        }
     }
 
     // This function handles RecyclerView that lead you to TripDetails page
