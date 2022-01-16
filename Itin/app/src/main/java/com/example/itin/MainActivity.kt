@@ -38,31 +38,9 @@ class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // what happen when click on AddTodo button -> call the addTrip function
         btAddTrip.setOnClickListener() { addTrip() }
 
+        // make the bottom navigation bar
+        bottomNavBarSetup()
 
-
-        var bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavView_Bar)
-        var menu = bottomNavigationView.menu
-        var menuItem = menu.getItem(0)
-        menuItem.setChecked(true)
-
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.ic_trips -> {
-
-                }
-                R.id.ic_profile -> {
-                    Intent(this, Profile::class.java).also {
-                        startActivity(it)
-                    }
-                }
-                R.id.ic_settings -> {
-                    Intent(this, Settings::class.java).also {
-                        startActivity(it)
-                    }
-                }
-            }
-            true
-        }
     }
 
     // This function handles RecyclerView that lead you to TripDetails page
@@ -111,5 +89,37 @@ class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         newDialog.show()
     }
 
+    // function to set up the bottom navigation bar
+    private fun bottomNavBarSetup(){
+        // makes the bottom navigation bar
 
+        var bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavView_Bar)
+
+        // makes the icons light up
+        var menu = bottomNavigationView.menu
+        var menuItem = menu.getItem(0)
+        menuItem.setChecked(true)
+
+        // what causes the activities to actually switch
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.ic_trips -> {
+
+                }
+                // go to profile
+                R.id.ic_profile -> {
+                    Intent(this, Profile::class.java).also {
+                        startActivity(it)
+                    }
+                }
+                // go to settings
+                R.id.ic_settings -> {
+                    Intent(this, Settings::class.java).also {
+                        startActivity(it)
+                    }
+                }
+            }
+            true
+        }
+    }
 }
