@@ -16,7 +16,7 @@
         android:textColor="@color/mint"
         android:textSize="25dp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/btMore"
+        app:layout_constraintEnd_toStartOf="@+id/ivMenu"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

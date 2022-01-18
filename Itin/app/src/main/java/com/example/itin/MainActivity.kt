@@ -1,11 +1,13 @@
 package com.example.itin
 
+import android.app.DatePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.get
@@ -13,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
@@ -63,6 +66,28 @@ class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         val etLocation = view.findViewById<EditText>(R.id.etLocation)
         val etStartDate = view.findViewById<EditText>(R.id.etStartDate)
         val etEndDate = view.findViewById<EditText>(R.id.etEndDate)
+
+        val c = Calendar.getInstance()
+        val year = c.get(Calendar.YEAR)
+        val month = c.get(Calendar.MONTH)+1
+        val day = c.get(Calendar.DAY_OF_MONTH)
+
+        val ivPickStartDate = view.findViewById<ImageView>(R.id.ivPickStartDate)
+        val ivPickEndDate = view.findViewById<ImageView>(R.id.ivPickEndDate)
+
+        ivPickStartDate.setOnClickListener {
+            val datePickerDialog = DatePickerDialog(this, DatePickerDialog.OnDateSetListener{_, mYear, mMonth, mDay ->
+                etStartDate.setText(""+mMonth+"/"+mDay+"/"+mYear)
+            }, year, month, day)
+            datePickerDialog.show()
+        }
+
+        ivPickEndDate.setOnClickListener {
+            val datePickerDialog = DatePickerDialog(this, DatePickerDialog.OnDateSetListener{_, mYear, mMonth, mDay ->
+                etStartDate.setText(""+mMonth+"/"+mDay+"/"+mYear)
+            }, year, month, day)
+            datePickerDialog.show()
+        }
 
         val newDialog = AlertDialog.Builder(this)
         newDialog.setView(view)
