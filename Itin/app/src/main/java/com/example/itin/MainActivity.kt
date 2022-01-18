@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         trips = mutableListOf()
 
         // initiate a new object of class TripAdapter, pass in trips list as parameter
-        tripAdapter = TripAdapter(trips, this)
+        tripAdapter = TripAdapter(this, trips, this)
 
         // assign adapter for our RecyclerView
         rvTripList.adapter = tripAdapter
@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     private fun addTrip() {
         val view = LayoutInflater.from(this).inflate(R.layout.create_trip, null)
 
+        val etName = view.findViewById<EditText>(R.id.etName)
         val etLocation = view.findViewById<EditText>(R.id.etLocation)
         val etStartDate = view.findViewById<EditText>(R.id.etStartDate)
         val etEndDate = view.findViewById<EditText>(R.id.etEndDate)
@@ -67,10 +68,16 @@ class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         newDialog.setView(view)
 
         newDialog.setPositiveButton("Add") { dialog, _ ->
-            val name = "Trip to " + etLocation.text.toString()
+            val name: String
             val location = etLocation.text.toString()
             val startDate = etStartDate.text.toString()
             val endDate = etEndDate.text.toString()
+
+            name = if (etName.text.toString().isEmpty()) {
+                "Trip to $location"
+            } else {
+                etName.text.toString()
+            }
 
             val trip = Trip(name, location, startDate, endDate)
             trips.add(trip)

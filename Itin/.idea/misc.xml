@@ -4,6 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable-anydpi/ic_add.xml" value="0.2708333333333333" />
+        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable-anydpi/ic_more.xml" value="0.2708333333333333" />
+        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable/ic_add.xml" value="0.2708333333333333" />
+        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable/ic_delete.xml" value="0.2708333333333333" />
+        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable/ic_edit.xml" value="0.2708333333333333" />
+        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable/ic_more.xml" value="0.2708333333333333" />
+        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable/ic_share.xml" value="0.2708333333333333" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable/shape_background.xml" value="0.2708333333333333" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/activity_create_trip.xml" value="0.1" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/activity_itinerary.xml" value="0.2546875" />
@@ -19,6 +25,7 @@
         <entry key="..\:/Users/tschw/Desktop/SeniorCapstone/Itin/app/src/main/res/layout/activity_settings.xml" value="0.1947463768115942" />
         <entry key="..\:/Users/tschw/Desktop/SeniorCapstone/Itin/app/src/main/res/layout/hehe.xml" value="0.1947463768115942" />
         <entry key="..\:/Users/tschw/Desktop/SeniorCapstone/Itin/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.278125" />
+        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/menu/show_menu.xml" value="0.2546875" />
       </map>
     </option>
   </component>

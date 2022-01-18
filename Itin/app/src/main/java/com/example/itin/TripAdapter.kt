@@ -1,19 +1,110 @@
 package com.example.itin
 
+import android.app.AlertDialog
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.security.PrivateKey
 
 class TripAdapter(
+    private val context: Context,
     private val trips: MutableList<Trip>, // parameter: a mutable list of trip items
     private val listener: OnItemClickListener
 ) : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
 
     // create a view holder: holds a layout of a specific item
-    class TripViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    inner class TripViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val ivMenu: ImageView
+
+        init {
+            ivMenu = itemView.findViewById<ImageView>(R.id.ivMenu)
+            ivMenu.setOnClickListener { popupMenu(it) }
+        }
+
+        // this function handles the popup menu for each item in the trips list
+        private fun popupMenu(view: View) {
+            val curTrip = trips[adapterPosition]
+
+            val popupMenu = PopupMenu(context, view)
+            popupMenu.inflate(R.menu.show_menu)
+            popupMenu.setOnMenuItemClickListener {
+                when(it.itemId) {
+                    // for Edit button
+                    R.id.edit -> {
+                        val view = LayoutInflater.from(context).inflate(R.layout.create_trip, null)
+
+                        val etName = view.findViewById<EditText>(R.id.etName)
+                        val etLocation = view.findViewById<EditText>(R.id.etLocation)
+                        val etStartDate = view.findViewById<EditText>(R.id.etStartDate)
+                        val etEndDate = view.findViewById<EditText>(R.id.etStartDate)
+
+                        val dialog = AlertDialog.Builder(context)
+                        dialog.setView(view)
+                            .setPositiveButton("OK") {dialog,_ ->
+                                if (etName.text.toString().isEmpty()){
+                                    if (etLocation.text.toString().isNotEmpty()) {
+                                        curTrip.name = "Trip to " + etLocation.text.toString()
+                                    }
+                                } else {
+                                    curTrip.name = etName.text.toString()
+                                }
+                                if (etLocation.text.toString().isNotEmpty()){
+                                    curTrip.location =etLocation.text.toString()
+                                }
+                                if (etStartDate.text.toString().isNotEmpty()){
+                                    curTrip.startDate =etStartDate.text.toString()
+                                }
+                                if (etStartDate.text.toString().isNotEmpty()){
+                                    curTrip.endDate =etEndDate.text.toString()
+                                }
+                                notifyDataSetChanged()
+                                Toast.makeText(context, "Successfully Edited", Toast.LENGTH_SHORT).show()
+                                dialog.dismiss()
+                            }
+                            .setNegativeButton("Cancel") {dialog,_ ->
+                                dialog.dismiss()
+                            }
+                            .create()
+                            .show()
+                        true
+                    }
+
+                    // for Delete button
+                    R.id.delete -> {
+                        val dialog = AlertDialog.Builder(context)
+                        dialog.setTitle("Delete")
+                            .setIcon(R.drawable.ic_warning)
+                            .setMessage("Are you sure delete this trip?")
+                            .setPositiveButton("Yes") {dialog,_ ->
+                                trips.removeAt(adapterPosition)
+                                notifyDataSetChanged()
+                                Toast.makeText(context, "Successfully Delete", Toast.LENGTH_SHORT).show()
+                                dialog.dismiss()
+                            }
+                            .setNegativeButton("No") {dialog,_ ->
+                                dialog.dismiss()
+                            }
+                            .create()
+                            .show()
+                        true
+                    }
+                    else -> true
+                }
+            }
+            popupMenu.show()
+            val popup = PopupMenu::class.java.getDeclaredField("mPopup")
+            popup.isAccessible = true
+            val menu = popup.get(popupMenu)
+            menu.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.java).invoke(menu, true)
+        }
+    }
 
     // Ctrl + I
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TripViewHolder {
