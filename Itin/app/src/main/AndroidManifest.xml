@@ -25,10 +25,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:exported="false"
-            android:label="@string/title_activity_google_login"
-            android:theme="@style/Theme.Itin.Fullscreen"
         </activity>
 
         <activity
