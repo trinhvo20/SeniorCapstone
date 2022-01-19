@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         ivPickEndDate.setOnClickListener {
             val datePickerDialog = DatePickerDialog(this, DatePickerDialog.OnDateSetListener{_, mYear, mMonth, mDay ->
-                etStartDate.setText(""+mMonth+"/"+mDay+"/"+mYear)
+                etEndDate.setText(""+mMonth+"/"+mDay+"/"+mYear)
             }, year, month, day)
             datePickerDialog.show()
         }

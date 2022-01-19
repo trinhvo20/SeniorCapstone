@@ -99,11 +99,11 @@ class GoogleLogin : AppCompatActivity() {
                 // Check if this is a new user or existing
                 if (authResult.additionalUserInfo!!.isNewUser) {
                     Log.d(TAG, "firebaseAuthWithGoogleAccount: Account created... \n$email")
-                    Toast.makeText(this@GoogleLogin, "Account created... \n$email", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@GoogleLogin, "Account created... \n$email", Toast.LENGTH_LONG).show()
                 }
                 else {
                     Log.d(TAG, "firebaseAuthWithGoogleAccount: Existing user... \n$email")
-                    Toast.makeText( this@GoogleLogin, "Logged In... \n@email", Toast.LENGTH_SHORT).show()
+                    Toast.makeText( this@GoogleLogin, "Logged In... \n@email", Toast.LENGTH_LONG).show()
                 }
 
                 // Opening the Main Page after log in
