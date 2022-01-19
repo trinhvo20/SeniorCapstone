@@ -14,10 +14,12 @@
         android:layout_gravity="bottom"
         app:menu="@menu/bottom_navigation_menu" />
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentContainerView"
-        android:name="com.example.itin.SettingsFragment"
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="638dp" />
+        android:layout_height="wrap_content"
+        android:id="@+id/activityTitleSettings"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -14,8 +14,13 @@ class Settings : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
+        // basic text to say what page you are on
+        val title = findViewById<View>(R.id.activityTitleSettings) as TextView
+        title.text = "Settings!"
+
         // set up the bottom navigation bar
         bottomNavBarSetup()
+
     }
 
     // function to set up the bottom navigation bar
