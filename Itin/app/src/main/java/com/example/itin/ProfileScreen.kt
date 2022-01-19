@@ -1,26 +1,43 @@
 package com.example.itin
 
-
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.widget.TextView
+import com.example.itin.databinding.ActivityProfileScreenBinding
+import com.example.itin.databinding.GoogleLoginBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 
-class Settings : AppCompatActivity(){
+class ProfileScreen : AppCompatActivity() {
+
+    private lateinit var binding: ActivityProfileScreenBinding
+    private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        binding = ActivityProfileScreenBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        // basic text to say what page you are on
-        val title = findViewById<View>(R.id.activityTitleSettings) as TextView
-        title.text = "Settings!"
+        firebaseAuth = FirebaseAuth.getInstance()
+        checkUser()
 
-        // set up the bottom navigation bar
+        binding.logoutBtn.setOnClickListener {
+            firebaseAuth.signOut()
+            checkUser()
+        }
+
         bottomNavBarSetup()
+    }
 
+    private fun checkUser() {
+        val firebaseUser = firebaseAuth.currentUser
+        if (firebaseUser == null) { // If the user is not currently logged in
+            startActivity(Intent(this, GoogleLogin::class.java))
+        }
+        else {
+            val email = firebaseUser.email
+            binding.emailTV.text = email
+        }
     }
 
     // function to set up the bottom navigation bar
@@ -30,7 +47,7 @@ class Settings : AppCompatActivity(){
 
         // light up the icon you are on
         var menu = bottomNavigationView.menu
-        var menuItem = menu.getItem(2)
+        var menuItem = menu.getItem(1)
         menuItem.setChecked(true)
 
         // actually switch between activities
@@ -42,16 +59,15 @@ class Settings : AppCompatActivity(){
                     }
                 }
                 R.id.ic_profile -> {
-                    Intent(this, ProfileScreen::class.java).also {
+
+                }
+                R.id.ic_settings -> {
+                    Intent(this, Settings::class.java).also {
                         startActivity(it)
                     }
                 }
-                R.id.ic_settings -> {
-
-                }
             }
             true
+            }
         }
-    }
-
 }
