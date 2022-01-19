@@ -47,7 +47,7 @@ class ProfileScreen : AppCompatActivity() {
 
         // light up the icon you are on
         var menu = bottomNavigationView.menu
-        var menuItem = menu.getItem(2)
+        var menuItem = menu.getItem(1)
         menuItem.setChecked(true)
 
         // actually switch between activities
