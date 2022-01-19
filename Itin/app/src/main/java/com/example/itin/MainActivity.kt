@@ -17,9 +17,6 @@ import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
-// Toggle Debugging
-const val DEBUG_TOGGLE : Boolean = true
-
 class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
     private lateinit var tripAdapter : TripAdapter
@@ -42,15 +39,7 @@ class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         rvTripList.layoutManager = LinearLayoutManager(this)
 
         // what happen when click on AddTodo button -> call the addTrip function
-        btAddTrip.setOnClickListener { addTrip() }
-
-        //Creating Testing Trip ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        if(DEBUG_TOGGLE) {
-            val trip = Trip("Trip to TEST", "TEST", "1/1/1", "2/2/2")
-            trips.add(trip)
-            tripAdapter.notifyDataSetChanged()
-        }
-        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        btAddTrip.setOnClickListener() { addTrip() }
 
         // make the bottom navigation bar
         bottomNavBarSetup()
@@ -95,7 +84,7 @@ class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         ivPickEndDate.setOnClickListener {
             val datePickerDialog = DatePickerDialog(this, DatePickerDialog.OnDateSetListener{_, mYear, mMonth, mDay ->
-                etEndDate.setText(""+mMonth+"/"+mDay+"/"+mYear)
+                etStartDate.setText(""+mMonth+"/"+mDay+"/"+mYear)
             }, year, month, day)
             datePickerDialog.show()
         }
