@@ -42,7 +42,7 @@ class Settings : AppCompatActivity(){
                     }
                 }
                 R.id.ic_profile -> {
-                    Intent(this, Profile::class.java).also {
+                    Intent(this, ProfileScreen::class.java).also {
                         startActivity(it)
                     }
                 }

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.itin.databinding.ActivityProfileScreenBinding
 import com.example.itin.databinding.GoogleLoginBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 
 class ProfileScreen : AppCompatActivity() {
@@ -24,6 +25,8 @@ class ProfileScreen : AppCompatActivity() {
             firebaseAuth.signOut()
             checkUser()
         }
+
+        bottomNavBarSetup()
     }
 
     private fun checkUser() {
@@ -36,4 +39,35 @@ class ProfileScreen : AppCompatActivity() {
             binding.emailTV.text = email
         }
     }
+
+    // function to set up the bottom navigation bar
+    private fun bottomNavBarSetup(){
+        // create the bottom navigation bar
+        var bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavView_Bar)
+
+        // light up the icon you are on
+        var menu = bottomNavigationView.menu
+        var menuItem = menu.getItem(2)
+        menuItem.setChecked(true)
+
+        // actually switch between activities
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.ic_trips -> {
+                    Intent(this, MainActivity::class.java).also {
+                        startActivity(it)
+                    }
+                }
+                R.id.ic_profile -> {
+
+                }
+                R.id.ic_settings -> {
+                    Intent(this, Settings::class.java).also {
+                        startActivity(it)
+                    }
+                }
+            }
+            true
+            }
+        }
 }

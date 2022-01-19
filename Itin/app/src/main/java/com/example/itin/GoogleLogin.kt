@@ -62,7 +62,7 @@ class GoogleLogin : AppCompatActivity() {
         val firebaseUser = firebaseAuth.currentUser
         // This is the case if user is already logged in, skips login screen if that is the case
         if (firebaseUser != null) {
-            startActivity(Intent(this@GoogleLogin, ProfileScreen::class.java))
+            startActivity(Intent(this@GoogleLogin, MainActivity::class.java))
             finish()
         }
     }
