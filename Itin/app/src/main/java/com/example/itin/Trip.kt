@@ -9,6 +9,7 @@ class Trip (
     var location : String,
     var startDate: String,
     var endDate : String,
+
     var days : MutableList<Day> = mutableListOf(),
 
 ) : Serializable // objects of this class can be transferred between activities
