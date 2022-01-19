@@ -39,7 +39,15 @@ class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         rvTripList.layoutManager = LinearLayoutManager(this)
 
         // what happen when click on AddTodo button -> call the addTrip function
-        btAddTrip.setOnClickListener() { addTrip() }
+        btAddTrip.setOnClickListener { addTrip() }
+
+        //Creating Testing Trip ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        if(DEBUG_TOGGLE) {
+            val trip = Trip("Trip to TEST", "TEST", "1/1/2022", "1/2/2022")
+            trips.add(trip)
+            tripAdapter.notifyDataSetChanged()
+        }
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // make the bottom navigation bar
         bottomNavBarSetup()

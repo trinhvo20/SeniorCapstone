@@ -15,5 +15,28 @@ class ItineraryActivity : AppCompatActivity() {
         val trip = intent.getSerializableExtra("EXTRA_TRIP") as Trip
 
         tvName.text = trip.name
+        tvDateRange.text = "From: ${trip.startDate}     To: ${trip.endDate}"
+
+        var days = trip.days
+
+        // initiate a new object of class TripAdapter, pass in trips list as parameter
+        dayAdapter = DayAdapter(days)
+
+        // assign adapter for our RecyclerView
+        rvActivityList.adapter = dayAdapter
+
+        // determine how items are arrange in our list
+        rvActivityList.layoutManager = LinearLayoutManager(this)
+
+        val dayNum = 2
+        for (i in 1..dayNum) {
+            val day = Day(i.toString())
+            days.add(day)
+        }
+        dayAdapter.notifyDataSetChanged()
+
     }
+
 }
+
+
