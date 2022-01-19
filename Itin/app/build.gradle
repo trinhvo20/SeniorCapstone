@@ -49,6 +49,7 @@ dependencies {
     implementation 'android.arch.lifecycle:livedata:1.1.1'
 
     // These dependencies allow for Google Sign In
+    implementation 'com.firebaseui:firebase-ui-auth:4.3.2'
     implementation 'com.google.firebase:firebase-auth:21.0.1'
     implementation 'com.google.android.gms:play-services-auth:19.0.0'
     implementation 'android.arch.lifecycle:viewmodel:1.1.1'
