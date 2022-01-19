@@ -17,6 +17,9 @@ import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
+// Toggle Debugging
+const val DEBUG_TOGGLE : Boolean = true
+
 class MainActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
     private lateinit var tripAdapter : TripAdapter

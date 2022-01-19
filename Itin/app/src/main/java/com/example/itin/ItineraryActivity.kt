@@ -3,10 +3,18 @@ package com.example.itin
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_itinerary.*
+import kotlinx.android.synthetic.main.activity_main.*
 
 
 class ItineraryActivity : AppCompatActivity() {
+    private lateinit var dayAdapter : DayAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_itinerary)
@@ -33,10 +41,9 @@ class ItineraryActivity : AppCompatActivity() {
             val day = Day(i.toString())
             days.add(day)
         }
+
         dayAdapter.notifyDataSetChanged()
 
     }
 
 }
-
-

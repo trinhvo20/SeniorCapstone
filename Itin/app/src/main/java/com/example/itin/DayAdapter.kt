@@ -20,10 +20,10 @@ class DayAdapter(
     }
 
     override fun onBindViewHolder(holder: DayViewHolder, position: Int) {
-        val curday = days[position]
+        val curDay = days[position]
         holder.itemView.apply{
             // get the data from our trips list and put them in the corresponding TextView in trip_item.xml
-            tvName.text = "Day " + curday.daynumber
+            tvName.text = "Day " + curDay.daynumber
         }
     }
 
@@ -31,4 +31,3 @@ class DayAdapter(
         return  days.size
     }
 }
-

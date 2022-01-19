@@ -17,7 +17,6 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import java.lang.Exception
-import android.widget.Toast.makeText as makeText1
 
 class GoogleLogin : AppCompatActivity() {
 
