@@ -8,14 +8,28 @@
     tools:context=".MainActivity"
     android:padding="10dp">
 
+    <TextView
+        android:id="@+id/tripsTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Trips"
+        android:background="@color/mint"
+        android:gravity="center"
+        android:padding="7dp"
+        android:textColor="@color/white"
+        android:textSize="25dp"
+        android:textStyle="bold" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTripList"
         android:layout_width="match_parent"
-        android:layout_height="623dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="65dp"
+        android:layout_below="@id/tripsTV"
         app:layout_constraintBottom_toTopOf="@+id/btAddTrip"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btAddTrip"

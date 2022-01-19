@@ -7,8 +7,16 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="mint">#009688</color>
+    <color name="mint">#66c0b8</color>
     <color name="DarkGray">#A9A9A9</color>
     <color name="DimGray">#696969</color>
     <color name="RichBlack">#010203</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color>
+    <color name="light_blue_A200">#FF40C4FF</color>
+    <color name="light_blue_A400">#FF00B0FF</color>
+    <color name="black_overlay">#66000000</color>
+    
+    // Used for bottom sign in screen
+    <color name="colorDividerView">#ECECEC</color>
 </resources>
