@@ -36,10 +36,15 @@ class ItineraryActivity : AppCompatActivity() {
         // determine how items are arrange in our list
         rvActivityList.layoutManager = LinearLayoutManager(this)
 
-        val day = Day("1")
-        days.add(day)
+        val dayNum = 2
+        for (i in 1..dayNum) {
+            val day = Day(i.toString())
+            days.add(day)
+        }
         dayAdapter.notifyDataSetChanged()
 
     }
 
 }
+
+

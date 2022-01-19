@@ -23,7 +23,7 @@ class DayAdapter(
         val curday = days[position]
         holder.itemView.apply{
             // get the data from our trips list and put them in the corresponding TextView in trip_item.xml
-            tvName.text = curday.daynumber
+            tvName.text = "Day " + curday.daynumber
         }
     }
 
