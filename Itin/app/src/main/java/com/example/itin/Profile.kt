@@ -37,7 +37,7 @@ class Profile : AppCompatActivity(){
             when (item.itemId) {
                 // go to trips page (main Activity)
                 R.id.ic_trips -> {
-                    Intent(this, MainActivity::class.java).also {
+                    Intent(this, TripActivity::class.java).also {
                         startActivity(it)
                     }
                 }

@@ -54,7 +54,7 @@ class ProfileScreen : AppCompatActivity() {
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.ic_trips -> {
-                    Intent(this, MainActivity::class.java).also {
+                    Intent(this, TripActivity::class.java).also {
                         startActivity(it)
                     }
                 }

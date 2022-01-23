@@ -61,7 +61,7 @@ class GoogleLogin : AppCompatActivity() {
         val firebaseUser = firebaseAuth.currentUser
         // This is the case if user is already logged in, skips login screen if that is the case
         if (firebaseUser != null) {
-            startActivity(Intent(this@GoogleLogin, MainActivity::class.java))
+            startActivity(Intent(this@GoogleLogin, TripActivity::class.java))
             finish()
         }
     }
@@ -105,8 +105,8 @@ class GoogleLogin : AppCompatActivity() {
                     Toast.makeText( this@GoogleLogin, "Logged In... \n@email", Toast.LENGTH_LONG).show()
                 }
 
-                // Opening the Main Page after log in
-                startActivity(Intent(this@GoogleLogin, MainActivity::class.java))
+                // Opening the Trip page after log in
+                startActivity(Intent(this@GoogleLogin, TripActivity::class.java))
                 finish()
             }
             .addOnFailureListener { e ->
