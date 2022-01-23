@@ -4,14 +4,13 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.itin.classes.Trip
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_main.*

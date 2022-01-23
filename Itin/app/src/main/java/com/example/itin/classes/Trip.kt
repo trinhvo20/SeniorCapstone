@@ -1,8 +1,7 @@
-package com.example.itin
+package com.example.itin.classes
 
-import android.location.Location
+import com.example.itin.classes.Day
 import java.io.Serializable
-import java.util.*
 
 class Trip (
     var name : String,

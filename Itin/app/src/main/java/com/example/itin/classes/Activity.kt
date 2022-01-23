@@ -1,4 +1,4 @@
-package com.example.itin
+package com.example.itin.classes
 
 class Activity (
     var name : String,

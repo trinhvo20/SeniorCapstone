@@ -1,15 +1,11 @@
 package com.example.itin
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.widget.EditText
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.itin.classes.Day
+import com.example.itin.classes.Trip
 import kotlinx.android.synthetic.main.activity_itinerary.*
-import kotlinx.android.synthetic.main.activity_main.*
 
 
 class ItineraryActivity : AppCompatActivity() {

@@ -10,8 +10,8 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.itin.classes.Trip
 import kotlinx.android.synthetic.main.trip_item.view.*
-import java.security.PrivateKey
 
 class TripAdapter(
     private val context: Context,

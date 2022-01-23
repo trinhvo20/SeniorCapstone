@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.itin.classes.Day
 import kotlinx.android.synthetic.main.trip_item.view.*
 
 class DayAdapter(
