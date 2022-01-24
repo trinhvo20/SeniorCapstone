@@ -1,11 +1,44 @@
 package com.example.itin
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import androidx.core.os.HandlerCompat.postDelayed
+import com.example.itin.classes.Trip
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var topAnim: Animation
+    lateinit var bottomAnim: Animation
+    private var splashScreen = 5000
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN)
         setContentView(R.layout.activity_main)
+
+        // Load animation for main page
+        topAnim = AnimationUtils.loadAnimation(this, R.anim.top_animation)
+        bottomAnim = AnimationUtils.loadAnimation(this, R.anim.bottom_animation)
+
+        // assign animation
+        LogoIV.animation = topAnim
+        ItinTV.animation = bottomAnim
+        IntroTV.animation = bottomAnim
+
+        Handler(Looper.getMainLooper()).postDelayed(object: Runnable {
+            override fun run() {
+                Intent(this@MainActivity, GoogleLogin::class.java).also{
+                    startActivity((it))
+                }
+                finish()
+            }
+        }, splashScreen.toLong())
     }
 }

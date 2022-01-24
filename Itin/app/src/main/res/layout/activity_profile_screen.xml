@@ -46,14 +46,14 @@
                     android:id="@+id/editProfileIV"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:src="@drawable/ic_edit"
-                    app:civ_circle_background_color="@color/LightGray"
-                    app:civ_border_width="2dp"
-                    app:civ_border_color="@color/white"
                     android:layout_below="@+id/profileImageIV"
-                    android:layout_toRightOf="@+id/profileImageIV"
+                    android:layout_marginLeft="-20dp"
                     android:layout_marginTop="-20dp"
-                    android:layout_marginLeft="-20dp"/>
+                    android:layout_toRightOf="@+id/profileImageIV"
+                    android:src="@drawable/ic_edit"
+                    app:civ_border_color="@color/white"
+                    app:civ_border_width="2dp"
+                    app:civ_circle_background_color="@color/LightGray" />
 
                 <TextView
                     android:id="@+id/fullNameTV"

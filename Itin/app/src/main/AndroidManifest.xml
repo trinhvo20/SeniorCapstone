@@ -13,7 +13,12 @@
         android:theme="@style/Theme.Itin" >
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ItineraryActivity"
             android:exported="false" />
@@ -23,11 +28,6 @@
         <activity
             android:name=".GoogleLogin"
             android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:label="@string/title_activity_google_login"
@@ -39,6 +39,10 @@
         </activity>
         <activity android:name=".Profile" />
         <activity android:name=".Settings" />
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>
