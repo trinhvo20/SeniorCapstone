@@ -4,14 +4,17 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.itin.databinding.ActivityProfileScreenBinding
-import com.example.itin.databinding.GoogleLoginBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import kotlinx.android.synthetic.main.activity_profile_screen.*
 
 class ProfileScreen : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileScreenBinding
     private lateinit var firebaseAuth: FirebaseAuth
+    
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,7 +24,8 @@ class ProfileScreen : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
         checkUser()
 
-        binding.logoutBtn.setOnClickListener {
+        // what happen when click the Logout button
+        logoutBtn.setOnClickListener {
             firebaseAuth.signOut()
             checkUser()
         }
@@ -35,8 +39,17 @@ class ProfileScreen : AppCompatActivity() {
             startActivity(Intent(this, GoogleLogin::class.java))
         }
         else {
+            // get user's email
             val email = firebaseUser.email
-            binding.emailTV.text = email
+            emailTV.text = email
+
+            // get user's default username (email before @)
+            val username = email?.substringBefore("@")
+            userNameTV.text = username
+
+            // get user's full name
+            val fullName = firebaseUser.displayName
+            fullNameTV.text = fullName
         }
     }
 

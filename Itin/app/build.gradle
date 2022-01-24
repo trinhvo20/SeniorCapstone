@@ -60,6 +60,7 @@ dependencies {
 
     // The following dependency is for the recycler view
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'com.google.firebase:firebase-database-ktx:20.0.3'
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

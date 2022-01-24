@@ -32,13 +32,13 @@ class MainActivity : AppCompatActivity() {
         ItinTV.animation = bottomAnim
         IntroTV.animation = bottomAnim
 
-        Handler(Looper.getMainLooper()).postDelayed(object: Runnable {
-            override fun run() {
-                Intent(this@MainActivity, GoogleLogin::class.java).also{
-                    startActivity((it))
-                }
-                finish()
+        // show the Main Screen and after 5s, change to GoogleLogin page
+        // if already login, go to TripActivity page (handle in GoogleLogin.kt)
+        Handler(Looper.getMainLooper()).postDelayed({
+            Intent(this@MainActivity, GoogleLogin::class.java).also{
+                startActivity((it))
             }
+            finish()
         }, splashScreen.toLong())
     }
 }
