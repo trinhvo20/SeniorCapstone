@@ -3,9 +3,12 @@ package com.example.itin
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
 import kotlinx.android.synthetic.main.activity_itinerary.*
+import kotlinx.android.synthetic.main.activity_itinerary.tvName
+import kotlinx.android.synthetic.main.trip_day_item.*
 
 
 class ItineraryActivity : AppCompatActivity() {
@@ -32,9 +35,14 @@ class ItineraryActivity : AppCompatActivity() {
         // determine how items are arrange in our list
         rvActivityList.layoutManager = LinearLayoutManager(this)
 
-        val dayNum = 2
+        val dayNum = 4
+        val actnum = 6
         for (i in 1..dayNum) {
             val day = Day(i.toString())
+            for (i in 1..actnum){
+                val activity = Activity("activity $i","$i:00")
+                day.activities.add(activity)
+            }
             days.add(day)
         }
 
