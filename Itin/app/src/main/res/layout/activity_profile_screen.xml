@@ -208,7 +208,6 @@
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/ic_person_outline"
                         android:drawablePadding="10dp"
-                        android:text="Full Name"
                         android:textColor="@color/black" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -226,7 +225,6 @@
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/ic_person"
                         android:drawablePadding="10dp"
-                        android:text="Username"
                         android:textColor="@color/black" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -244,12 +242,12 @@
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/ic_phone"
                         android:drawablePadding="10dp"
-                        android:text="123-456-7890"
                         android:textColor="@color/black" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <Button
+                    android:id="@+id/updateButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/LightGray"
