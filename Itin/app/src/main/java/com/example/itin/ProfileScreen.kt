@@ -29,7 +29,7 @@ class ProfileScreen : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
         checkUser()
 
-        // what happen when click the Logout button
+        // Logout button
         logoutBtn.setOnClickListener {
             firebaseAuth.signOut()
             checkUser()
@@ -38,6 +38,7 @@ class ProfileScreen : AppCompatActivity() {
         // update button
         updateButton.setOnClickListener { update() }
 
+        // bottom Navigation Bar
         bottomNavBarSetup()
     }
 
@@ -56,13 +57,33 @@ class ProfileScreen : AppCompatActivity() {
         }
     }
 
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //
+
+    private fun validateUsername(): Boolean {
+        val username = usernameInput.editText?.text.toString()
+        val noWhiteSpace = Regex("(?=\\S+$)")
+        if (username.length < 6) {
+            usernameInput.error = "Minimum 6 characters"
+            return false
+        } else if (username.matches(noWhiteSpace)) {
+            usernameInput.error = "Cannot contain whitespaces"
+            return false
+        } else {
+            usernameInput.error = null
+            usernameInput.isErrorEnabled = false
+            return true
+        }
+    }
+
+
     // function to read data from Realtime Database
     private fun readData(uid: String) {
         databaseReference = FirebaseDatabase.getInstance().getReference("users")
         val checkUser = databaseReference.child(uid)
 
         checkUser.get().addOnSuccessListener {
-            if(it.exists()){
+            if (it.exists()){
                 val fullName = it.child("fullName").value.toString()
                 val username = it.child("username").value.toString()
                 val email = it.child("email").value.toString()
@@ -84,7 +105,7 @@ class ProfileScreen : AppCompatActivity() {
 
     // function to update user info
     private fun update() {
-        var check = 1
+        var filled = false
         val newName = fullNameInput.editText?.text.toString()
         val newUsername = usernameInput.editText?.text.toString()
         val newPhone = phoneNumberInput.editText?.text.toString()
@@ -94,19 +115,29 @@ class ProfileScreen : AppCompatActivity() {
 
         if (newName.isNotEmpty()) {
             curUser.child("fullName").setValue(newName)
-            check = 0
+            filled = true
         }
         if (newUsername.isNotEmpty()) {
-            curUser.child("username").setValue(newUsername)
-            check = 0
+            if (validateUsername()) {
+                curUser.child("username").setValue(newUsername)
+                filled = true
+            }
         }
         if (newPhone.isNotEmpty()) {
             curUser.child("phone").setValue(newPhone)
-            check = 0
+            filled = true
         }
-        if (check == 1) {
+        // if all 3 fields are not filled
+        if (!filled) {
             Toast.makeText(this,"Fill in at least one field", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(this,"Updated", Toast.LENGTH_SHORT).show()
         }
+
+        fullNameInput.editText?.text?.clear()
+        usernameInput.editText?.text?.clear()
+        phoneNumberInput.editText?.text?.clear()
+
     }
 
     // function to set up the bottom navigation bar
