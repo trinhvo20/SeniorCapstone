@@ -1,5 +1,6 @@
 package com.example.itin
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -14,7 +15,7 @@ import kotlinx.android.synthetic.main.trip_day_item.*
 
 class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListener {
     private lateinit var dayAdapter : DayAdapter
-
+    lateinit var days: MutableList<Day>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_itinerary)
@@ -25,7 +26,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         tvName.text = trip.name
         tvDateRange.text = "From: ${trip.startDate}     To: ${trip.endDate}"
 
-        var days = trip.days
+        days = trip.days
 
         // initiate a new object of class TripAdapter, pass in trips list as parameter
         dayAdapter = DayAdapter(this,days,this)
@@ -51,8 +52,14 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
 
     }
 
-    override fun onItemClick(position: Int) {
-        Toast.makeText(this, "pos $position", Toast.LENGTH_SHORT).show()
+    override fun onItemClick(position: Int, daypos: Int) {
+        Toast.makeText(this, "Day: $daypos \nActivity: $position", Toast.LENGTH_LONG).show()
+        Intent(this, DetailsActivity::class.java).also {
+            // pass the current trip object between activities
+            it.putExtra("ACTIVITY", days[daypos][position])
+            // start ItineraryActivity
+            startActivity(it)
+        }
     }
 
 }

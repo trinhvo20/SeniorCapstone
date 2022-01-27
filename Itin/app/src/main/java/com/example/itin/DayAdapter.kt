@@ -39,7 +39,7 @@ class DayAdapter(
         // makes the sub recyclerview work, no sure why but it does
         holder.recyclerView.apply{
             layoutManager = LinearLayoutManager(holder.recyclerView.context,RecyclerView.VERTICAL,false)
-            adapter = ActivityAdapter(context,curDay.activities,listener)
+            adapter = ActivityAdapter(context,curDay.activities,listener,position)
         }
 
 
