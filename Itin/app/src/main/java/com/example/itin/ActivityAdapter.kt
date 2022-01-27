@@ -1,5 +1,6 @@
 package com.example.itin
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +9,9 @@ import com.example.itin.classes.Activity
 import kotlinx.android.synthetic.main.day_activity_item.view.*
 
 class ActivityAdapter(
-    private val Activities: List<Activity?>, // parameter: a mutable list of trip items
+    private val context: Context,
+    private val Activities: List<Activity?>, // parameter: a mutable list of Activity items
+    private val listener: OnItemClickListener
 ) : RecyclerView.Adapter<ActivityAdapter.ActivityViewHolder>() {
 
     // create a view holder: holds a layout of a specific item
@@ -23,16 +26,25 @@ class ActivityAdapter(
     override fun onBindViewHolder(holder: ActivityViewHolder, position: Int) {
         val curActivity = Activities[position]
         holder.itemView.apply{
-            // get the data from our trips list and put them in the corresponding TextView in trip_item.xml
+            // get the data from our Activities list and put them in the corresponding TextView in day_activity_item.xml
             if (curActivity != null) {
                 tvActivityName.text = curActivity.name
                 tvActivityTime.text = curActivity.time
             }
+        }
 
+        // handle RecyclerView clickable
+        holder.itemView.setOnClickListener {
+            listener.onItemClick(position)
         }
     }
 
     override fun getItemCount(): Int {
         return  Activities.size
+    }
+
+    // this interface will handle the RecyclerView clickable
+    interface  OnItemClickListener {
+        fun onItemClick(position: Int)
     }
 }

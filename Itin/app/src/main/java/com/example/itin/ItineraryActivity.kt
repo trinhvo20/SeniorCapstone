@@ -2,6 +2,7 @@ package com.example.itin
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
@@ -11,7 +12,7 @@ import kotlinx.android.synthetic.main.activity_itinerary.tvName
 import kotlinx.android.synthetic.main.trip_day_item.*
 
 
-class ItineraryActivity : AppCompatActivity() {
+class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListener {
     private lateinit var dayAdapter : DayAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +28,7 @@ class ItineraryActivity : AppCompatActivity() {
         var days = trip.days
 
         // initiate a new object of class TripAdapter, pass in trips list as parameter
-        dayAdapter = DayAdapter(days)
+        dayAdapter = DayAdapter(this,days,this)
 
         // assign adapter for our RecyclerView
         rvActivityList.adapter = dayAdapter
@@ -48,6 +49,10 @@ class ItineraryActivity : AppCompatActivity() {
 
         dayAdapter.notifyDataSetChanged()
 
+    }
+
+    override fun onItemClick(position: Int) {
+        Toast.makeText(this, "pos $position", Toast.LENGTH_SHORT).show()
     }
 
 }
