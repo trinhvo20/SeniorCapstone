@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.HandlerCompat.postDelayed
 import androidx.preference.PreferenceManager
 import com.example.itin.classes.Trip
+import com.google.firebase.database.*
+import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -32,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         // Load animation for main page
         topAnim = AnimationUtils.loadAnimation(this, R.anim.top_animation)
         bottomAnim = AnimationUtils.loadAnimation(this, R.anim.bottom_animation)
+
 
         // assign animation
         LogoIV.animation = topAnim
