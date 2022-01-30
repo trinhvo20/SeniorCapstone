@@ -3,6 +3,9 @@ package com.example.itin
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.preference.PreferenceManager
 import com.example.itin.databinding.ActivityProfileScreenBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth

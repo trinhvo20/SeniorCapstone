@@ -13,7 +13,6 @@
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         android:text="Location"
-        android:textColor="@color/black"
         android:textSize="30dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,7 +26,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Date Range"
-        android:textColor="@color/black"
         android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvName" />

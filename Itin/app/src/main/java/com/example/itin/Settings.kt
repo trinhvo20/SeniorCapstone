@@ -2,11 +2,12 @@ package com.example.itin
 
 
 import android.content.Intent
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.widget.TextView
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.preference.PreferenceManager
 
 class Settings : AppCompatActivity(){
 
@@ -14,9 +15,8 @@ class Settings : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
-        // basic text to say what page you are on
-        val title = findViewById<View>(R.id.activityTitleSettings) as TextView
-        title.text = "Settings!"
+        val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+
 
         // set up the bottom navigation bar
         bottomNavBarSetup()
@@ -53,5 +53,4 @@ class Settings : AppCompatActivity(){
             true
         }
     }
-
 }
