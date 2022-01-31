@@ -1,9 +1,12 @@
 package com.example.itin
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.classes.Day
@@ -19,6 +22,16 @@ class DayAdapter(
     // create a view holder: holds a layout of a specific item
     class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val recyclerView : RecyclerView = itemView.rvActivities
+        val ivAdd: ImageView
+
+        init {
+            ivAdd = itemView.findViewById<ImageView>(R.id.ivAdd)
+            ivAdd.setOnClickListener { addActivity(it) }
+        }
+
+        private fun addActivity(view: View) {
+            Log.w("AddActivity","give this functionality later")
+        }
     }
 
 
