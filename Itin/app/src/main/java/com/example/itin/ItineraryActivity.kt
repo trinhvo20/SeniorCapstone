@@ -55,7 +55,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         for (i in 1..dayNum) {
             val day = Day(i.toString())
             for (i in 1..actnum){
-                val activity = Activity("activity $i","$i:00")
+                val activity = Activity("activity $i","$i:00", "test")
                 day.activities.add(activity)
             }
             days.add(day)
