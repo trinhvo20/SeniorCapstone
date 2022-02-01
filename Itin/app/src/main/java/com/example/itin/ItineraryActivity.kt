@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
+import kotlinx.android.synthetic.main.activity_friend.*
 import kotlinx.android.synthetic.main.activity_itinerary.*
 import kotlinx.android.synthetic.main.activity_itinerary.tvName
 import kotlinx.android.synthetic.main.trip_day_item.*
@@ -21,13 +22,16 @@ import java.time.temporal.ChronoUnit
 class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListener {
     private lateinit var dayAdapter : DayAdapter
     lateinit var days: MutableList<Day>
+    private lateinit var trip : Trip
     @RequiresApi(Build.VERSION_CODES.O)
+    
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_itinerary)
 
         // get the trip object from MainActivity
-        val trip = intent.getSerializableExtra("EXTRA_TRIP") as Trip
+        trip = intent.getSerializableExtra("EXTRA_TRIP") as Trip
 
         tvName.text = trip.name
         tvDateRange.text = "From: ${trip.startDate}     To: ${trip.endDate}"
@@ -63,6 +67,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
 
         dayAdapter.notifyDataSetChanged()
 
+        homeBtn.setOnClickListener { finish() }
     }
 
     override fun onItemClick(position: Int, daypos: Int) {

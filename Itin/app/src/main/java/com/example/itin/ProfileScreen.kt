@@ -41,6 +41,16 @@ class ProfileScreen : AppCompatActivity() {
         // update button
         updateButton.setOnClickListener { update() }
 
+        previousTripBtn.setOnClickListener {
+            val intent = Intent(this, PreviousTripActivity::class.java)
+            startActivity(intent)
+        }
+
+        friendBtn.setOnClickListener {
+            val intent = Intent(this, FriendActivity::class.java)
+            startActivity(intent)
+        }
+
         // bottom Navigation Bar
         bottomNavBarSetup()
     }
@@ -92,11 +102,14 @@ class ProfileScreen : AppCompatActivity() {
                 val email = it.child("email").value.toString()
                 val phone = it.child("phone").value.toString()
 
-                user = User(fullName,username,email,phone)
-
+                // Show user info
                 emailTV.text = email
                 userNameTV.text = username
                 fullNameTV.text = fullName
+
+                fullNameInput.editText?.setText(fullName)
+                usernameInput.editText?.setText(username)
+                phoneNumberInput.editText?.setText(phone)
 
             } else {
                 Log.d("print", "User does not exist")
