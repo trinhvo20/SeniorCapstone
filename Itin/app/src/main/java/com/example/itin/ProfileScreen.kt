@@ -22,13 +22,14 @@ class ProfileScreen : AppCompatActivity() {
     private lateinit var user : User
 
     // for realtime database
-    private lateinit var databaseReference: DatabaseReference
+    private lateinit var userReference: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        userReference = FirebaseDatabase.getInstance().getReference("users")
         firebaseAuth = FirebaseAuth.getInstance()
         checkUser()
 
@@ -92,8 +93,7 @@ class ProfileScreen : AppCompatActivity() {
 
     // function to read data from Realtime Database
     private fun readData(uid: String) {
-        databaseReference = FirebaseDatabase.getInstance().getReference("users")
-        val checkUser = databaseReference.child(uid)
+        val checkUser = userReference.child(uid)
 
         checkUser.get().addOnSuccessListener {
             if (it.exists()){
@@ -127,7 +127,7 @@ class ProfileScreen : AppCompatActivity() {
         val newPhone = phoneNumberInput.editText?.text.toString()
 
         val uid = firebaseAuth.currentUser?.uid.toString() // get uid from Google
-        val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+        val curUser = userReference.child(uid)
 
         if (newName.isNotEmpty()) {
             curUser.child("fullName").setValue(newName)
