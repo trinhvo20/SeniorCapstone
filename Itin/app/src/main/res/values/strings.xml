@@ -3,6 +3,7 @@
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
     <string name="sync_header">Sync</string>
+    <string name="display_header">Display</string>
 
     <!-- Messages Preferences -->
     <string name="signature_title">Your signature</string>
@@ -14,7 +15,14 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+
+    <!-- Display Preferences -->
+    <string name="dark_mode_key">dark_mode_key</string>
+    <string name="dark_mode_title">Dark Mode</string>
+
+    <!-- Google Sign In -->
     <string name="title_activity_google_sign_in">GoogleSignIn</string>
     <string name="title_activity_google_login">GoogleLogin</string>
+    <string name="title_activity_settings">SettingsActivity</string>
 
 </resources>
