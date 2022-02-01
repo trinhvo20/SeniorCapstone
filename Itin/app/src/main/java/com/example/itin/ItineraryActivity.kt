@@ -13,6 +13,7 @@ import com.example.itin.classes.Trip
 import kotlinx.android.synthetic.main.activity_friend.*
 import kotlinx.android.synthetic.main.activity_itinerary.*
 import kotlinx.android.synthetic.main.activity_itinerary.tvName
+import kotlinx.android.synthetic.main.activity_itinerary.homeBtn
 import kotlinx.android.synthetic.main.trip_day_item.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
