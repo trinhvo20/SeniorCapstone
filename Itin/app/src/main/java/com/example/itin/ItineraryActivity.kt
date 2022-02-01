@@ -5,18 +5,22 @@ import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
+import kotlinx.android.synthetic.main.activity_friend.*
 import kotlinx.android.synthetic.main.activity_itinerary.*
+import kotlinx.android.synthetic.main.activity_itinerary.homeBtn
 
 
 class ItineraryActivity : AppCompatActivity() {
+
     private lateinit var dayAdapter : DayAdapter
+    private lateinit var trip : Trip
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_itinerary)
 
         // get the trip object from MainActivity
-        val trip = intent.getSerializableExtra("EXTRA_TRIP") as Trip
+        trip = intent.getSerializableExtra("EXTRA_TRIP") as Trip
 
         tvName.text = trip.name
         tvDateRange.text = "From: ${trip.startDate}     To: ${trip.endDate}"
@@ -40,6 +44,7 @@ class ItineraryActivity : AppCompatActivity() {
 
         dayAdapter.notifyDataSetChanged()
 
+        homeBtn.setOnClickListener { finish() }
     }
 
 }

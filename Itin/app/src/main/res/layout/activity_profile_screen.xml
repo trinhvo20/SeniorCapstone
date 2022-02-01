@@ -103,6 +103,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
 
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/previousTripBtn"
                     android:layout_width="0dp"
                     android:layout_height="105dp"
                     android:layout_margin="10dp"
@@ -144,6 +145,7 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/friendBtn"
                     android:layout_width="0dp"
                     android:layout_height="105dp"
                     android:layout_margin="10dp"
