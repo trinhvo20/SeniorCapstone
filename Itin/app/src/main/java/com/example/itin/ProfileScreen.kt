@@ -19,7 +19,7 @@ class ProfileScreen : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileScreenBinding
     private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var user : User
+    private lateinit var uid : String
 
     // for realtime database
     private lateinit var userReference: DatabaseReference
@@ -55,6 +55,7 @@ class ProfileScreen : AppCompatActivity() {
         // bottom Navigation Bar
         bottomNavBarSetup()
     }
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     private fun checkUser() {
         val firebaseUser = firebaseAuth.currentUser
@@ -63,16 +64,13 @@ class ProfileScreen : AppCompatActivity() {
             startActivity(Intent(this, GoogleLogin::class.java))
         }
         else {
-            val uid = firebaseUser.uid
+            uid = firebaseUser.uid
             Log.d("print", "firebaseAuthWithGoogleAccount: Uid: $uid")
 
             // for realtime database, find the current user by its uid
             readData(uid)
         }
     }
-
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    //
 
     private fun validateUsername(): Boolean {
         val username = usernameInput.editText?.text.toString()
@@ -126,7 +124,6 @@ class ProfileScreen : AppCompatActivity() {
         val newUsername = usernameInput.editText?.text.toString()
         val newPhone = phoneNumberInput.editText?.text.toString()
 
-        val uid = firebaseAuth.currentUser?.uid.toString() // get uid from Google
         val curUser = userReference.child(uid)
 
         if (newName.isNotEmpty()) {
@@ -150,10 +147,7 @@ class ProfileScreen : AppCompatActivity() {
             Toast.makeText(this,"Updated", Toast.LENGTH_SHORT).show()
         }
 
-        fullNameInput.editText?.text?.clear()
-        usernameInput.editText?.text?.clear()
-        phoneNumberInput.editText?.text?.clear()
-
+        readData(uid)
     }
 
     // function to set up the bottom navigation bar
