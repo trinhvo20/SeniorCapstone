@@ -13,6 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Itin">
         <activity
+            android:name=".DetailsActivity"
+            android:exported="false" />
             android:name=".test"
             android:exported="false" />
         <activity
@@ -44,6 +46,7 @@
         </activity>
         <activity
             android:name=".TripActivity"
+            android:exported="true"></activity>
             android:exported="true" />
         <activity android:name=".Profile" />
         <activity android:name=".Settings" />
