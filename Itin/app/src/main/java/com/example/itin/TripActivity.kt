@@ -2,19 +2,30 @@ package com.example.itin
 
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.itin.classes.Activity
+import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
+import com.example.itin.classes.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_trip.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 
 // Toggle Debugging
 const val DEBUG_TOGGLE : Boolean = true
@@ -23,7 +34,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
     private lateinit var tripAdapter : TripAdapter
     private lateinit var trips : MutableList<Trip>
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var user : User
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trip)
@@ -69,6 +83,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
     // This function will be called when you click the AddTrip button,
     // a dialog will show up for you to create a new trip
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun addTrip() {
         val view = LayoutInflater.from(this).inflate(R.layout.create_trip, null)
 
@@ -115,6 +130,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             }
 
             val trip = Trip(name, location, startDate, endDate)
+            SendToDB(trip)
             trips.add(trip)
             tripAdapter.notifyDataSetChanged()
 
@@ -163,5 +179,19 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             }
             true
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun SendToDB(trip : Trip){
+        var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
+        var startDate = LocalDate.parse(trip.startDate, formatter)
+        var endDate = LocalDate.parse(trip.endDate, formatter)
+
+        val uid = firebaseAuth.currentUser?.uid.toString() // get uid from Google
+        val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+        val curTrip = curUser.child("trips")
+
+        curTrip.child("Location").setValue(trip.location)
+
     }
 }
