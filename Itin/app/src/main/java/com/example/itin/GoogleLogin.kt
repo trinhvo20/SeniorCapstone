@@ -115,8 +115,7 @@ class GoogleLogin : AppCompatActivity() {
                     Toast.makeText(this@GoogleLogin, "Account created... \n$email", Toast.LENGTH_LONG).show()
                     // create a new user account in realtime database (unique id = uid)
                     val user = User(fullName,username,email,phoneNumber)
-                    databaseReference.child(uid).setValue(user)
-                    passUserInfo(uid)
+                    databaseReference.child(uid).child("userInfo").setValue(user)
                 }
                 else {
                     Log.d(TAG, "firebaseAuthWithGoogleAccount: Existing user... \n$email")

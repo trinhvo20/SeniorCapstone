@@ -91,7 +91,7 @@ class ProfileScreen : AppCompatActivity() {
 
     // function to read data from Realtime Database
     private fun readData(uid: String) {
-        val checkUser = userReference.child(uid)
+        val checkUser = userReference.child(uid).child("userInfo")
 
         checkUser.get().addOnSuccessListener {
             if (it.exists()){
@@ -124,7 +124,7 @@ class ProfileScreen : AppCompatActivity() {
         val newUsername = usernameInput.editText?.text.toString()
         val newPhone = phoneNumberInput.editText?.text.toString()
 
-        val curUser = userReference.child(uid)
+        val curUser = userReference.child(uid).child("userInfo")
 
         if (newName.isNotEmpty()) {
             curUser.child("fullName").setValue(newName)
