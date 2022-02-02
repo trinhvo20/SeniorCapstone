@@ -1,11 +1,16 @@
 package com.example.itin
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
@@ -66,6 +71,8 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             days.add(day)
         }
 
+
+
         dayAdapter.notifyDataSetChanged()
 
         homeBtn.setOnClickListener { finish() }
@@ -81,4 +88,47 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         }
     }
 
+    fun addActivity(view : View, context : Context, curday : Day) {
+
+
+        val view = LayoutInflater.from(context).inflate(R.layout.edit_activity, null)
+
+        val etName = view.findViewById<EditText>(R.id.etName)
+        val etLocation = view.findViewById<EditText>(R.id.etLocation)
+        val etCost = view.findViewById<EditText>(R.id.etCost)
+        val etNotes = view.findViewById<EditText>(R.id.etNotes)
+
+
+        val newDialog = AlertDialog.Builder(context)
+        newDialog.setView(view)
+
+        newDialog.setPositiveButton("Edit") { dialog, _ ->
+            val location = etLocation.text.toString()
+            val cost = etCost.text.toString()
+            val notes = etNotes.text.toString()
+
+            val name = if (etName.text.toString().isEmpty()) {
+                "$location"
+            } else {
+                etName.text.toString()
+            }
+
+            val activity = Activity(name, "1:00", location, cost, notes)
+            curday.activities.add(activity)
+
+            dayAdapter.notifyDataSetChanged()
+
+            Toast.makeText(context, "Activity Edited", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+
+        }
+
+        newDialog.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.dismiss()
+            Toast.makeText(context, "Canceled", Toast.LENGTH_SHORT).show()
+        }
+
+        newDialog.create()
+        newDialog.show()
+    }
 }

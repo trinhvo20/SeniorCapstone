@@ -16,6 +16,7 @@ class DetailsActivity : AppCompatActivity() {
 
         val activity = intent.getSerializableExtra("ACTIVITY") as Activity
 
+        //filling in information
         tvName.text = activity.name
         tvTime.text = activity.time
         tvLocation.text = activity.location
@@ -29,6 +30,7 @@ class DetailsActivity : AppCompatActivity() {
 
     }
 
+    // function to edit the activity
     private fun editActivity(activity: Activity) {
         val view = LayoutInflater.from(this).inflate(R.layout.edit_activity, null)
 
@@ -61,6 +63,7 @@ class DetailsActivity : AppCompatActivity() {
             Toast.makeText(this, "Activity Edited", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
 
+            //reload the activity seamlessly
             finish();
             overridePendingTransition(0, 0);
             startActivity(intent);
