@@ -75,11 +75,16 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // This here checks the value in the database to overwrite the initial value of 0
         val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
         curUser.get().addOnSuccessListener {
-            if(it.exists()){
-                tripCount = it.child("tripCount").value.toString().toInt()
-                Log.d("TripCount on Start", tripCount.toString())
+            if (it.exists()) {
+                try {
+                    tripCount = it.child("tripCount").value.toString().toInt()
+                }
+                catch (e: NumberFormatException){
+                    curUser.child("tripCount").setValue(0)
+                }
             }
         }
+
 
         // make the bottom navigation bar
         bottomNavBarSetup()
@@ -157,7 +162,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             curUser.get().addOnSuccessListener {
                 if(it.exists()){
                     tripCount = it.child("tripCount").value.toString().toInt() + 1
-                    Log.d("Get TripCount DataBAse",tripCount.toString())
                 }
             }
 
@@ -165,7 +169,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             SendToDB(trip,curTrip,tripCount)
             trips.add(trip)
             tripCount += 1
-            Log.d("TripCount+=1",tripCount.toString())
             curUser.child("tripCount").setValue(tripCount)
             tripAdapter.notifyDataSetChanged()
 
@@ -222,6 +225,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // Navigates to the correct directory
         val tripInstance = curTrip.child(id.toString())
 
+        tripInstance.child("Name").setValue(trip.name)
         tripInstance.child("Location").setValue(trip.location)
+        tripInstance.child("Start Date").setValue(trip.startDate)
+        tripInstance.child("End Date").setValue(trip.endDate)
     }
 }
