@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.ImageView
@@ -26,21 +27,28 @@ import java.time.temporal.ChronoUnit
 import java.util.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import kotlinx.android.synthetic.main.activity_profile_screen.*
+import kotlin.properties.Delegates
 
 // Toggle Debugging
 const val DEBUG_TOGGLE : Boolean = true
 
-class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
+abstract class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
     private lateinit var tripAdapter : TripAdapter
     private lateinit var trips : MutableList<Trip>
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var user : User
+    private lateinit var databaseReference: DatabaseReference
+    private var num : Int = 0
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trip)
+
+        // Create a Firebase instance
+        firebaseAuth = FirebaseAuth.getInstance()
 
         // set trip list
         trips = mutableListOf()
@@ -63,6 +71,22 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             trips.add(trip)
             tripAdapter.notifyDataSetChanged()
         }
+        // Read the trips data if there is trips data
+        val uid = firebaseAuth.currentUser?.uid.toString() // get uid from Google
+
+        val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+        databaseReference = curUser.child("userInfo")
+        val numTrips = databaseReference.child("numTrips")
+
+        numTrips.get().addOnSuccessListener {
+            if (it.exists()) {
+                num = it.value.toString().toInt()
+            }
+        }
+//
+//        if (numTrips > 0) {
+//            readData(uid, numTrips)
+//        }
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // make the bottom navigation bar
@@ -130,8 +154,17 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             }
 
             val trip = Trip(name, location, startDate, endDate)
-            SendToDB(trip)
+            val uid = firebaseAuth.currentUser?.uid.toString() // get uid from Google
+
+            val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+            val curTrip = curUser.child("trips")
+            val userInfo = curUser.child("userInfo")
+
+            SendToDB(trip, curTrip, num)
             trips.add(trip)
+
+            num += 1
+            userInfo.child("numTrips").setValue(num)
             tripAdapter.notifyDataSetChanged()
 
             Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
@@ -182,16 +215,32 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun SendToDB(trip : Trip){
-        var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
-        var startDate = LocalDate.parse(trip.startDate, formatter)
-        var endDate = LocalDate.parse(trip.endDate, formatter)
+    private fun SendToDB(trip : Trip, curTrip : DatabaseReference, id : Int){
 
-        val uid = firebaseAuth.currentUser?.uid.toString() // get uid from Google
-        val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
-        val curTrip = curUser.child("trips")
+        val tripInstance = curTrip.child(id.toString())
 
-        curTrip.child("Location").setValue(trip.location)
+        tripInstance.child("Location").setValue(trip.location)
+        tripInstance.child("Name").setValue(trip.name)
+        tripInstance.child("startDate").setValue(trip.startDate)
+        tripInstance.child("endDate").setValue(trip.endDate)
 
+    }
+    // function to read data from Realtime Database
+    private fun readData(uid: String, numTrips: Int) {
+        databaseReference = FirebaseDatabase.getInstance().getReference("users").child(uid)
+        val checkUser = databaseReference.child("trips")
+
+        checkUser.get().addOnSuccessListener {
+            if (it.exists()){
+                val trip = Trip("TEST", "TEST", "1/1/2022", "1/2/2022")
+                trips.add(trip)
+                tripAdapter.notifyDataSetChanged()
+
+            } else {
+                Log.d("print", "User does not exist")
+            }
+        }.addOnCanceledListener {
+            Log.d("print", "Failed to fetch the user")
+        }
     }
 }
