@@ -76,6 +76,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
         curUser.get().addOnSuccessListener {
             if (it.exists()) {
+                // Try to grab the value from the DB for tripCount, if it doesn't exist, create the child
                 try {
                     tripCount = it.child("tripCount").value.toString().toInt()
                 }
