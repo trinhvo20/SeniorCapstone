@@ -5,12 +5,13 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.preference.PreferenceManager
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.HandlerCompat.postDelayed
-import androidx.preference.PreferenceManager
+//import androidx.preference.PreferenceManager
 import com.example.itin.classes.Trip
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.create_trip.*

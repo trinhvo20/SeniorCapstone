@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.preference.PreferenceManager
+//import androidx.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
 import com.example.itin.classes.User
