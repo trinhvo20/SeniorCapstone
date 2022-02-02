@@ -4,8 +4,11 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
@@ -66,6 +69,8 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             days.add(day)
         }
 
+
+
         dayAdapter.notifyDataSetChanged()
 
         homeBtn.setOnClickListener { finish() }
@@ -80,5 +85,6 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             startActivity(it)
         }
     }
+
 
 }
