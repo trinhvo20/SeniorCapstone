@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,27 +18,65 @@ import kotlinx.android.synthetic.main.trip_day_item.view.*
 import kotlinx.android.synthetic.main.trip_item.view.tvName
 
 class DayAdapter(
-    private val incontext: Context,
-    private val indays: List<Day>, // parameter: a mutable list of day items
+    private val context: Context,
+    private val days: List<Day>, // parameter: a mutable list of day items
     private val listener: ActivityAdapter.OnItemClickListener
 ) : RecyclerView.Adapter<DayAdapter.DayViewHolder>() {
-    val context = incontext
-    val days = indays
+
 
     // create a view holder: holds a layout of a specific item
-    class DayViewHolder(itemView: View, context: Context, days : List<Day>) : RecyclerView.ViewHolder(itemView){
+    inner class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val recyclerView : RecyclerView = itemView.rvActivities
         val ivAdd: ImageView
 
         init {
             ivAdd = itemView.findViewById<ImageView>(R.id.ivAdd)
-            ivAdd.setOnClickListener { addAnActivity(it, context, days) }
+            ivAdd.setOnClickListener { addAnActivity(it) }
         }
 
-        private fun addAnActivity(view : View, context : Context, days : List<Day>) {
+        // function to add an activity to a day
+        private fun addAnActivity(view : View) {
+            val curDay = days[adapterPosition]
 
-            (this as ItineraryActivity).addActivity(view, context, days[adapterPosition])
 
+            val view = LayoutInflater.from(context).inflate(R.layout.edit_activity, null)
+
+            val etName = view.findViewById<EditText>(R.id.etName)
+            val etLocation = view.findViewById<EditText>(R.id.etLocation)
+            val etCost = view.findViewById<EditText>(R.id.etCost)
+            val etNotes = view.findViewById<EditText>(R.id.etNotes)
+
+
+            val newDialog = AlertDialog.Builder(context)
+            newDialog.setView(view)
+
+            newDialog.setPositiveButton("Edit") { dialog, _ ->
+                val location = etLocation.text.toString()
+                val cost = etCost.text.toString()
+                val notes = etNotes.text.toString()
+
+                val name = if (etName.text.toString().isEmpty()) {
+                    "$location"
+                } else {
+                    etName.text.toString()
+                }
+
+                val activity = Activity(name, "1:00", location, cost, notes)
+                curDay.activities.add(activity)
+
+                notifyDataSetChanged()
+                Toast.makeText(context, "Activity Edited", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+
+            }
+
+            newDialog.setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+                Toast.makeText(context, "Canceled", Toast.LENGTH_SHORT).show()
+            }
+
+            newDialog.create()
+            newDialog.show()
         }
     }
 
@@ -45,7 +84,7 @@ class DayAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DayViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val v  = inflater.inflate(R.layout.trip_day_item,parent,false)
-        return DayViewHolder(v,context,days)
+        return DayViewHolder(v)
     }
 
     override fun onBindViewHolder(holder: DayViewHolder, position: Int) {
