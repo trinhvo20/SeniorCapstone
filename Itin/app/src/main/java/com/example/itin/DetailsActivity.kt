@@ -35,11 +35,14 @@ class DetailsActivity : AppCompatActivity() {
         val view = LayoutInflater.from(this).inflate(R.layout.edit_activity, null)
 
         val etName = view.findViewById<EditText>(R.id.etName)
+        val etTime = view.findViewById<EditText>(R.id.etTime)
         val etLocation = view.findViewById<EditText>(R.id.etLocation)
         val etCost = view.findViewById<EditText>(R.id.etCost)
         val etNotes = view.findViewById<EditText>(R.id.etNotes)
 
+
         etName.setText(activity.name)
+        etTime.setText(activity.time)
         etLocation.setText(activity.location)
         etCost.setText(activity.cost)
         etNotes.setText(activity.notes)
@@ -52,6 +55,7 @@ class DetailsActivity : AppCompatActivity() {
             val location = etLocation.text.toString()
             activity.cost = etCost.text.toString()
             activity.notes = etNotes.text.toString()
+            activity.time = etTime.text.toString()
 
             activity.name = if (etName.text.toString().isEmpty()) {
                 "$location"

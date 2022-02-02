@@ -13,7 +13,7 @@
         android:background="@color/mint"
         android:gravity="center"
         android:padding="7dp"
-        android:text="Edit an Activity"
+        android:text="Add an Activity"
         android:textColor="@color/white"
         android:textSize="25dp"
         android:textStyle="bold"
