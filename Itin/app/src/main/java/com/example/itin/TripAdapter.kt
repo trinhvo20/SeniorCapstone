@@ -42,8 +42,8 @@ class TripAdapter(
 
                         val etName = view.findViewById<EditText>(R.id.etName)
                         val etLocation = view.findViewById<EditText>(R.id.etLocation)
-                        val etStartDate = view.findViewById<EditText>(R.id.etStartDate)
-                        val etEndDate = view.findViewById<EditText>(R.id.etStartDate)
+                        val etStartDate = view.findViewById<EditText>(R.id.etCost)
+                        val etEndDate = view.findViewById<EditText>(R.id.etCost)
 
                         val dialog = AlertDialog.Builder(context)
                         dialog.setView(view)
@@ -123,7 +123,7 @@ class TripAdapter(
         holder.itemView.apply{
             // get the data from our trips list and put them in the corresponding TextView in trip_item.xml
             tvName.text = curTrip.name
-            tvStartDate.text = curTrip.startDate
+            tvCost.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
         }
 

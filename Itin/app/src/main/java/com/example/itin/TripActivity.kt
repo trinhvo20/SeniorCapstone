@@ -12,7 +12,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.classes.Trip
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_trip.*
 import java.util.*
 
@@ -74,8 +73,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         val etName = view.findViewById<EditText>(R.id.etName)
         val etLocation = view.findViewById<EditText>(R.id.etLocation)
-        val etStartDate = view.findViewById<EditText>(R.id.etStartDate)
-        val etEndDate = view.findViewById<EditText>(R.id.etEndDate)
+        val etStartDate = view.findViewById<EditText>(R.id.etCost)
+        val etEndDate = view.findViewById<EditText>(R.id.etNotes)
 
         val c = Calendar.getInstance()
         val year = c.get(Calendar.YEAR)

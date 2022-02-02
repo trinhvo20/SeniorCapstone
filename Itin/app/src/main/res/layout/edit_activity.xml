@@ -13,7 +13,7 @@
         android:background="@color/mint"
         android:gravity="center"
         android:padding="7dp"
-        android:text="Create A New Trip"
+        android:text="Edit an Activity"
         android:textColor="@color/white"
         android:textSize="25dp"
         android:textStyle="bold"
@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="Trip Name"
+            android:text="Activity Name"
             android:textColor="@color/mint"
             android:textSize="20dp"
             android:textStyle="bold"
@@ -75,7 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="Where you going to?"
+            android:text="Where is the activity takeing place?"
             android:textColor="@color/mint"
             android:textSize="20dp"
             android:textStyle="bold"
@@ -115,7 +115,7 @@
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="Start Date"
+            android:text="Cost"
             android:textColor="@color/mint"
             android:textSize="20dp"
             android:textStyle="bold"
@@ -128,21 +128,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:hint="MM/DD/YYYY"
+            android:hint="$0"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/ivPickStartDate"
             app:layout_constraintStart_toEndOf="@+id/tvCost"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/ivPickStartDate"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_calendar"
-            android:layout_marginRight="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -151,6 +141,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:background="@drawable/shape_background"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -158,14 +149,14 @@
 
         <TextView
             android:id="@+id/tvEndDate"
-            android:layout_width="100dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="End Date"
-            android:textSize="20dp"
-            android:textColor="@color/mint"
-            android:textStyle="bold"
             android:layout_margin="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="Aditional notes"
+            android:textColor="@color/mint"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -174,21 +165,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:hint="MM/DD/YYYY"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/ivPickEndDate"
-            app:layout_constraintStart_toEndOf="@+id/tvEndDate"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageView
-            android:id="@+id/ivPickEndDate"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_calendar"
-            android:layout_marginRight="10dp"
+            android:hint="Notes"
+            android:singleLine="false"
+            android:textAlignment="viewStart"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvEndDate" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
