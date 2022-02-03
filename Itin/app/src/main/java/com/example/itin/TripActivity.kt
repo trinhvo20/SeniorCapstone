@@ -39,6 +39,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var user : User
     private var tripCount : Int = 0
+    private lateinit var location: String
+    private lateinit var startDate: String
+    private lateinit var endDate: String
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -117,7 +120,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         val c = Calendar.getInstance()
         val year = c.get(Calendar.YEAR)
-        var month = c.get(Calendar.MONTH)
+        val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         val ivPickStartDate = view.findViewById<ImageView>(R.id.ivPickStartDate)
@@ -141,41 +144,47 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         newDialog.setView(view)
 
         newDialog.setPositiveButton("Add") { dialog, _ ->
-            val name: String
-            val location = etLocation.text.toString()
-            val startDate = etStartDate.text.toString()
-            val endDate = etEndDate.text.toString()
+            location = etLocation.text.toString()
+            startDate = etStartDate.text.toString()
+            endDate = etEndDate.text.toString()
 
-            name = if (etName.text.toString().isEmpty()) {
+            val name: String = if (etName.text.toString().isEmpty()) {
                 "Trip to $location"
             } else {
                 etName.text.toString()
             }
 
-            // Grab the initial values for database manipulation
-            val trip = Trip(name, location, startDate, endDate)
-            val uid = firebaseAuth.currentUser?.uid.toString()
+            var isAllFieldsChecked = checkAllFields()
 
-            val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
-            val curTrip = curUser.child("trips")
+            if (isAllFieldsChecked) {
+                // Grab the initial values for database manipulation
+                val trip = Trip(name, location, startDate, endDate)
+                val uid = firebaseAuth.currentUser?.uid.toString()
 
-            // This event listener waits for a change in its child (tripCount) then records the updated version
-            // We must add 1 to this because it records the previous iterations' value
-            curUser.get().addOnSuccessListener {
-                if(it.exists()){
-                    tripCount = it.child("tripCount").value.toString().toInt() + 1
+                val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+                val curTrip = curUser.child("trips")
+
+                // This event listener waits for a change in its child (tripCount) then records the updated version
+                // We must add 1 to this because it records the previous iterations' value
+                curUser.get().addOnSuccessListener {
+                    if(it.exists()){
+                        tripCount = it.child("tripCount").value.toString().toInt() + 1
+                    }
                 }
+
+                // Write to the database, then increment tripCount in the database
+                SendToDB(trip,curTrip,tripCount)
+                trips.add(trip)
+                tripCount += 1
+                curUser.child("tripCount").setValue(tripCount)
+                tripAdapter.notifyDataSetChanged()
+
+                Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+            } else {
+                Toast.makeText(this, "Location and Dates are needed", Toast.LENGTH_SHORT).show()
             }
 
-            // Write to the database, then increment tripCount in the database
-            SendToDB(trip,curTrip,tripCount)
-            trips.add(trip)
-            tripCount += 1
-            curUser.child("tripCount").setValue(tripCount)
-            tripAdapter.notifyDataSetChanged()
-
-            Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
         }
 
         newDialog.setNegativeButton("Cancel") { dialog, _ ->
@@ -185,6 +194,29 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         newDialog.create()
         newDialog.show()
+    }
+
+    private fun checkAllFields(): Boolean {
+        val view = LayoutInflater.from(this).inflate(R.layout.create_trip, null)
+        val etLocation = view.findViewById<EditText>(R.id.etLocation)
+        val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
+        val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
+        if (location.isEmpty()) {
+            etLocation.error = "This field is required";
+            return false;
+        }
+
+        if (startDate.isEmpty()) {
+            etStartDate.error = "This field is required";
+            return false;
+        }
+
+        if (endDate.isEmpty()) {
+            etEndDate.error = "Email is required";
+            return false;
+        }
+        // after all validation return true.
+        return true;
     }
 
     // function to set up the bottom navigation bar
