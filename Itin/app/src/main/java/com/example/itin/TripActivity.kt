@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -111,12 +112,12 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         val etName = view.findViewById<EditText>(R.id.etName)
         val etLocation = view.findViewById<EditText>(R.id.etLocation)
-        val etStartDate = view.findViewById<EditText>(R.id.etStartDate)
-        val etEndDate = view.findViewById<EditText>(R.id.etEndDate)
+        val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
+        val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
 
         val c = Calendar.getInstance()
         val year = c.get(Calendar.YEAR)
-        val month = c.get(Calendar.MONTH)+1
+        var month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         val ivPickStartDate = view.findViewById<ImageView>(R.id.ivPickStartDate)
@@ -124,14 +125,14 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         ivPickStartDate.setOnClickListener {
             val datePickerDialog = DatePickerDialog(this, DatePickerDialog.OnDateSetListener{_, mYear, mMonth, mDay ->
-                etStartDate.setText(""+mMonth+"/"+mDay+"/"+mYear)
+                etStartDate.text = "${mMonth+1}/$mDay/$mYear"
             }, year, month, day)
             datePickerDialog.show()
         }
 
         ivPickEndDate.setOnClickListener {
             val datePickerDialog = DatePickerDialog(this, DatePickerDialog.OnDateSetListener{_, mYear, mMonth, mDay ->
-                etEndDate.setText(""+mMonth+"/"+mDay+"/"+mYear)
+                etEndDate.text = "${mMonth+1}/$mDay/$mYear"
             }, year, month, day)
             datePickerDialog.show()
         }
