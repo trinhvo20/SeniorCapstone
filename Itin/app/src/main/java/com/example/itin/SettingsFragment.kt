@@ -25,9 +25,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     // function to take the settings from root preferences and put them into action
     private fun loadSettings(){
-        val sp = PreferenceManager.getDefaultSharedPreferences(context)
+        val sp = context?.let { PreferenceManager.getDefaultSharedPreferences(it) }
 
-        val dark = sp.getBoolean("dark_mode_key",false)
+        val dark = sp?.getBoolean("dark_mode_key",false)
         if("$dark" == "false"){
             // this is light mode
             val theme = AppCompatDelegate.MODE_NIGHT_NO
@@ -42,7 +42,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onResume() {
         super.onResume()
-        preferenceScreen.sharedPreferences.registerOnSharedPreferenceChangeListener(
+        preferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(
             preferenceChangeListener
         )
         loadSettings()
@@ -50,7 +50,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onPause() {
         super.onPause()
-        preferenceScreen.sharedPreferences.unregisterOnSharedPreferenceChangeListener(
+        preferenceScreen.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(
             preferenceChangeListener
         )
     }

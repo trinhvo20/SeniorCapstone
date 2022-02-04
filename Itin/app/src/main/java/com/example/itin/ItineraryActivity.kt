@@ -1,25 +1,16 @@
 package com.example.itin
 
-import android.content.Context
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
-import kotlinx.android.synthetic.main.activity_friend.*
 import kotlinx.android.synthetic.main.activity_itinerary.*
-import kotlinx.android.synthetic.main.activity_itinerary.tvName
-import kotlinx.android.synthetic.main.activity_itinerary.homeBtn
-import kotlinx.android.synthetic.main.trip_day_item.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
