@@ -25,4 +25,6 @@
     <string name="title_activity_google_login">GoogleLogin</string>
     <string name="title_activity_settings">SettingsActivity</string>
 
+    <string name="API_KEY">AIzaSyCDem9vP86TKoWfzAn1QvEudD24zDLpGHM</string>
+
 </resources>

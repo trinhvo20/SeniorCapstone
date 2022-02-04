@@ -3,7 +3,6 @@ package com.example.itin
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,21 +12,21 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.itin.classes.Activity
-import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
 import com.example.itin.classes.User
+import com.google.android.gms.common.api.Status
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.database.FirebaseDatabase
-import kotlinx.android.synthetic.main.create_trip.*
-import kotlinx.android.synthetic.main.activity_trip.*
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
-import java.util.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import kotlinx.android.synthetic.main.activity_trip.*
+import kotlinx.android.synthetic.main.create_trip.*
+import java.util.*
 
 // Toggle Debugging
 const val DEBUG_TOGGLE : Boolean = true
@@ -115,9 +114,32 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
         val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
 
+        Places.initialize(this,getString(R.string.API_KEY))
+        val placesClient = Places.createClient(this)
+
+        // Initialize the AutocompleteSupportFragment.
+        val autocompleteFragment = supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
+
+        // Specify the types of place data to return.
+        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
+
+        // Set up a PlaceSelectionListener to handle the response.
+        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+            override fun onPlaceSelected(place: Place) {
+                // TODO: Get info about the selected place.
+                Log.i("Places", "Place: ${place.address}, ${place.id}")
+            }
+
+            override fun onError(status: Status) {
+                // TODO: Handle the error.
+                Log.i("Places", "An error occurred: $status")
+            }
+        })
+
+        // Calendar Date Picker
         val c = Calendar.getInstance()
         val year = c.get(Calendar.YEAR)
-        var month = c.get(Calendar.MONTH)
+        val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         val ivPickStartDate = view.findViewById<ImageView>(R.id.ivPickStartDate)

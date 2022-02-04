@@ -52,7 +52,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            android:padding="10dp"
             android:hint="Name your trip"
+            android:background="@android:drawable/edit_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tvName"
@@ -60,8 +62,9 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/clLocation"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -91,12 +94,24 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:hint="Location"
+            android:drawableLeft="@drawable/ic_location"
+            android:background="@android:drawable/edit_text"
+            android:focusable="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvLocation" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <fragment
+            android:id="@+id/autocomplete_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment" />
+
+    </LinearLayout>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -18,10 +18,6 @@
             android:name=".test"
             android:exported="false" />
         <activity
-            android:name=".SettingsActivity"
-            android:exported="false"
-            android:label="@string/title_activity_settings" />
-        <activity
             android:name=".FriendActivity"
             android:exported="false" />
         <activity
@@ -53,8 +49,9 @@
         <activity
             android:name=".TripActivity"
             android:exported="true" />
-        <activity android:name=".Profile" />
-        <activity android:name=".Settings" />
+        <activity
+            android:name=".Settings"
+            android:exported="false"/>
 
         <meta-data
             android:name="preloaded_fonts"
