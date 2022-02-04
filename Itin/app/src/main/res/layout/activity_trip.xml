@@ -15,9 +15,10 @@
         android:text="Trips"
         android:background="@color/mint"
         android:gravity="center"
-        android:padding="7dp"
-        android:textColor="@color/white"
-        android:textSize="25dp"
+        android:padding="10dp"
+        android:fontFamily="@font/bungee"
+        android:includeFontPadding="false"
+        android:textSize="30dp"
         android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView
