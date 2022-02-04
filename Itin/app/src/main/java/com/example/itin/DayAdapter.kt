@@ -5,10 +5,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
 import kotlinx.android.synthetic.main.trip_day_item.view.*
 import kotlinx.android.synthetic.main.trip_item.view.tvName
@@ -19,18 +23,63 @@ class DayAdapter(
     private val listener: ActivityAdapter.OnItemClickListener
 ) : RecyclerView.Adapter<DayAdapter.DayViewHolder>() {
 
+
     // create a view holder: holds a layout of a specific item
-    class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
+    //-----> Needs to be inner class for shit to work Remember that if you copy this code for later <-----
+    inner class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val recyclerView : RecyclerView = itemView.rvActivities
         val ivAdd: ImageView
 
         init {
             ivAdd = itemView.findViewById<ImageView>(R.id.ivAdd)
-            ivAdd.setOnClickListener { addActivity(it) }
+            ivAdd.setOnClickListener { addAnActivity(it) }
         }
 
-        private fun addActivity(view: View) {
-            Log.w("AddActivity","give this functionality later")
+        // function to add an activity to a day
+        private fun addAnActivity(view : View) {
+            val curDay = days[adapterPosition]
+
+
+            val view = LayoutInflater.from(context).inflate(R.layout.add_activity, null)
+
+            val etName = view.findViewById<EditText>(R.id.etName)
+            val etTime = view.findViewById<EditText>(R.id.etTime)
+            val etLocation = view.findViewById<EditText>(R.id.etLocation)
+            val etCost = view.findViewById<EditText>(R.id.etCost)
+            val etNotes = view.findViewById<EditText>(R.id.etNotes)
+
+
+            val newDialog = AlertDialog.Builder(context)
+            newDialog.setView(view)
+
+            newDialog.setPositiveButton("Add") { dialog, _ ->
+                val location = etLocation.text.toString()
+                val cost = etCost.text.toString()
+                val notes = etNotes.text.toString()
+                val time = etTime.text.toString()
+
+                val name = if (etName.text.toString().isEmpty()) {
+                    "$location"
+                } else {
+                    etName.text.toString()
+                }
+
+                val activity = Activity(name, time, location, cost, notes)
+                curDay.activities.add(activity)
+
+                notifyDataSetChanged()
+                Toast.makeText(context, "Activity Added", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+
+            }
+
+            newDialog.setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+                Toast.makeText(context, "Canceled", Toast.LENGTH_SHORT).show()
+            }
+
+            newDialog.create()
+            newDialog.show()
         }
     }
 
@@ -49,7 +98,7 @@ class DayAdapter(
             tvName.text = "Day " + curDay.daynumber
         }
 
-        // makes the sub recyclerview work, no sure why but it does
+        // makes the sub recyclerview work, not sure why but it does
         holder.recyclerView.apply{
             layoutManager = LinearLayoutManager(holder.recyclerView.context,RecyclerView.VERTICAL,false)
             adapter = ActivityAdapter(context,curDay.activities,listener,position)
