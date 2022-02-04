@@ -73,8 +73,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         val etName = view.findViewById<EditText>(R.id.etName)
         val etLocation = view.findViewById<EditText>(R.id.etLocation)
-        val etStartDate = view.findViewById<EditText>(R.id.etCost)
-        val etEndDate = view.findViewById<EditText>(R.id.etNotes)
+        val etStartDate = view.findViewById<EditText>(R.id.etStartDate)
+        val etEndDate = view.findViewById<EditText>(R.id.etEndDate)
 
         val c = Calendar.getInstance()
         val year = c.get(Calendar.YEAR)

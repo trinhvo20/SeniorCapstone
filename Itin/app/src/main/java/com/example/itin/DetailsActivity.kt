@@ -40,7 +40,7 @@ class DetailsActivity : AppCompatActivity() {
         val etCost = view.findViewById<EditText>(R.id.etCost)
         val etNotes = view.findViewById<EditText>(R.id.etNotes)
 
-
+        // auto fill fields with existing data, very convenient
         etName.setText(activity.name)
         etTime.setText(activity.time)
         etLocation.setText(activity.location)
@@ -67,7 +67,7 @@ class DetailsActivity : AppCompatActivity() {
             Toast.makeText(this, "Activity Edited", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
 
-            //reload the activity seamlessly
+            //reload the activity with no transition
             finish();
             overridePendingTransition(0, 0);
             startActivity(intent);

@@ -42,8 +42,8 @@ class TripAdapter(
 
                         val etName = view.findViewById<EditText>(R.id.etName)
                         val etLocation = view.findViewById<EditText>(R.id.etLocation)
-                        val etStartDate = view.findViewById<EditText>(R.id.etCost)
-                        val etEndDate = view.findViewById<EditText>(R.id.etCost)
+                        val etStartDate = view.findViewById<EditText>(R.id.etStartDate)
+                        val etEndDate = view.findViewById<EditText>(R.id.etEndDate)
 
                         val dialog = AlertDialog.Builder(context)
                         dialog.setView(view)

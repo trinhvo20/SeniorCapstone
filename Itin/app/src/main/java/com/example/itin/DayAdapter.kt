@@ -25,6 +25,7 @@ class DayAdapter(
 
 
     // create a view holder: holds a layout of a specific item
+    //-----> Needs to be inner class for shit to work Remember that if you copy this code for later <-----
     inner class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val recyclerView : RecyclerView = itemView.rvActivities
         val ivAdd: ImageView
@@ -97,7 +98,7 @@ class DayAdapter(
             tvName.text = "Day " + curDay.daynumber
         }
 
-        // makes the sub recyclerview work, no sure why but it does
+        // makes the sub recyclerview work, not sure why but it does
         holder.recyclerView.apply{
             layoutManager = LinearLayoutManager(holder.recyclerView.context,RecyclerView.VERTICAL,false)
             adapter = ActivityAdapter(context,curDay.activities,listener,position)
