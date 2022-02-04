@@ -39,9 +39,10 @@ class DayAdapter(
             val curDay = days[adapterPosition]
 
 
-            val view = LayoutInflater.from(context).inflate(R.layout.edit_activity, null)
+            val view = LayoutInflater.from(context).inflate(R.layout.add_activity, null)
 
             val etName = view.findViewById<EditText>(R.id.etName)
+            val etTime = view.findViewById<EditText>(R.id.etTime)
             val etLocation = view.findViewById<EditText>(R.id.etLocation)
             val etCost = view.findViewById<EditText>(R.id.etCost)
             val etNotes = view.findViewById<EditText>(R.id.etNotes)
@@ -50,10 +51,11 @@ class DayAdapter(
             val newDialog = AlertDialog.Builder(context)
             newDialog.setView(view)
 
-            newDialog.setPositiveButton("Edit") { dialog, _ ->
+            newDialog.setPositiveButton("Add") { dialog, _ ->
                 val location = etLocation.text.toString()
                 val cost = etCost.text.toString()
                 val notes = etNotes.text.toString()
+                val time = etTime.text.toString()
 
                 val name = if (etName.text.toString().isEmpty()) {
                     "$location"
@@ -61,11 +63,11 @@ class DayAdapter(
                     etName.text.toString()
                 }
 
-                val activity = Activity(name, "1:00", location, cost, notes)
+                val activity = Activity(name, time, location, cost, notes)
                 curDay.activities.add(activity)
 
                 notifyDataSetChanged()
-                Toast.makeText(context, "Activity Edited", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Activity Added", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
 
             }
