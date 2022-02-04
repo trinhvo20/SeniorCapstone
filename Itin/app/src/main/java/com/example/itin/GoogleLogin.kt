@@ -18,6 +18,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import java.lang.Exception
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.android.synthetic.main.activity_profile_screen.*
 
 class GoogleLogin : AppCompatActivity() {
 
@@ -42,6 +43,10 @@ class GoogleLogin : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = GoogleLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // for realtime database
+        rootNode = FirebaseDatabase.getInstance()
+        databaseReference = rootNode.getReference("users")
 
         // Google SignIn Settings. This is also where we will request addition information as needed from gmail account
         val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -104,17 +109,13 @@ class GoogleLogin : AppCompatActivity() {
                 Log.d(TAG, "firebaseAuthWithGoogleAccount: Email: $email")
                 Log.d(TAG, "firebaseAuthWithGoogleAccount: Phone: $phoneNumber")
 
-                // for realtime database
-                rootNode = FirebaseDatabase.getInstance()
-                databaseReference = rootNode.getReference("users")
-
                 // Check if this is a new user or existing
                 if (authResult.additionalUserInfo!!.isNewUser) {
                     Log.d(TAG, "firebaseAuthWithGoogleAccount: Account created... \n$email")
                     Toast.makeText(this@GoogleLogin, "Account created... \n$email", Toast.LENGTH_LONG).show()
                     // create a new user account in realtime database (unique id = uid)
                     val user = User(fullName,username,email,phoneNumber)
-                    databaseReference.child(uid).setValue(user)
+                    databaseReference.child(uid).child("userInfo").setValue(user)
                 }
                 else {
                     Log.d(TAG, "firebaseAuthWithGoogleAccount: Existing user... \n$email")
@@ -129,6 +130,32 @@ class GoogleLogin : AppCompatActivity() {
                 Log.d(TAG, "firebaseAuthWithGoogleAccount: Loggin Failed due to ${e.message}")
                 Toast.makeText(this@GoogleLogin, "Login failed due to ${e.message}", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun passUserInfo(uid: String) {
+        val checkUser = databaseReference.child(uid)
+
+        checkUser.get().addOnSuccessListener {
+            if (it.exists()){
+                val fullName = it.child("fullName").value.toString()
+                val username = it.child("username").value.toString()
+                val email = it.child("email").value.toString()
+                val phone = it.child("phone").value.toString()
+
+                val intent = Intent(this,ProfileScreen::class.java)
+                intent.putExtra("FULLNAME",fullName)
+                intent.putExtra("USERNAME",username)
+                intent.putExtra("EMAIL",email)
+                intent.putExtra("PHONE",phone)
+
+                startActivity(intent)
+
+            } else {
+                Log.d("print", "User does not exist")
+            }
+        }.addOnCanceledListener {
+            Log.d("print", "Failed to fetch the user")
+        }
     }
 }
 

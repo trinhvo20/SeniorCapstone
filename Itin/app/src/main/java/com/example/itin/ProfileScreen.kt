@@ -5,7 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.preference.PreferenceManager
+//import androidx.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
 import com.example.itin.classes.User
@@ -19,16 +19,17 @@ class ProfileScreen : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileScreenBinding
     private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var user : User
+    private lateinit var uid : String
 
     // for realtime database
-    private lateinit var databaseReference: DatabaseReference
+    private lateinit var userReference: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        userReference = FirebaseDatabase.getInstance().getReference("users")
         firebaseAuth = FirebaseAuth.getInstance()
         checkUser()
 
@@ -54,6 +55,7 @@ class ProfileScreen : AppCompatActivity() {
         // bottom Navigation Bar
         bottomNavBarSetup()
     }
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     private fun checkUser() {
         val firebaseUser = firebaseAuth.currentUser
@@ -62,16 +64,13 @@ class ProfileScreen : AppCompatActivity() {
             startActivity(Intent(this, GoogleLogin::class.java))
         }
         else {
-            val uid = firebaseUser.uid
+            uid = firebaseUser.uid
             Log.d("print", "firebaseAuthWithGoogleAccount: Uid: $uid")
 
             // for realtime database, find the current user by its uid
             readData(uid)
         }
     }
-
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    //
 
     private fun validateUsername(): Boolean {
         val username = usernameInput.editText?.text.toString()
@@ -92,8 +91,7 @@ class ProfileScreen : AppCompatActivity() {
 
     // function to read data from Realtime Database
     private fun readData(uid: String) {
-        databaseReference = FirebaseDatabase.getInstance().getReference("users")
-        val checkUser = databaseReference.child(uid)
+        val checkUser = userReference.child(uid).child("userInfo")
 
         checkUser.get().addOnSuccessListener {
             if (it.exists()){
@@ -126,8 +124,7 @@ class ProfileScreen : AppCompatActivity() {
         val newUsername = usernameInput.editText?.text.toString()
         val newPhone = phoneNumberInput.editText?.text.toString()
 
-        val uid = firebaseAuth.currentUser?.uid.toString() // get uid from Google
-        val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+        val curUser = userReference.child(uid).child("userInfo")
 
         if (newName.isNotEmpty()) {
             curUser.child("fullName").setValue(newName)
@@ -150,10 +147,7 @@ class ProfileScreen : AppCompatActivity() {
             Toast.makeText(this,"Updated", Toast.LENGTH_SHORT).show()
         }
 
-        fullNameInput.editText?.text?.clear()
-        usernameInput.editText?.text?.clear()
-        phoneNumberInput.editText?.text?.clear()
-
+        readData(uid)
     }
 
     // function to set up the bottom navigation bar

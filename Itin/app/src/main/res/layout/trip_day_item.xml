@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="2dp"
     android:background="@drawable/shape_background"
     android:padding="10dp">
 
@@ -14,8 +15,9 @@
         android:layout_margin="5dp"
         android:layout_marginEnd="284dp"
         android:text="Name"
+        android:fontFamily="casual"
         android:textColor="@color/mint"
-        android:textSize="25dp"
+        android:textSize="30dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/rvActivities"
         app:layout_constraintEnd_toStartOf="@+id/ivAdd"

@@ -61,10 +61,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_above="@id/userNameTV"
-                    android:layout_marginLeft="22dp"
+                    android:layout_marginLeft="19dp"
+                    android:layout_marginBottom="5dp"
                     android:layout_toRightOf="@+id/profileImageIV"
+                    android:fontFamily="@font/bungee"
+                    android:includeFontPadding="false"
                     android:text="Full Name"
-                    android:textColor="@color/black"
                     android:textSize="22sp"
                     android:textStyle="bold" />
 
@@ -76,20 +78,20 @@
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/profileImageIV"
                     android:text="Username"
-                    android:textColor="@color/black"
-                    android:textSize="19sp" />
+                    android:fontFamily="casual"
+                    android:textStyle="bold"
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/emailTV"
-                    style="@style/TextAppearance.MaterialComponents.Body1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/userNameTV"
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/profileImageIV"
+                    android:fontFamily="casual"
                     android:text="Email"
-                    android:textColor="@color/DimGray"
-                    android:textSize="17sp" />
+                    android:textSize="16sp" />
 
             </RelativeLayout>
 

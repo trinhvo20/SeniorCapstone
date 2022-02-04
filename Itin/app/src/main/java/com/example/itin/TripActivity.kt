@@ -2,18 +2,31 @@ package com.example.itin
 
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.itin.classes.Activity
+import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
+import com.example.itin.classes.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.database.FirebaseDatabase
+import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_trip.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 
 // Toggle Debugging
 const val DEBUG_TOGGLE : Boolean = true
@@ -22,10 +35,16 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
     private lateinit var tripAdapter : TripAdapter
     private lateinit var trips : MutableList<Trip>
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var user : User
+    private var tripCount : Int = 0
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trip)
+
+        firebaseAuth = FirebaseAuth.getInstance()
 
         // set trip list
         trips = mutableListOf()
@@ -50,6 +69,24 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         }
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+        // set up proper tripCount
+        val uid = firebaseAuth.currentUser?.uid.toString()
+
+        // This here checks the value in the database to overwrite the initial value of 0
+        val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+        curUser.get().addOnSuccessListener {
+            if (it.exists()) {
+                // Try to grab the value from the DB for tripCount, if it doesn't exist, create the child
+                try {
+                    tripCount = it.child("tripCount").value.toString().toInt()
+                }
+                catch (e: NumberFormatException){
+                    curUser.child("tripCount").setValue(0)
+                }
+            }
+        }
+
+
         // make the bottom navigation bar
         bottomNavBarSetup()
 
@@ -68,6 +105,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
     // This function will be called when you click the AddTrip button,
     // a dialog will show up for you to create a new trip
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun addTrip() {
         val view = LayoutInflater.from(this).inflate(R.layout.create_trip, null)
 
@@ -113,8 +151,26 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 etName.text.toString()
             }
 
+            // Grab the initial values for database manipulation
             val trip = Trip(name, location, startDate, endDate)
+            val uid = firebaseAuth.currentUser?.uid.toString()
+
+            val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+            val curTrip = curUser.child("trips")
+
+            // This event listener waits for a change in its child (tripCount) then records the updated version
+            // We must add 1 to this because it records the previous iterations' value
+            curUser.get().addOnSuccessListener {
+                if(it.exists()){
+                    tripCount = it.child("tripCount").value.toString().toInt() + 1
+                }
+            }
+
+            // Write to the database, then increment tripCount in the database
+            SendToDB(trip,curTrip,tripCount)
             trips.add(trip)
+            tripCount += 1
+            curUser.child("tripCount").setValue(tripCount)
             tripAdapter.notifyDataSetChanged()
 
             Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
@@ -162,5 +218,17 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             }
             true
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun SendToDB(trip : Trip, curTrip : DatabaseReference, id : Int){
+
+        // Navigates to the correct directory
+        val tripInstance = curTrip.child(id.toString())
+
+        tripInstance.child("Name").setValue(trip.name)
+        tripInstance.child("Location").setValue(trip.location)
+        tripInstance.child("Start Date").setValue(trip.startDate)
+        tripInstance.child("End Date").setValue(trip.endDate)
     }
 }

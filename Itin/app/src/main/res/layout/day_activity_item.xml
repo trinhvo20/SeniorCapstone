@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="2dp"
+    android:padding="8dp"
     android:background="@drawable/trip_activity_background">
 
     <TextView
@@ -11,10 +13,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
         android:text="00:00 am"
         android:textColor="@color/RichBlack"
+        android:fontFamily="casual"
         android:textSize="22dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -26,10 +27,9 @@
         android:id="@+id/tvActivityName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
         android:text="Name of Activity"
+        android:fontFamily="casual"
         android:textColor="@color/RichBlack"
         android:textSize="22dp"
         android:textStyle="bold"
