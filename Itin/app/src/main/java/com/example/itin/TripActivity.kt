@@ -63,7 +63,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         //Creating Testing Trip ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if(DEBUG_TOGGLE) {
-            val trip = Trip("Trip to TEST", "TEST", "1/1/2022", "1/2/2022")
+            val trip = Trip("Trip to TEST", "TEST", "1/1/2022", "1/2/2022", deleted=false, active=true, tripID=-1)
             trips.add(trip)
             tripAdapter.notifyDataSetChanged()
         }
@@ -79,13 +79,14 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 // Try to grab the value from the DB for tripCount, if it doesn't exist, create the child
                 try {
                     tripCount = it.child("tripCount").value.toString().toInt()
+                    // check if user is there, then add in previous trips from database
+                    checkUser(tripCount)
                 }
                 catch (e: NumberFormatException){
                     curUser.child("tripCount").setValue(0)
                 }
             }
         }
-
 
         // make the bottom navigation bar
         bottomNavBarSetup()
@@ -124,14 +125,14 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         ivPickStartDate.setOnClickListener {
             val datePickerDialog = DatePickerDialog(this, DatePickerDialog.OnDateSetListener{_, mYear, mMonth, mDay ->
-                etStartDate.setText(""+mMonth+"/"+mDay+"/"+mYear)
+                etStartDate.setText(""+(mMonth+1)+"/"+mDay+"/"+mYear)
             }, year, month, day)
             datePickerDialog.show()
         }
 
         ivPickEndDate.setOnClickListener {
             val datePickerDialog = DatePickerDialog(this, DatePickerDialog.OnDateSetListener{_, mYear, mMonth, mDay ->
-                etEndDate.setText(""+mMonth+"/"+mDay+"/"+mYear)
+                etEndDate.setText(""+(mMonth+1)+"/"+mDay+"/"+mYear)
             }, year, month, day)
             datePickerDialog.show()
         }
@@ -151,8 +152,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 etName.text.toString()
             }
 
-            // Grab the initial values for database manipulation
-            val trip = Trip(name, location, startDate, endDate)
             val uid = firebaseAuth.currentUser?.uid.toString()
 
             val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
@@ -165,6 +164,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     tripCount = it.child("tripCount").value.toString().toInt() + 1
                 }
             }
+
+            // Grab the initial values for database manipulation
+            val trip = Trip(name, location, startDate, endDate, deleted=false, active=true, tripID=tripCount)
 
             // Write to the database, then increment tripCount in the database
             SendToDB(trip,curTrip,tripCount)
@@ -184,6 +186,52 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         newDialog.create()
         newDialog.show()
+    }
+
+    private fun checkUser(count : Int){
+        val firebaseUser = firebaseAuth.currentUser
+        // If the use is not current logged in:
+        if(firebaseUser == null) {
+            startActivity(Intent(this, GoogleLogin::class.java))
+        }
+        else{
+            val uid = firebaseUser.uid
+
+            // for realtime database, find the current user by its uid
+            readData(uid, count)
+        }
+
+    }
+
+    private fun readData(uid: String, count : Int){
+        val userReference = FirebaseDatabase.getInstance().getReference("users")
+        val checkTrips = userReference.child(uid).child("trips")
+
+        for(i in 0 until count) {
+            checkTrips.child("$i").get().addOnSuccessListener {
+                if (it.exists()) {
+                    val name = it.child("Name").value.toString()
+                    val location = it.child("Location").value.toString()
+                    val stDate = it.child("Start Date").value.toString()
+                    val endDate = it.child("End Date").value.toString()
+                    val deleted = it.child("Deleted").value.toString()
+                    val active = it.child("Active").value.toString()
+
+                    // make a trip
+                    val trip = Trip(name, location, stDate, endDate, stringToBoolean(deleted), stringToBoolean(active),tripID=i)
+                    // add trip as long as it is not deleted and it is active
+                    if(deleted == "false" && active == "true") {
+                        trips.add(trip)
+                        tripAdapter.notifyDataSetChanged()
+                    }
+                }
+                else {
+                    Log.d("print", "User does not exist")
+                }
+            }.addOnCanceledListener {
+                Log.d("print", "Failed to fetch the user")
+            }
+        }
     }
 
     // function to set up the bottom navigation bar
@@ -230,5 +278,15 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         tripInstance.child("Location").setValue(trip.location)
         tripInstance.child("Start Date").setValue(trip.startDate)
         tripInstance.child("End Date").setValue(trip.endDate)
+        tripInstance.child("Deleted").setValue(trip.deleted)
+        tripInstance.child("Active").setValue(trip.active)
+    }
+
+    // convert a string to a boolean
+    private fun stringToBoolean(str : String): Boolean {
+        if (str == "false"){
+            return false
+        }
+        return true
     }
 }

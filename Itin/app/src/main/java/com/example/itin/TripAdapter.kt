@@ -2,6 +2,8 @@ package com.example.itin
 
 import android.app.AlertDialog
 import android.content.Context
+import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +11,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.classes.Trip
 import kotlinx.android.synthetic.main.trip_item.view.*
@@ -29,6 +32,7 @@ class TripAdapter(
         }
 
         // this function handles the popup menu for each item in the trips list
+        @RequiresApi(Build.VERSION_CODES.O)
         private fun popupMenu(view: View) {
             val curTrip = trips[adapterPosition]
 
@@ -83,9 +87,12 @@ class TripAdapter(
                             .setIcon(R.drawable.ic_warning)
                             .setMessage("Are you sure delete this trip?")
                             .setPositiveButton("Yes") {dialog,_ ->
+                                trips[adapterPosition].delByName(trips[adapterPosition].name)
+                                trips[adapterPosition].sendToDB()
                                 trips.removeAt(adapterPosition)
                                 notifyDataSetChanged()
-                                Toast.makeText(context, "Successfully Delete", Toast.LENGTH_SHORT).show()
+
+                                Toast.makeText(context, "Successfully Deleted", Toast.LENGTH_SHORT).show()
                                 dialog.dismiss()
                             }
                             .setNegativeButton("No") {dialog,_ ->
