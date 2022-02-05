@@ -74,7 +74,8 @@ class ProfileScreen : AppCompatActivity() {
 
     private fun validateUsername(): Boolean {
         val username = usernameInput.editText?.text.toString()
-        val noWhiteSpace = Regex("(?=\\S+$)")
+        val noWhiteSpace = Regex("^(.*\\s+.*)+\$")
+
         if (username.length < 6) {
             usernameInput.error = "Minimum 6 characters"
             return false
