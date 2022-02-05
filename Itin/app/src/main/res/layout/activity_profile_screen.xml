@@ -247,6 +247,7 @@
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/ic_phone"
                         android:drawablePadding="10dp"
+                        android:inputType="phone"
                         android:text="123-456-7890" />
 
                 </com.google.android.material.textfield.TextInputLayout>

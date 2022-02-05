@@ -1,18 +1,16 @@
 package com.example.itin
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatDelegate
-//import androidx.preference.PreferenceManager
+import android.telephony.PhoneNumberUtils
 import android.util.Log
 import android.widget.Toast
-import com.example.itin.classes.User
+import androidx.appcompat.app.AppCompatActivity
 import com.example.itin.databinding.ActivityProfileScreenBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_profile_screen.*
 
 class ProfileScreen : AppCompatActivity() {
@@ -22,14 +20,18 @@ class ProfileScreen : AppCompatActivity() {
     private lateinit var uid : String
 
     // for realtime database
-    private lateinit var userReference: DatabaseReference
+    private lateinit var curUser: DatabaseReference
+
+    private lateinit var fullName: String
+    private lateinit var username: String
+    private lateinit var email: String
+    private lateinit var phoneNo: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        userReference = FirebaseDatabase.getInstance().getReference("users")
         firebaseAuth = FirebaseAuth.getInstance()
         checkUser()
 
@@ -72,34 +74,15 @@ class ProfileScreen : AppCompatActivity() {
         }
     }
 
-    private fun validateUsername(): Boolean {
-        val username = usernameInput.editText?.text.toString()
-        val noWhiteSpace = Regex("^(.*\\s+.*)+\$")
-
-        if (username.length < 6) {
-            usernameInput.error = "Minimum 6 characters"
-            return false
-        } else if (username.matches(noWhiteSpace)) {
-            usernameInput.error = "Cannot contain whitespaces"
-            return false
-        } else {
-            usernameInput.error = null
-            usernameInput.isErrorEnabled = false
-            return true
-        }
-    }
-
-
     // function to read data from Realtime Database
     private fun readData(uid: String) {
-        val checkUser = userReference.child(uid).child("userInfo")
-
-        checkUser.get().addOnSuccessListener {
+        curUser = FirebaseDatabase.getInstance().getReference("users").child(uid).child("userInfo")
+        curUser.get().addOnSuccessListener {
             if (it.exists()){
-                val fullName = it.child("fullName").value.toString()
-                val username = it.child("username").value.toString()
-                val email = it.child("email").value.toString()
-                val phone = it.child("phone").value.toString()
+                fullName = it.child("fullName").value.toString()
+                username = it.child("username").value.toString()
+                email = it.child("email").value.toString()
+                phoneNo = it.child("phone").value.toString()
 
                 // Show user info
                 emailTV.text = email
@@ -108,7 +91,7 @@ class ProfileScreen : AppCompatActivity() {
 
                 fullNameInput.editText?.setText(fullName)
                 usernameInput.editText?.setText(username)
-                phoneNumberInput.editText?.setText(phone)
+                phoneNumberInput.editText?.setText(phoneNo)
 
             } else {
                 Log.d("print", "User does not exist")
@@ -120,35 +103,68 @@ class ProfileScreen : AppCompatActivity() {
 
     // function to update user info
     private fun update() {
-        var filled = false
-        val newName = fullNameInput.editText?.text.toString()
-        val newUsername = usernameInput.editText?.text.toString()
-        val newPhone = phoneNumberInput.editText?.text.toString()
 
-        val curUser = userReference.child(uid).child("userInfo")
-
-        if (newName.isNotEmpty()) {
-            curUser.child("fullName").setValue(newName)
-            filled = true
-        }
-        if (newUsername.isNotEmpty()) {
-            if (validateUsername()) {
-                curUser.child("username").setValue(newUsername)
-                filled = true
-            }
-        }
-        if (newPhone.isNotEmpty()) {
-            curUser.child("phone").setValue(newPhone)
-            filled = true
-        }
-        // if all 3 fields are not filled
-        if (!filled) {
-            Toast.makeText(this,"Fill in at least one field", Toast.LENGTH_SHORT).show()
-        } else {
+        if (isNameChanged() || isUsernameChanged() || isPhoneNoChanged()) {
             Toast.makeText(this,"Updated", Toast.LENGTH_SHORT).show()
+        } else {
+
+            Toast.makeText(this,"Update at least one field", Toast.LENGTH_SHORT).show()
         }
 
         readData(uid)
+    }
+
+    private fun isNameChanged(): Boolean {
+        val newName = fullNameInput.editText?.text.toString()
+        if (newName == fullName) {
+            return false
+        }
+        else {
+            curUser.child("fullName").setValue(newName)
+            fullNameInput.error = null
+            fullNameInput.isErrorEnabled = false
+            return true
+        }
+    }
+
+    private fun isUsernameChanged(): Boolean {
+        val newUsername = usernameInput.editText?.text.toString()
+        val noWhiteSpace = Regex("^(.*\\s+.*)+\$")
+        if (newUsername == username) {
+            return false
+        }
+        else if (newUsername.length < 6) {
+            usernameInput.error = "Minimum 6 characters"
+            return false
+        }
+        else if (newUsername.matches(noWhiteSpace)) {
+            usernameInput.error = "Cannot contain whitespaces"
+            return false
+        }
+        else {
+            curUser.child("username").setValue(newUsername)
+            usernameInput.error = null
+            usernameInput.isErrorEnabled = false
+            return true
+        }
+    }
+
+    private fun isPhoneNoChanged(): Boolean {
+        val newPhoneNo = phoneNumberInput.editText?.text.toString()
+        if (newPhoneNo == phoneNo) {
+            return false
+        }
+        else if (newPhoneNo.length != 10) {
+            phoneNumberInput.error = "Must contain 10 digits"
+            return false
+        }
+        else {
+            val formattedPhoneNo = PhoneNumberUtils.formatNumber(newPhoneNo, "US")
+            curUser.child("phone").setValue(formattedPhoneNo)
+            phoneNumberInput.error = null
+            phoneNumberInput.isErrorEnabled = false
+            return true
+        }
     }
 
     // function to set up the bottom navigation bar
