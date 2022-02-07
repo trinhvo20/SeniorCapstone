@@ -7,6 +7,8 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.itin.adapters.ActivityAdapter
+import com.example.itin.adapters.DayAdapter
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
@@ -65,7 +67,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
 
         dayAdapter.notifyDataSetChanged()
 
-        homeBtn.setOnClickListener { finish() }
+        backBtn.setOnClickListener { finish() }
     }
 
     override fun onItemClick(position: Int, daypos: Int) {

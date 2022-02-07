@@ -14,10 +14,10 @@
         android:layout_height="70dp">
 
         <ImageView
-            android:id="@+id/homeBtn"
-            android:src="@drawable/ic_home"
+            android:id="@+id/backBtn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_back" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,9 +26,17 @@
             android:textSize="30dp"
             android:fontFamily="@font/bungee"
             android:includeFontPadding="false"/>
-
     </RelativeLayout>
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPreviousTrip"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/tripsTV"
+        android:layout_marginHorizontal="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/btAddTrip"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 
 </LinearLayout>

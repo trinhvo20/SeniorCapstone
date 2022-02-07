@@ -14,10 +14,10 @@
         android:layout_height="70dp">
 
         <ImageView
-            android:id="@+id/homeBtn"
-            android:src="@drawable/ic_home"
+            android:id="@+id/backBtn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_back" />
 
         <TextView
             android:layout_width="wrap_content"

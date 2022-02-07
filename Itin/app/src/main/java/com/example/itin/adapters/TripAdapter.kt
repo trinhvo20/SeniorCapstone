@@ -1,20 +1,17 @@
-package com.example.itin
+package com.example.itin.adapters
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.content.Context
-import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.Toast
-import androidx.annotation.RequiresApi
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
+import com.example.itin.R
 import com.example.itin.classes.Trip
 import kotlinx.android.synthetic.main.trip_item.view.*
+import java.util.*
 
 class TripAdapter(
     private val context: Context,
@@ -24,15 +21,13 @@ class TripAdapter(
 
     // create a view holder: holds a layout of a specific item
     inner class TripViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val ivMenu: ImageView
+        private val ivMenu: ImageView = itemView.findViewById(R.id.ivMenu)
 
         init {
-            ivMenu = itemView.findViewById<ImageView>(R.id.ivMenu)
             ivMenu.setOnClickListener { popupMenu(it) }
         }
 
         // this function handles the popup menu for each item in the trips list
-        @RequiresApi(Build.VERSION_CODES.O)
         private fun popupMenu(view: View) {
             val curTrip = trips[adapterPosition]
 
@@ -46,26 +41,48 @@ class TripAdapter(
 
                         val etName = view.findViewById<EditText>(R.id.etName)
                         val etLocation = view.findViewById<EditText>(R.id.etLocation)
-                        val etStartDate = view.findViewById<EditText>(R.id.etStartDate)
-                        val etEndDate = view.findViewById<EditText>(R.id.etEndDate)
+                        val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
+                        val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
+
+                        val c = Calendar.getInstance()
+                        val year = c.get(Calendar.YEAR)
+                        val month = c.get(Calendar.MONTH)
+                        val day = c.get(Calendar.DAY_OF_MONTH)
+
+                        val ivPickStartDate = view.findViewById<ImageView>(R.id.ivPickStartDate)
+                        val ivPickEndDate = view.findViewById<ImageView>(R.id.ivPickEndDate)
+
+                        ivPickStartDate.setOnClickListener {
+                            val datePickerDialog = DatePickerDialog(context, DatePickerDialog.OnDateSetListener{ _, mYear, mMonth, mDay ->
+                                etStartDate.text = ""+(mMonth+1)+"/"+mDay+"/"+mYear
+                            }, year, month, day)
+                            datePickerDialog.show()
+                        }
+
+                        ivPickEndDate.setOnClickListener {
+                            val datePickerDialog = DatePickerDialog(context, DatePickerDialog.OnDateSetListener{ _, mYear, mMonth, mDay ->
+                                etEndDate.text = ""+(mMonth+1)+"/"+mDay+"/"+mYear
+                            }, year, month, day)
+                            datePickerDialog.show()
+                        }
 
                         val dialog = AlertDialog.Builder(context)
                         dialog.setView(view)
                             .setPositiveButton("OK") {dialog,_ ->
-                                if (etName.text.toString().isEmpty()){
-                                    if (etLocation.text.toString().isNotEmpty()) {
+                                if (etName.text.toString().isBlank()){
+                                    if (etLocation.text.toString().isNotBlank()) {
                                         curTrip.name = "Trip to " + etLocation.text.toString()
                                     }
                                 } else {
                                     curTrip.name = etName.text.toString()
                                 }
-                                if (etLocation.text.toString().isNotEmpty()){
+                                if (etLocation.text.toString().isNotBlank()){
                                     curTrip.location =etLocation.text.toString()
                                 }
-                                if (etStartDate.text.toString().isNotEmpty()){
+                                if (etStartDate.text.toString().isNotBlank()){
                                     curTrip.startDate =etStartDate.text.toString()
                                 }
-                                if (etStartDate.text.toString().isNotEmpty()){
+                                if (etStartDate.text.toString().isNotBlank()){
                                     curTrip.endDate =etEndDate.text.toString()
                                 }
                                 notifyDataSetChanged()
@@ -130,7 +147,7 @@ class TripAdapter(
         holder.itemView.apply{
             // get the data from our trips list and put them in the corresponding TextView in trip_item.xml
             tvName.text = curTrip.name
-            tvCost.text = curTrip.startDate
+            tvStartDate.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
         }
 
