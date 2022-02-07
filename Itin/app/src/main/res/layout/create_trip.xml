@@ -55,6 +55,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:hint="Name your trip"
+            android:fontFamily="casual"
+            android:textSize="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tvName"
@@ -94,6 +96,8 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:hint="Location"
+            android:textSize="20dp"
+            android:fontFamily="casual"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
@@ -127,12 +131,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
+        <TextView
             android:id="@+id/etStartDate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:hint="MM/DD/YYYY"
+            android:textSize="20dp"
+            android:fontFamily="casual"
+            android:textAlignment="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ivPickStartDate"
             app:layout_constraintStart_toEndOf="@+id/tvStartDate"
@@ -144,6 +151,7 @@
             android:layout_height="40dp"
             android:src="@drawable/ic_calendar"
             android:layout_marginRight="10dp"
+            android:background="@drawable/shadow_rect"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -174,12 +182,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
+        <TextView
             android:id="@+id/etEndDate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:hint="MM/DD/YYYY"
+            android:textSize="20dp"
+            android:fontFamily="casual"
+            android:textAlignment="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ivPickEndDate"
             app:layout_constraintStart_toEndOf="@+id/tvEndDate"
@@ -191,6 +202,7 @@
             android:layout_height="40dp"
             android:src="@drawable/ic_calendar"
             android:layout_marginRight="10dp"
+            android:background="@drawable/shadow_rect"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
