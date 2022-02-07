@@ -154,8 +154,8 @@ class ProfileScreen : AppCompatActivity() {
         if (newPhoneNo == phoneNo) {
             return false
         }
-        else if (newPhoneNo.length != 10) {
-            phoneNumberInput.error = "Must contain 10 digits"
+        else if (newPhoneNo.length != 11) {
+            phoneNumberInput.error = "Must contain 11 digits"
             return false
         }
         else {
