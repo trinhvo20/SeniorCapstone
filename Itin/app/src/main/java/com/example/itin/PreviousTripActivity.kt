@@ -9,7 +9,7 @@ class PreviousTripActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_previous_trip)
 
-        homeBtn.setOnClickListener { finish() }
+        backBtn.setOnClickListener { finish() }
     }
 
 }

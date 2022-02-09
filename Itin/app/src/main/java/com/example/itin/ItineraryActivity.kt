@@ -65,7 +65,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
 
         dayAdapter.notifyDataSetChanged()
 
-        homeBtn.setOnClickListener { finish() }
+        backBtn.setOnClickListener { finish() }
     }
 
     override fun onItemClick(position: Int, daypos: Int) {

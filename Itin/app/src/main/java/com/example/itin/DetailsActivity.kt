@@ -25,8 +25,7 @@ class DetailsActivity : AppCompatActivity() {
 
         btEdit.setOnClickListener{editActivity(activity)}
 
-
-
+        backBtn.setOnClickListener { finish() }
 
     }
 

@@ -12,20 +12,24 @@
     android:background="@color/mint"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
         <ImageView
-            android:id="@+id/homeBtn"
-            android:src="@drawable/ic_home"
+            android:id="@+id/backBtn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_back" />
 
         <TextView
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:layout_alignParentRight="true"
             android:layout_marginTop="5dp"
+            android:layout_toRightOf="@id/backBtn"
+            android:layout_marginLeft="5dp"
             android:fontFamily="@font/bungee"
             android:includeFontPadding="false"
+            android:textAlignment="center"
             android:text="Trip Name"
             android:textSize="30dp" />
 
