@@ -12,9 +12,10 @@
         android:layout_height="wrap_content"
         android:background="@color/mint"
         android:gravity="center"
-        android:padding="7dp"
+        android:padding="15dp"
         android:text="Add an Activity"
-        android:textColor="@color/white"
+        android:fontFamily="@font/bungee"
+        android:includeFontPadding="false"
         android:textSize="25dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -27,7 +28,7 @@
         android:id="@+id/clName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:background="@drawable/shape_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -42,6 +43,7 @@
             android:text="Activity Name"
             android:textColor="@color/mint"
             android:textSize="20dp"
+            android:fontFamily="casual"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -53,6 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:hint="Name of Activity"
+            android:fontFamily="casual"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tvName"
@@ -62,12 +65,13 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clTime"
         android:layout_width="0dp"
+        android:layout_marginTop="5dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:background="@drawable/shape_background"
-        app:layout_constraintEnd_toEndOf="@id/clLocation"
-        app:layout_constraintStart_toStartOf="@id/clName"
-        app:layout_constraintTop_toBottomOf="@+id/clName">
+        app:layout_constraintEnd_toStartOf="@+id/clCost"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clLocation">
 
         <EditText
             android:id="@+id/etTime"
@@ -75,6 +79,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:hint="00:00"
+            android:fontFamily="casual"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tvTime"
             app:layout_constraintTop_toTopOf="parent"
@@ -86,6 +91,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:text="Time"
+            android:fontFamily="casual"
             android:textColor="@color/mint"
             android:textSize="20dp"
             android:textStyle="bold"
@@ -99,11 +105,11 @@
         android:id="@+id/clLocation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:background="@drawable/shape_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/clTime">
+        app:layout_constraintTop_toBottomOf="@+id/clName">
 
         <TextView
             android:id="@+id/tvLocation"
@@ -114,6 +120,7 @@
             android:textColor="@color/mint"
             android:textSize="20dp"
             android:textStyle="bold"
+            android:fontFamily="casual"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -126,6 +133,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:hint="Location"
+            android:fontFamily="casual"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
@@ -136,13 +144,13 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clCost"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:background="@drawable/shape_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/clTime"
         app:layout_constraintTop_toBottomOf="@+id/clLocation">
 
         <TextView
@@ -154,6 +162,7 @@
             android:textColor="@color/mint"
             android:textSize="20dp"
             android:textStyle="bold"
+            android:fontFamily="casual"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -164,6 +173,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:hint="$0"
+            android:fontFamily="casual"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tvCost"
             app:layout_constraintTop_toTopOf="parent" />
@@ -174,13 +184,12 @@
         android:id="@+id/clNotes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:background="@drawable/shape_background"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/clCost">
+        app:layout_constraintTop_toBottomOf="@+id/clTime">
 
         <TextView
             android:id="@+id/tvEndDate"
@@ -190,6 +199,7 @@
             android:text="Aditional notes"
             android:textColor="@color/mint"
             android:textSize="20dp"
+            android:fontFamily="casual"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -201,6 +211,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:hint="Notes"
+            android:fontFamily="casual"
             android:singleLine="false"
             android:textAlignment="viewStart"
             app:layout_constraintBottom_toBottomOf="parent"
