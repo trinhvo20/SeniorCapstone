@@ -14,17 +14,11 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.itin.classes.Activity
-import com.example.itin.classes.Day
+import com.example.itin.adapters.TripAdapter
 import com.example.itin.classes.Trip
-import com.example.itin.classes.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_trip.*
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 import java.util.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -37,7 +31,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     private lateinit var tripAdapter : TripAdapter
     private lateinit var trips : MutableList<Trip>
     private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var user : User
     private var tripCount : Int = 0
 
     @RequiresApi(Build.VERSION_CODES.O)

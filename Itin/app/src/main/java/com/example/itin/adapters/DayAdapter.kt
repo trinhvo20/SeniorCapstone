@@ -1,17 +1,16 @@
-package com.example.itin
+package com.example.itin.adapters
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
-import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.itin.R
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
 import kotlinx.android.synthetic.main.trip_day_item.view.*
@@ -28,10 +27,9 @@ class DayAdapter(
     //-----> Needs to be inner class for shit to work Remember that if you copy this code for later <-----
     inner class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val recyclerView : RecyclerView = itemView.rvActivities
-        val ivAdd: ImageView
+        private val ivAdd: ImageView = itemView.findViewById<ImageView>(R.id.ivAdd)
 
         init {
-            ivAdd = itemView.findViewById<ImageView>(R.id.ivAdd)
             ivAdd.setOnClickListener { addAnActivity(it) }
         }
 

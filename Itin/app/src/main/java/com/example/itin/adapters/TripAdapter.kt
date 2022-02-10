@@ -1,9 +1,8 @@
-package com.example.itin
+package com.example.itin.adapters
 
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +12,7 @@ import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
+import com.example.itin.R
 import com.example.itin.classes.Trip
 import kotlinx.android.synthetic.main.trip_item.view.*
 
