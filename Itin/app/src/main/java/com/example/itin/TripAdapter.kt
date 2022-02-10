@@ -24,10 +24,9 @@ class TripAdapter(
 
     // create a view holder: holds a layout of a specific item
     inner class TripViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val ivMenu: ImageView
+        private val ivMenu: ImageView = itemView.findViewById<ImageView>(R.id.ivMenu)
 
         init {
-            ivMenu = itemView.findViewById<ImageView>(R.id.ivMenu)
             ivMenu.setOnClickListener { popupMenu(it) }
         }
 

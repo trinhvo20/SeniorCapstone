@@ -126,14 +126,14 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         ivPickStartDate.setOnClickListener {
             val datePickerDialog = DatePickerDialog(this, DatePickerDialog.OnDateSetListener{_, mYear, mMonth, mDay ->
-                etStartDate.setText(""+(mMonth+1)+"/"+mDay+"/"+mYear)
+                etStartDate.text = ""+(mMonth+1)+"/"+mDay+"/"+mYear
             }, year, month, day)
             datePickerDialog.show()
         }
 
         ivPickEndDate.setOnClickListener {
             val datePickerDialog = DatePickerDialog(this, DatePickerDialog.OnDateSetListener{_, mYear, mMonth, mDay ->
-                etEndDate.setText(""+(mMonth+1)+"/"+mDay+"/"+mYear)
+                etEndDate.text = ""+(mMonth+1)+"/"+mDay+"/"+mYear
             }, year, month, day)
             datePickerDialog.show()
         }
@@ -147,44 +147,45 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             val startDate = etStartDate.text.toString()
             val endDate = etEndDate.text.toString()
 
-            name = if (etName.text.toString().isEmpty()) {
-                "Trip to $location"
-            } else {
-                etName.text.toString()
+            if (location.isBlank() || startDate.isBlank() || endDate.isBlank()) {
+                Toast.makeText(this, "Location & Dates are required", Toast.LENGTH_SHORT).show()
             }
-
-            val uid = firebaseAuth.currentUser?.uid.toString()
-
-            val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
-            val curTrip = curUser.child("trips")
-
-            // This event listener waits for a change in its child (tripCount) then records the updated version
-            // We must add 1 to this because it records the previous iterations' value
-            curUser.get().addOnSuccessListener {
-                if(it.exists()){
-                    tripCount = it.child("tripCount").value.toString().toInt() + 1
+            else {
+                name = etName.text.toString().ifBlank {
+                    "Trip to $location"
                 }
+
+                val uid = firebaseAuth.currentUser?.uid.toString()
+
+                val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+                val curTrip = curUser.child("trips")
+
+                // This event listener waits for a change in its child (tripCount) then records the updated version
+                // We must add 1 to this because it records the previous iterations' value
+                curUser.get().addOnSuccessListener {
+                    if(it.exists()){
+                        tripCount = it.child("tripCount").value.toString().toInt() + 1
+                    }
+                }
+
+                // Grab the initial values for database manipulation
+                val trip = Trip(name, location, startDate, endDate, deleted=false, active=true, tripID=tripCount)
+
+                // Write to the database, then increment tripCount in the database
+                SendToDB(trip,curTrip,tripCount)
+                trips.add(trip)
+                tripCount += 1
+                curUser.child("tripCount").setValue(tripCount)
+                tripAdapter.notifyDataSetChanged()
+
+                Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
             }
-
-            // Grab the initial values for database manipulation
-            val trip = Trip(name, location, startDate, endDate, deleted=false, active=true, tripID=tripCount)
-
-            // Write to the database, then increment tripCount in the database
-            SendToDB(trip,curTrip,tripCount)
-            trips.add(trip)
-            tripCount += 1
-            curUser.child("tripCount").setValue(tripCount)
-            tripAdapter.notifyDataSetChanged()
-
-            Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
         }
-
         newDialog.setNegativeButton("Cancel") { dialog, _ ->
             dialog.dismiss()
             Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
         }
-
         newDialog.create()
         newDialog.show()
     }
