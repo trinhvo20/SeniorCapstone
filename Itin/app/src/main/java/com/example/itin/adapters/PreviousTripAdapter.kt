@@ -14,14 +14,15 @@ import com.example.itin.R
 import com.example.itin.classes.Trip
 import kotlinx.android.synthetic.main.trip_item.view.*
 
-class TripAdapter(
+class PreviousTripAdapter(
+
     private val context: Context,
     private val trips: MutableList<Trip>, // parameter: a mutable list of trip items
-    private val listener: OnItemClickListener
-) : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
+    private val listener: PreviousTripAdapter.OnItemClickListener
 
-    // create a view holder: holds a layout of a specific item
-    inner class TripViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+) : RecyclerView.Adapter<PreviousTripAdapter.PreviousTripViewHolder>() {
+
+    inner class PreviousTripViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val ivMenu: ImageView = itemView.findViewById(R.id.ivMenu)
 
         init {
@@ -83,8 +84,8 @@ class TripAdapter(
                             .setIcon(R.drawable.ic_warning)
                             .setMessage("Are you sure delete this trip?")
                             .setPositiveButton("Yes") {dialog,_ ->
-                                trips[adapterPosition].delByName(trips[adapterPosition].name)
-                                trips[adapterPosition].sendToDB()
+                                //trips[adapterPosition].delByName(trips[adapterPosition].name)
+                                //trips[adapterPosition].sendToDB()
                                 trips.removeAt(adapterPosition)
                                 notifyDataSetChanged()
 
@@ -109,22 +110,16 @@ class TripAdapter(
         }
     }
 
-    // Ctrl + I
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TripViewHolder {
-        // LayoutInflater will take trip_item.xml code and convert it to view we can work it in kotlin
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PreviousTripViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.trip_item, parent, false)
-
-        // need to return a TodoViewHolder
-        return TripViewHolder(view)
+        return PreviousTripViewHolder(view)
     }
 
-    // take the data from our trips list and set it to the corresponding view (trip_item.xml)
-    override fun onBindViewHolder(holder: TripViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PreviousTripViewHolder, position: Int) {
         val curTrip = trips[position]
 
         // access to trip_item.xml
-        holder.itemView.apply{
-            // get the data from our trips list and put them in the corresponding TextView in trip_item.xml
+        holder.itemView.apply {
             tvName.text = curTrip.name
             tvStartDate.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
@@ -134,7 +129,6 @@ class TripAdapter(
         holder.itemView.setOnClickListener {
             listener.onItemClick(position)
         }
-
     }
 
     override fun getItemCount(): Int {
@@ -142,8 +136,7 @@ class TripAdapter(
     }
 
     // this interface will handle the RecyclerView clickable
-    interface  OnItemClickListener {
+    interface OnItemClickListener {
         fun onItemClick(position: Int)
     }
-
 }
