@@ -51,6 +51,7 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun checkUser(){
         val firebaseUser = FirebaseAuth.getInstance().currentUser
         // If the use is not current logged in:
