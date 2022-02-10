@@ -17,8 +17,8 @@ import kotlinx.android.synthetic.main.trip_item.view.*
 class PreviousTripAdapter(
 
     private val context: Context,
-    private val trips: MutableList<Trip>, // parameter: a mutable list of trip items
-    private val listener: PreviousTripAdapter.OnItemClickListener
+    private val previousTrips: MutableList<Trip>,
+    private val listener: OnItemClickListener
 
 ) : RecyclerView.Adapter<PreviousTripAdapter.PreviousTripViewHolder>() {
 
@@ -31,7 +31,7 @@ class PreviousTripAdapter(
 
         // this function handles the popup menu for each item in the trips list
         private fun popupMenu(view: View) {
-            val curTrip = trips[adapterPosition]
+            val curTrip = previousTrips[adapterPosition]
 
             val popupMenu = PopupMenu(context, view)
             popupMenu.inflate(R.menu.show_menu)
@@ -86,7 +86,7 @@ class PreviousTripAdapter(
                             .setPositiveButton("Yes") {dialog,_ ->
                                 //trips[adapterPosition].delByName(trips[adapterPosition].name)
                                 //trips[adapterPosition].sendToDB()
-                                trips.removeAt(adapterPosition)
+                                previousTrips.removeAt(adapterPosition)
                                 notifyDataSetChanged()
 
                                 Toast.makeText(context, "Successfully Deleted", Toast.LENGTH_SHORT).show()
@@ -116,7 +116,7 @@ class PreviousTripAdapter(
     }
 
     override fun onBindViewHolder(holder: PreviousTripViewHolder, position: Int) {
-        val curTrip = trips[position]
+        val curTrip = previousTrips[position]
 
         // access to trip_item.xml
         holder.itemView.apply {
@@ -132,7 +132,7 @@ class PreviousTripAdapter(
     }
 
     override fun getItemCount(): Int {
-        return trips.size
+        return previousTrips.size
     }
 
     // this interface will handle the RecyclerView clickable

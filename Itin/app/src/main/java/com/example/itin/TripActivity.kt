@@ -149,7 +149,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 }
 
                 val uid = firebaseAuth.currentUser?.uid.toString()
-
                 val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
                 val curTrip = curUser.child("trips")
 
