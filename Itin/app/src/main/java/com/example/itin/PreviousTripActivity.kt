@@ -29,6 +29,7 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
     private var previousTripCount : Int = 0
     private var tripCount : Int = 0
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_previous_trip)
@@ -67,6 +68,12 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
                     // Try to grab the value from the DB for tripCount, if it doesn't exist, notify user
                     try {
                         tripCount = it.child("tripCount").value.toString().toInt()
+                        // Try to get the previousTripCount value, if it is not exist, create a new one
+                        try {
+                            previousTripCount = it.child("previousTripCount").value.toString().toInt()
+                        } catch (e: NumberFormatException) {
+                            curUser.child("previousTripCount").setValue(0)
+                        }
                         readData(tripCount)
                     }
                     catch (e: NumberFormatException){
@@ -85,7 +92,7 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
         val checkTrips = curUser.child("trips")
 
         for(i in 0 until count) {
-            checkTrips.child("$i").get().addOnSuccessListener {
+            checkTrips.child("$i").get().addOnSuccessListener { it ->
                 if (it.exists()) {
                     val name = it.child("Name").value.toString()
                     val location = it.child("Location").value.toString()
@@ -105,6 +112,7 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
                             previousTrips.add(trip)
                             previousTripAdapter.notifyDataSetChanged()
                             previousTripCount = previousTrips.size
+                            curUser.child("previousTripCount").setValue(previousTripCount)
                         }
                     }
                 }
