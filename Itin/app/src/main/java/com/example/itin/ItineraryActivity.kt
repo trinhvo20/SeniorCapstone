@@ -12,6 +12,7 @@ import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
 import kotlinx.android.synthetic.main.activity_itinerary.*
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
@@ -50,18 +51,19 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         var startdate = LocalDate.parse(trip.startDate, formatter)
         var enddate = LocalDate.parse(trip.endDate, formatter)
 
-
+        val tempdays = mutableListOf<Day>()
         val dayNum = ChronoUnit.DAYS.between(startdate, enddate) + 1
         val actnum = 6
         for (i in 1..dayNum) {
             val day = Day(i.toString())
             for (i in 1..actnum){
-                val activity = Activity("activity $i","$i:00", "test")
+                val activity = Activity("activity $i","$i:00PM", "test")
                 day.activities.add(activity)
             }
             days.add(day)
         }
 
+        activitysort(days)
 
         dayAdapter.notifyDataSetChanged()
 
@@ -78,5 +80,32 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    // function to sort the activities on each of the day, it is a modified Insertion sort
+    private fun activitysort (tempdays : MutableList<Day>){
+        var formatter = DateTimeFormatter.ofPattern("h:ma")
+
+            for(day in tempdays) {
+                for (i in 0 until day.activities.size) {
+                    val key = day.activities[i]
+
+//                    if (key != null) {
+//                        println(key.time)
+//                    }
+
+                    var j = i - 1
+
+                    /* Move elements of arr[0..i-1], that are greater than key, to one position ahead of their current position */
+
+                    if (key != null) {
+                        while (j >= 0 && LocalTime.parse(day.activities[j]?.time, formatter).isAfter(LocalTime.parse(key.time, formatter))){
+                            day.activities[j + 1] = day.activities[j]
+                            j--
+                        }
+                    }
+                    day.activities[j + 1] = key
+                }
+            }
+    }
 
 }
