@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.EditText
@@ -14,20 +15,16 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.itin.classes.Activity
-import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
 import com.example.itin.classes.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_trip.*
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 import java.util.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import kotlinx.coroutines.delay
 
 // Toggle Debugging
 const val DEBUG_TOGGLE : Boolean = true
@@ -206,22 +203,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         val checkTrips = userReference.child(uid).child("trips")
 
         for(i in 0 until count) {
-            checkTrips.child("$i").get().addOnSuccessListener {
+            checkTrips.child("Trip $i").get().addOnSuccessListener {
                 if (it.exists()) {
-                    val name = it.child("Name").value.toString()
-                    val location = it.child("Location").value.toString()
-                    val stDate = it.child("Start Date").value.toString()
-                    val endDate = it.child("End Date").value.toString()
-                    val deleted = it.child("Deleted").value.toString()
-                    val active = it.child("Active").value.toString()
-
-                    // make a trip
-                    val trip = Trip(name, location, stDate, endDate, stringToBoolean(deleted), stringToBoolean(active),tripID=i)
-                    // add trip as long as it is not deleted and it is active
-                    if(deleted == "false" && active == "true") {
-                        trips.add(trip)
-                        tripAdapter.notifyDataSetChanged()
-                    }
+                    accessMasterTripList(i)
                 }
                 else {
                     Log.d("print", "User does not exist")
@@ -282,6 +266,36 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // Record trips in the individual user
         curTrip.child("Trip $id").setValue(id)
 
+    }
+
+    // function used to access the masterTripList
+    private fun accessMasterTripList(i: Int){
+        val masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
+        masterTripList.child("$i").get().addOnSuccessListener {
+            if (it.exists()) {
+                val name = it.child("Name").value.toString()
+                val location = it.child("Location").value.toString()
+                val stDate = it.child("Start Date").value.toString()
+                val endDate = it.child("End Date").value.toString()
+                val deleted = it.child("Deleted").value.toString()
+                val active = it.child("Active").value.toString()
+
+                val trip = Trip(
+                    name,
+                    location,
+                    stDate,
+                    endDate,
+                    stringToBoolean(deleted),
+                    stringToBoolean(active),
+                    tripID = i
+                )
+
+                if(deleted == "false" && active == "true") {
+                    trips.add(trip)
+                    tripAdapter.notifyDataSetChanged()
+                }
+            }
+        }
     }
 
     // convert a string to a boolean
