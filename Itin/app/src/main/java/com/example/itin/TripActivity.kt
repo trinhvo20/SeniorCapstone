@@ -70,12 +70,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         }
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        // set up proper tripCount
-        val uid = firebaseAuth.currentUser?.uid.toString()
-
         // This here checks the value in the database to overwrite the initial value of 0
-        val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
-        curUser.get().addOnSuccessListener {
+        val masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
+        masterTripList.get().addOnSuccessListener {
             if (it.exists()) {
                 // Try to grab the value from the DB for tripCount, if it doesn't exist, create the child
                 try {
@@ -84,7 +81,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     checkUser(tripCount)
                 }
                 catch (e: NumberFormatException){
-                    curUser.child("tripCount").setValue(0)
+                    masterTripList.child("tripCount").setValue(0)
                 }
             }
         }
@@ -154,13 +151,13 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             }
 
             val uid = firebaseAuth.currentUser?.uid.toString()
-
             val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
-            val curTrip = curUser.child("trips")
+            val curTrips = curUser.child("trips")
+            val masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
 
             // This event listener waits for a change in its child (tripCount) then records the updated version
             // We must add 1 to this because it records the previous iterations' value
-            curUser.get().addOnSuccessListener {
+            masterTripList.get().addOnSuccessListener {
                 if(it.exists()){
                     tripCount = it.child("tripCount").value.toString().toInt() + 1
                 }
@@ -170,10 +167,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             val trip = Trip(name, location, startDate, endDate, deleted=false, active=true, tripID=tripCount)
 
             // Write to the database, then increment tripCount in the database
-            SendToDB(trip,curTrip,tripCount)
+            SendToDB(trip,curTrips,masterTripList,tripCount)
             trips.add(trip)
             tripCount += 1
-            curUser.child("tripCount").setValue(tripCount)
+            masterTripList.child("tripCount").setValue(tripCount)
             tripAdapter.notifyDataSetChanged()
 
             Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
@@ -270,10 +267,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun SendToDB(trip : Trip, curTrip : DatabaseReference, id : Int){
+    private fun SendToDB(trip : Trip, curTrip : DatabaseReference, masterTripList : DatabaseReference, id : Int){
 
-        // Navigates to the correct directory
-        val tripInstance = curTrip.child(id.toString())
+        // Navigates to the correct directory (masterTripList)
+        val tripInstance = masterTripList.child(id.toString())
 
         tripInstance.child("Name").setValue(trip.name)
         tripInstance.child("Location").setValue(trip.location)
@@ -281,6 +278,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         tripInstance.child("End Date").setValue(trip.endDate)
         tripInstance.child("Deleted").setValue(trip.deleted)
         tripInstance.child("Active").setValue(trip.active)
+
+        // Record trips in the individual user
+        curTrip.child("Trip $id").setValue(id)
+
     }
 
     // convert a string to a boolean
