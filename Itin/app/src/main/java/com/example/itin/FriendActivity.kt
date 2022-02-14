@@ -9,7 +9,7 @@ class FriendActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_friend)
 
-        homeBtn.setOnClickListener { finish() }
+        backBtn.setOnClickListener { finish() }
     }
 
 }
