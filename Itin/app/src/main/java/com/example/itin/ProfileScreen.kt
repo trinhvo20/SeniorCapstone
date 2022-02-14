@@ -6,16 +6,12 @@ import android.telephony.PhoneNumberUtils
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.itin.classes.Trip
 import com.example.itin.databinding.ActivityProfileScreenBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_profile_screen.*
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 class ProfileScreen : AppCompatActivity() {
 
@@ -80,15 +76,8 @@ class ProfileScreen : AppCompatActivity() {
 
     // function to read data from Realtime Database
     private fun readData(uid: String) {
-        curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+        curUser = FirebaseDatabase.getInstance().getReference("users").child(uid).child("userInfo")
         curUser.get().addOnSuccessListener {
-            if (it.exists()){
-                val previousTripCount = it.child("previousTripCount").value.toString()
-                previousTripCountTV.text = previousTripCount
-            }
-        }
-        val curUserInfo = curUser.child("userInfo")
-        curUserInfo.get().addOnSuccessListener {
             if (it.exists()){
                 fullName = it.child("fullName").value.toString()
                 username = it.child("username").value.toString()
@@ -103,6 +92,7 @@ class ProfileScreen : AppCompatActivity() {
                 fullNameInput.editText?.setText(fullName)
                 usernameInput.editText?.setText(username)
                 phoneNumberInput.editText?.setText(phoneNo)
+
             } else {
                 Log.d("print", "User does not exist")
             }

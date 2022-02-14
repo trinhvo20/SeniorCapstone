@@ -131,5 +131,31 @@ class GoogleLogin : AppCompatActivity() {
                 Toast.makeText(this@GoogleLogin, "Login failed due to ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
+
+    private fun passUserInfo(uid: String) {
+        val checkUser = databaseReference.child(uid)
+
+        checkUser.get().addOnSuccessListener {
+            if (it.exists()){
+                val fullName = it.child("fullName").value.toString()
+                val username = it.child("username").value.toString()
+                val email = it.child("email").value.toString()
+                val phone = it.child("phone").value.toString()
+
+                val intent = Intent(this,ProfileScreen::class.java)
+                intent.putExtra("FULLNAME",fullName)
+                intent.putExtra("USERNAME",username)
+                intent.putExtra("EMAIL",email)
+                intent.putExtra("PHONE",phone)
+
+                startActivity(intent)
+
+            } else {
+                Log.d("print", "User does not exist")
+            }
+        }.addOnCanceledListener {
+            Log.d("print", "Failed to fetch the user")
+        }
+    }
 }
 

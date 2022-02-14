@@ -1,11 +1,10 @@
-package com.example.itin.adapters
+package com.example.itin
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.itin.R
 import com.example.itin.classes.Activity
 import kotlinx.android.synthetic.main.day_activity_item.view.*
 

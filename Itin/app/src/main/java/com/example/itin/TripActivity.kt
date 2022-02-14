@@ -14,17 +14,20 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.itin.adapters.TripAdapter
+import com.example.itin.classes.Activity
+import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
+import com.example.itin.classes.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_trip.*
-import java.util.*
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 
 // Toggle Debugging
 const val DEBUG_TOGGLE : Boolean = true
@@ -34,6 +37,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     private lateinit var tripAdapter : TripAdapter
     private lateinit var trips : MutableList<Trip>
     private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var user : User
     private var tripCount : Int = 0
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -122,14 +126,14 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         ivPickStartDate.setOnClickListener {
             val datePickerDialog = DatePickerDialog(this, DatePickerDialog.OnDateSetListener{_, mYear, mMonth, mDay ->
-                etStartDate.text = ""+(mMonth+1)+"/"+mDay+"/"+mYear
+                etStartDate.setText(""+(mMonth+1)+"/"+mDay+"/"+mYear)
             }, year, month, day)
             datePickerDialog.show()
         }
 
         ivPickEndDate.setOnClickListener {
             val datePickerDialog = DatePickerDialog(this, DatePickerDialog.OnDateSetListener{_, mYear, mMonth, mDay ->
-                etEndDate.text = ""+(mMonth+1)+"/"+mDay+"/"+mYear
+                etEndDate.setText(""+(mMonth+1)+"/"+mDay+"/"+mYear)
             }, year, month, day)
             datePickerDialog.show()
         }
@@ -143,49 +147,48 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             val startDate = etStartDate.text.toString()
             val endDate = etEndDate.text.toString()
 
-            if (location.isBlank() || startDate.isBlank() || endDate.isBlank()) {
-                Toast.makeText(this, "Location & Dates are required", Toast.LENGTH_SHORT).show()
+            name = if (etName.text.toString().isEmpty()) {
+                "Trip to $location"
+            } else {
+                etName.text.toString()
             }
-            else {
-                name = etName.text.toString().ifBlank {
-                    "Trip to $location"
+
+            val uid = firebaseAuth.currentUser?.uid.toString()
+
+            val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+            val curTrip = curUser.child("trips")
+
+            // This event listener waits for a change in its child (tripCount) then records the updated version
+            // We must add 1 to this because it records the previous iterations' value
+            curUser.get().addOnSuccessListener {
+                if(it.exists()){
+                    tripCount = it.child("tripCount").value.toString().toInt() + 1
                 }
-
-                val uid = firebaseAuth.currentUser?.uid.toString()
-                val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
-                val curTrip = curUser.child("trips")
-
-                // This event listener waits for a change in its child (tripCount) then records the updated version
-                // We must add 1 to this because it records the previous iterations' value
-                curUser.get().addOnSuccessListener {
-                    if(it.exists()){
-                        tripCount = it.child("tripCount").value.toString().toInt() + 1
-                    }
-                }
-
-                // Grab the initial values for database manipulation
-                val trip = Trip(name, location, startDate, endDate, deleted=false, active=true, tripID=tripCount)
-
-                // Write to the database, then increment tripCount in the database
-                SendToDB(trip,curTrip,tripCount)
-                trips.add(trip)
-                tripCount += 1
-                curUser.child("tripCount").setValue(tripCount)
-                tripAdapter.notifyDataSetChanged()
-
-                Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
-                dialog.dismiss()
             }
+
+            // Grab the initial values for database manipulation
+            val trip = Trip(name, location, startDate, endDate, deleted=false, active=true, tripID=tripCount)
+
+            // Write to the database, then increment tripCount in the database
+            SendToDB(trip,curTrip,tripCount)
+            trips.add(trip)
+            tripCount += 1
+            curUser.child("tripCount").setValue(tripCount)
+            tripAdapter.notifyDataSetChanged()
+
+            Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
         }
+
         newDialog.setNegativeButton("Cancel") { dialog, _ ->
             dialog.dismiss()
             Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
         }
+
         newDialog.create()
         newDialog.show()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun checkUser(count : Int){
         val firebaseUser = firebaseAuth.currentUser
         // If the use is not current logged in:
@@ -201,11 +204,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun readData(uid: String, count : Int){
-        var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
-        val today = LocalDate.now()
-
         val userReference = FirebaseDatabase.getInstance().getReference("users")
         val checkTrips = userReference.child(uid).child("trips")
 
@@ -223,13 +222,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     val trip = Trip(name, location, stDate, endDate, stringToBoolean(deleted), stringToBoolean(active),tripID=i)
                     // add trip as long as it is not deleted and it is active
                     if(deleted == "false" && active == "true") {
-                        val endDateObj = LocalDate.parse(endDate, formatter)
-                        val dayInterval = ChronoUnit.DAYS.between(endDateObj, today).toInt()
-                        if (dayInterval <= 0) {
-                            val trip = Trip(name, location, stDate, endDate, stringToBoolean(deleted), stringToBoolean(active),tripID=i)
-                            trips.add(trip)
-                            tripAdapter.notifyDataSetChanged()
-                        }
+                        trips.add(trip)
+                        tripAdapter.notifyDataSetChanged()
                     }
                 }
                 else {
