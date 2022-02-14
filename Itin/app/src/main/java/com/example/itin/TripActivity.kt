@@ -22,6 +22,9 @@ import kotlinx.android.synthetic.main.activity_trip.*
 import java.util.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 // Toggle Debugging
 const val DEBUG_TOGGLE : Boolean = true
@@ -182,6 +185,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         newDialog.show()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun checkUser(count : Int){
         val firebaseUser = firebaseAuth.currentUser
         // If the use is not current logged in:
@@ -197,7 +201,11 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun readData(uid: String, count : Int){
+        var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
+        val today = LocalDate.now()
+
         val userReference = FirebaseDatabase.getInstance().getReference("users")
         val checkTrips = userReference.child(uid).child("trips")
 
@@ -215,8 +223,13 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     val trip = Trip(name, location, stDate, endDate, stringToBoolean(deleted), stringToBoolean(active),tripID=i)
                     // add trip as long as it is not deleted and it is active
                     if(deleted == "false" && active == "true") {
-                        trips.add(trip)
-                        tripAdapter.notifyDataSetChanged()
+                        val endDateObj = LocalDate.parse(endDate, formatter)
+                        val dayInterval = ChronoUnit.DAYS.between(endDateObj, today).toInt()
+                        if (dayInterval <= 0) {
+                            val trip = Trip(name, location, stDate, endDate, stringToBoolean(deleted), stringToBoolean(active),tripID=i)
+                            trips.add(trip)
+                            tripAdapter.notifyDataSetChanged()
+                        }
                     }
                 }
                 else {

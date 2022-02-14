@@ -1,18 +1,17 @@
 package com.example.itin.adapters
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.Toast
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
 import com.example.itin.classes.Trip
 import kotlinx.android.synthetic.main.trip_item.view.*
+import java.util.*
 
 class TripAdapter(
     private val context: Context,
@@ -42,8 +41,30 @@ class TripAdapter(
 
                         val etName = view.findViewById<EditText>(R.id.etName)
                         val etLocation = view.findViewById<EditText>(R.id.etLocation)
-                        val etStartDate = view.findViewById<EditText>(R.id.etStartDate)
-                        val etEndDate = view.findViewById<EditText>(R.id.etEndDate)
+                        val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
+                        val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
+
+                        val c = Calendar.getInstance()
+                        val year = c.get(Calendar.YEAR)
+                        val month = c.get(Calendar.MONTH)
+                        val day = c.get(Calendar.DAY_OF_MONTH)
+
+                        val ivPickStartDate = view.findViewById<ImageView>(R.id.ivPickStartDate)
+                        val ivPickEndDate = view.findViewById<ImageView>(R.id.ivPickEndDate)
+
+                        ivPickStartDate.setOnClickListener {
+                            val datePickerDialog = DatePickerDialog(context, DatePickerDialog.OnDateSetListener{ _, mYear, mMonth, mDay ->
+                                etStartDate.text = ""+(mMonth+1)+"/"+mDay+"/"+mYear
+                            }, year, month, day)
+                            datePickerDialog.show()
+                        }
+
+                        ivPickEndDate.setOnClickListener {
+                            val datePickerDialog = DatePickerDialog(context, DatePickerDialog.OnDateSetListener{ _, mYear, mMonth, mDay ->
+                                etEndDate.text = ""+(mMonth+1)+"/"+mDay+"/"+mYear
+                            }, year, month, day)
+                            datePickerDialog.show()
+                        }
 
                         val dialog = AlertDialog.Builder(context)
                         dialog.setView(view)
