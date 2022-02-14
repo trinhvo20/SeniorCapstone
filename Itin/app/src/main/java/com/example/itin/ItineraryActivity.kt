@@ -55,7 +55,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         val dayNum = ChronoUnit.DAYS.between(startdate, enddate) + 1
         val actnum = 6
         for (i in 1..dayNum) {
-            val day = Day(i.toString())
+            val day = Day(i.toString() + ": " + startdate.plusDays(i-1).format(formatter).toString())
             for (i in 1..actnum){
                 val activity = Activity("activity $i","$i:00PM", "test")
                 day.activities.add(activity)
