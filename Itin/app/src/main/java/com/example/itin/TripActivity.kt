@@ -28,6 +28,7 @@ import java.time.temporal.ChronoUnit
 import java.util.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import java.time.LocalTime
 
 // Toggle Debugging
 const val DEBUG_TOGGLE : Boolean = true
@@ -174,6 +175,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             trips.add(trip)
             tripCount += 1
             curUser.child("tripCount").setValue(tripCount)
+            tripsort(trips)
             tripAdapter.notifyDataSetChanged()
 
             Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
@@ -189,6 +191,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         newDialog.show()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun checkUser(count : Int){
         val firebaseUser = firebaseAuth.currentUser
         // If the use is not current logged in:
@@ -204,6 +207,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun readData(uid: String, count : Int){
         val userReference = FirebaseDatabase.getInstance().getReference("users")
         val checkTrips = userReference.child(uid).child("trips")
@@ -223,6 +227,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     // add trip as long as it is not deleted and it is active
                     if(deleted == "false" && active == "true") {
                         trips.add(trip)
+                        tripsort(trips)
                         tripAdapter.notifyDataSetChanged()
                     }
                 }
@@ -289,5 +294,29 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             return false
         }
         return true
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    // function to sort the activities on each of the day, it is a modified Insertion sort
+    private fun tripsort (trips: MutableList<Trip>){
+        var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
+
+        for (i in 0 until trips.size) {
+            val key = trips[i]
+
+                if (key != null) {
+                    println(key.startDate)
+                }
+
+            var j = i - 1
+
+            if (key != null) {
+                while (j >= 0 && LocalDate.parse(trips[j].startDate, formatter).isAfter(LocalDate.parse(key.startDate, formatter))){
+                    trips[j + 1] = trips[j]
+                    j--
+                }
+            }
+            trips[j + 1] = key
+        }
     }
 }

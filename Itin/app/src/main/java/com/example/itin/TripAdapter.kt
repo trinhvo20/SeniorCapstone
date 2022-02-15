@@ -15,6 +15,8 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.classes.Trip
 import kotlinx.android.synthetic.main.trip_item.view.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 class TripAdapter(
     private val context: Context,
@@ -23,6 +25,7 @@ class TripAdapter(
 ) : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
 
     // create a view holder: holds a layout of a specific item
+    @RequiresApi(Build.VERSION_CODES.O)
     inner class TripViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val ivMenu: ImageView
 
@@ -68,6 +71,7 @@ class TripAdapter(
                                 if (etStartDate.text.toString().isNotEmpty()){
                                     curTrip.endDate =etEndDate.text.toString()
                                 }
+                                tripsort(trips)
                                 notifyDataSetChanged()
                                 Toast.makeText(context, "Successfully Edited", Toast.LENGTH_SHORT).show()
                                 dialog.dismiss()
@@ -111,9 +115,35 @@ class TripAdapter(
             val menu = popup.get(popupMenu)
             menu.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.java).invoke(menu, true)
         }
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        // function to sort the activities on each of the day, it is a modified Insertion sort
+        private fun tripsort (trips: MutableList<Trip>){
+            var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
+
+            for (i in 0 until trips.size) {
+                val key = trips[i]
+
+                if (key != null) {
+                    println(key.startDate)
+                }
+
+                var j = i - 1
+
+                if (key != null) {
+                    while (j >= 0 && LocalDate.parse(trips[j].startDate, formatter).isAfter(
+                            LocalDate.parse(key.startDate, formatter))){
+                        trips[j + 1] = trips[j]
+                        j--
+                    }
+                }
+                trips[j + 1] = key
+            }
+        }
     }
 
     // Ctrl + I
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TripViewHolder {
         // LayoutInflater will take trip_item.xml code and convert it to view we can work it in kotlin
         val view = LayoutInflater.from(parent.context).inflate(R.layout.trip_item, parent, false)
