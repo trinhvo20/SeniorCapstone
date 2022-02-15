@@ -84,7 +84,12 @@ class ProfileScreen : AppCompatActivity() {
         curUser.get().addOnSuccessListener {
             if (it.exists()){
                 val previousTripCount = it.child("previousTripCount").value.toString()
-                previousTripCountTV.text = previousTripCount
+                Log.d("ProfileScreen","previousTripCount: $previousTripCount")
+                if (previousTripCount == "null") {
+                    previousTripCountTV.text = "0"
+                } else {
+                    previousTripCountTV.text = previousTripCount
+                }
             }
         }
         val curUserInfo = curUser.child("userInfo")

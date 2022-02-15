@@ -236,7 +236,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             // for realtime database, find the current user by its uid
             readData(count)
         }
-
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
