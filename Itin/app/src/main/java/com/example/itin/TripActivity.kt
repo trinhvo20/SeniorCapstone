@@ -202,7 +202,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 )
 
                 // Write to the database, then increment tripCount in the database
-                sendToDB(trip, curTrips, masterTripList, tripCount)
+                sendToDB(trip, tripCount)
                 tripCount += 1
                 Log.d("TripActivity", "tripCount updated: $tripCount")
                 masterTripList.child("tripCount").setValue(tripCount)
@@ -255,12 +255,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun sendToDB(
-        trip: Trip,
-        curTrip: DatabaseReference,
-        masterTripList: DatabaseReference,
-        id: Int
-    ) {
+    private fun sendToDB(trip: Trip, id: Int) {
 
         // Navigates to the correct directory (masterTripList)
         val tripInstance = masterTripList.child(id.toString())
@@ -273,7 +268,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         tripInstance.child("Active").setValue(trip.active)
 
         // Record trips in the individual user
-        curTrip.child("Trip $id").setValue(id)
+        curTrips.child("Trip $id").setValue(id)
 
     }
 

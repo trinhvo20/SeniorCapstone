@@ -3,14 +3,19 @@ package com.example.itin.adapters
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
 import com.example.itin.classes.Trip
 import kotlinx.android.synthetic.main.trip_item.view.*
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 class TripAdapter(
@@ -20,6 +25,7 @@ class TripAdapter(
 ) : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
 
     // create a view holder: holds a layout of a specific item
+    @RequiresApi(Build.VERSION_CODES.O)
     inner class TripViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val ivMenu: ImageView = itemView.findViewById(R.id.ivMenu)
 
@@ -28,6 +34,7 @@ class TripAdapter(
         }
 
         // this function handles the popup menu for each item in the trips list
+        @RequiresApi(Build.VERSION_CODES.O)
         private fun popupMenu(view: View) {
             val curTrip = trips[adapterPosition]
 
@@ -69,22 +76,36 @@ class TripAdapter(
                         val dialog = AlertDialog.Builder(context)
                         dialog.setView(view)
                             .setPositiveButton("OK") {dialog,_ ->
-                                if (etName.text.toString().isBlank()){
-                                    if (etLocation.text.toString().isNotBlank()) {
-                                        curTrip.name = "Trip to " + etLocation.text.toString()
+                                val name = etName.text.toString()
+                                val location = etLocation.text.toString()
+                                val startDate = etStartDate.text.toString()
+                                val endDate = etEndDate.text.toString()
+
+                                if (name.isBlank()){
+                                    if (location.isNotBlank()) {
+                                        curTrip.name = "Trip to $location"
                                     }
                                 } else {
-                                    curTrip.name = etName.text.toString()
+                                    curTrip.name = name
                                 }
-                                if (etLocation.text.toString().isNotBlank()){
-                                    curTrip.location =etLocation.text.toString()
+                                if (location.isNotBlank()){
+                                    curTrip.location = location
                                 }
-                                if (etStartDate.text.toString().isNotBlank()){
-                                    curTrip.startDate =etStartDate.text.toString()
+                                if (startDate.isNotBlank()){
+                                    curTrip.startDate = startDate
                                 }
-                                if (etStartDate.text.toString().isNotBlank()){
-                                    curTrip.endDate =etEndDate.text.toString()
+                                if (endDate.isNotBlank()){
+                                    curTrip.endDate = endDate
+                                    // check for dayInterval to set the trip 'active' status
+                                    var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
+                                    val today = LocalDate.now()
+                                    val endDateObj = LocalDate.parse(endDate, formatter)
+                                    val dayInterval = ChronoUnit.DAYS.between(endDateObj, today).toInt()
+                                    curTrip.active = dayInterval <= 0
                                 }
+
+                                curTrip.sendToDB()
+                                if (!curTrip.active) {trips.removeAt(adapterPosition)}
                                 notifyDataSetChanged()
                                 Toast.makeText(context, "Successfully Edited", Toast.LENGTH_SHORT).show()
                                 dialog.dismiss()
@@ -104,8 +125,8 @@ class TripAdapter(
                             .setIcon(R.drawable.ic_warning)
                             .setMessage("Are you sure delete this trip?")
                             .setPositiveButton("Yes") {dialog,_ ->
-                                trips[adapterPosition].delByName(trips[adapterPosition].name)
-                                trips[adapterPosition].sendToDB()
+                                curTrip.delByName(curTrip.name)
+                                curTrip.sendToDB()
                                 trips.removeAt(adapterPosition)
                                 notifyDataSetChanged()
 
@@ -131,6 +152,7 @@ class TripAdapter(
     }
 
     // Ctrl + I
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TripViewHolder {
         // LayoutInflater will take trip_item.xml code and convert it to view we can work it in kotlin
         val view = LayoutInflater.from(parent.context).inflate(R.layout.trip_item, parent, false)
