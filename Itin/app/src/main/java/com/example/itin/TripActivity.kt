@@ -144,44 +144,52 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
             if (location.isBlank() || startDate.isBlank() || endDate.isBlank()) {
                 Toast.makeText(this, "Location & Dates are required", Toast.LENGTH_SHORT).show()
-            }
-            else {
+            } else {
                 name = etName.text.toString().ifBlank {
                     "Trip to $location"
                 }
 
-            val uid = firebaseAuth.currentUser?.uid.toString()
-            val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
-            val curTrips = curUser.child("trips")
-            val masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
+                val uid = firebaseAuth.currentUser?.uid.toString()
+                val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+                val curTrips = curUser.child("trips")
+                val masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
 
-            // This event listener waits for a change in its child (tripCount) then records the updated version
-            // We must add 1 to this because it records the previous iterations' value
-            masterTripList.get().addOnSuccessListener {
-                if(it.exists()){
-                    tripCount = it.child("tripCount").value.toString().toInt() + 1
+                // This event listener waits for a change in its child (tripCount) then records the updated version
+                // We must add 1 to this because it records the previous iterations' value
+                masterTripList.get().addOnSuccessListener {
+                    if (it.exists()) {
+                        tripCount = it.child("tripCount").value.toString().toInt() + 1
+                    }
+
+                    // Grab the initial values for database manipulation
+                    val trip = Trip(
+                        name,
+                        location,
+                        startDate,
+                        endDate,
+                        deleted = false,
+                        active = true,
+                        tripID = tripCount
+                    )
+
+                    // Write to the database, then increment tripCount in the database
+                    SendToDB(trip, curTrips, masterTripList, tripCount)
+                    trips.add(trip)
+                    tripCount += 1
+                    masterTripList.child("tripCount").setValue(tripCount)
+                    tripAdapter.notifyDataSetChanged()
+
+                    Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
                 }
-
-                // Grab the initial values for database manipulation
-                val trip = Trip(name, location, startDate, endDate, deleted=false, active=true, tripID=tripCount)
-
-            // Write to the database, then increment tripCount in the database
-            SendToDB(trip,curTrips,masterTripList,tripCount)
-            trips.add(trip)
-            tripCount += 1
-            masterTripList.child("tripCount").setValue(tripCount)
-            tripAdapter.notifyDataSetChanged()
-
-                Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
-                dialog.dismiss()
             }
+            newDialog.setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+                Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
+            }
+            newDialog.create()
+            newDialog.show()
         }
-        newDialog.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.dismiss()
-            Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
-        }
-        newDialog.create()
-        newDialog.show()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
