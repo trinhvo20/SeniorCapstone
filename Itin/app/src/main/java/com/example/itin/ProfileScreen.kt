@@ -11,8 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.itin.databinding.ActivityProfileScreenBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_profile_screen.*
@@ -25,6 +24,7 @@ class ProfileScreen : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var uid : String
     private lateinit var curUser: DatabaseReference
+    private lateinit var curUserInfo: DatabaseReference
     private lateinit var storageReference: StorageReference
     private lateinit var imageUri: Uri
 
@@ -94,7 +94,7 @@ class ProfileScreen : AppCompatActivity() {
                 }
             }
         }
-        val curUserInfo = curUser.child("userInfo")
+        curUserInfo = curUser.child("userInfo")
         curUserInfo.get().addOnSuccessListener {
             if (it.exists()){
                 fullName = it.child("fullName").value.toString()
@@ -137,7 +137,7 @@ class ProfileScreen : AppCompatActivity() {
             return false
         }
         else {
-            curUser.child("fullName").setValue(newName)
+            curUserInfo.child("fullName").setValue(newName)
             fullNameInput.error = null
             fullNameInput.isErrorEnabled = false
             return true
@@ -147,6 +147,18 @@ class ProfileScreen : AppCompatActivity() {
     private fun isUsernameChanged(): Boolean {
         val newUsername = usernameInput.editText?.text.toString()
         val noWhiteSpace = Regex("^(.*\\s+.*)+\$")
+        var isExist = false
+        val usernameQuery = FirebaseDatabase.getInstance().reference.child("users").child("userInfo").orderByChild("username").equalTo(newUsername)
+        usernameQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                isExist = snapshot.childrenCount > 0
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
         if (newUsername == username) {
             return false
         }
@@ -158,8 +170,12 @@ class ProfileScreen : AppCompatActivity() {
             usernameInput.error = "Cannot contain whitespaces"
             return false
         }
+        else if (isExist) {
+            usernameInput.error = "This username is exist"
+            return false
+        }
         else {
-            curUser.child("username").setValue(newUsername)
+            curUserInfo.child("username").setValue(newUsername)
             usernameInput.error = null
             usernameInput.isErrorEnabled = false
             return true
@@ -177,7 +193,7 @@ class ProfileScreen : AppCompatActivity() {
         }
         else {
             val formattedPhoneNo = PhoneNumberUtils.formatNumber(newPhoneNo, "US")
-            curUser.child("phone").setValue(formattedPhoneNo)
+            curUserInfo.child("phone").setValue(formattedPhoneNo)
             phoneNumberInput.error = null
             phoneNumberInput.isErrorEnabled = false
             return true
