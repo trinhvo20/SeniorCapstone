@@ -128,6 +128,7 @@ class TripAdapter(
                                 curTrip.delByName(curTrip.name)
                                 curTrip.sendToDB()
                                 trips.removeAt(adapterPosition)
+                                tripsort(trips)
                                 notifyDataSetChanged()
 
                                 Toast.makeText(context, "Successfully Deleted", Toast.LENGTH_SHORT).show()
@@ -140,6 +141,11 @@ class TripAdapter(
                             .show()
                         true
                     }
+
+                    R.id.copy -> {
+                        Toast.makeText(context, "Duplicated", Toast.LENGTH_SHORT).show()
+                        true
+                    }
                     else -> true
                 }
             }
@@ -148,6 +154,31 @@ class TripAdapter(
             popup.isAccessible = true
             val menu = popup.get(popupMenu)
             menu.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.java).invoke(menu, true)
+        }
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        // function to sort the activities on each of the day, it is a modified Insertion sort
+        private fun tripsort (trips: MutableList<Trip>){
+            var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
+
+            for (i in 0 until trips.size) {
+                val key = trips[i]
+
+                if (key != null) {
+                    println(key.startDate)
+                }
+
+                var j = i - 1
+
+                if (key != null) {
+                    while (j >= 0 && LocalDate.parse(trips[j].startDate, formatter).isAfter(
+                            LocalDate.parse(key.startDate, formatter))){
+                        trips[j + 1] = trips[j]
+                        j--
+                    }
+                }
+                trips[j + 1] = key
+            }
         }
     }
 
