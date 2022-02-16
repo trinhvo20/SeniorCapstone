@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.itin.R
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
 import kotlinx.android.synthetic.main.trip_day_item.view.*
@@ -31,7 +32,7 @@ class DayAdapter(
     @RequiresApi(Build.VERSION_CODES.O)
     inner class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val recyclerView : RecyclerView = itemView.rvActivities
-        val ivAdd: ImageView
+        private val ivAdd: ImageView = itemView.findViewById<ImageView>(R.id.ivAdd)
 
         init {
             ivAdd = itemView.findViewById<ImageView>(R.id.ivAdd)

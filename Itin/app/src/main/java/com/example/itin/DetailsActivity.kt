@@ -20,7 +20,7 @@ class DetailsActivity : AppCompatActivity() {
         tvName.text = activity.name
         tvTime.text = activity.time
         tvLocation.text = activity.location
-        tvCost.text = activity.cost
+        tvStartDate.text = activity.cost
         tvNotes.text = activity.notes
 
         btEdit.setOnClickListener{editActivity(activity)}

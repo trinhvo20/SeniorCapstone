@@ -29,11 +29,8 @@ class Trip (
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun sendToDB(){
-        val firebaseAuth = FirebaseAuth.getInstance()
-        val uid = firebaseAuth.currentUser?.uid.toString()
-        val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
-        val curTrip = curUser.child("trips")
-        val tripInstance = curTrip.child(this.tripID.toString())
+        val masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
+        val tripInstance = masterTripList.child(this.tripID.toString())
 
         tripInstance.child("Name").setValue(name)
         tripInstance.child("Location").setValue(location)

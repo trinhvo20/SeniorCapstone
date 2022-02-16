@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.EditText
@@ -28,18 +29,24 @@ import java.time.temporal.ChronoUnit
 import java.util.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import java.time.LocalTime
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import kotlinx.coroutines.delay
 
 // Toggle Debugging
-const val DEBUG_TOGGLE : Boolean = true
+const val DEBUG_TOGGLE: Boolean = true
 
 class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
-    private lateinit var tripAdapter : TripAdapter
-    private lateinit var trips : MutableList<Trip>
+    private lateinit var tripAdapter: TripAdapter
+    private lateinit var trips: MutableList<Trip>
     private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var user : User
-    private var tripCount : Int = 0
+    private var tripCount: Int = 0
+    private lateinit var uid : String
+    private lateinit var curUser: DatabaseReference
+    private lateinit var curTrips: DatabaseReference
+    private lateinit var masterTripList: DatabaseReference
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,29 +71,36 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         btAddTrip.setOnClickListener { addTrip() }
 
         //Creating Testing Trip ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        if(DEBUG_TOGGLE) {
-            val trip = Trip("Trip to TEST", "TEST", "1/1/2022", "1/2/2022", deleted=false, active=true, tripID=-1)
+        if (DEBUG_TOGGLE) {
+            val trip = Trip(
+                "Trip to TEST",
+                "TEST",
+                "1/1/2022",
+                "1/2/2022",
+                deleted = false,
+                active = true,
+                tripID = -1
+            )
             trips.add(trip)
             tripAdapter.notifyDataSetChanged()
         }
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        // set up proper tripCount
-        val uid = firebaseAuth.currentUser?.uid.toString()
-
         // This here checks the value in the database to overwrite the initial value of 0
-        val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
-        curUser.get().addOnSuccessListener {
+        masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
+        masterTripList.get().addOnSuccessListener {
             if (it.exists()) {
                 // Try to grab the value from the DB for tripCount, if it doesn't exist, create the child
                 try {
                     tripCount = it.child("tripCount").value.toString().toInt()
+                    Log.d("TripActivity", "tripCount: $tripCount")
                     // check if user is there, then add in previous trips from database
                     checkUser(tripCount)
+                } catch (e: NumberFormatException) {
+                    masterTripList.child("tripCount").setValue(0)
                 }
-                catch (e: NumberFormatException){
-                    curUser.child("tripCount").setValue(0)
-                }
+            } else {
+                Log.d("TripActivity", "There is no MasterTripList")
             }
         }
 
@@ -126,16 +140,28 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         val ivPickEndDate = view.findViewById<ImageView>(R.id.ivPickEndDate)
 
         ivPickStartDate.setOnClickListener {
-            val datePickerDialog = DatePickerDialog(this, DatePickerDialog.OnDateSetListener{_, mYear, mMonth, mDay ->
-                etStartDate.setText(""+(mMonth+1)+"/"+mDay+"/"+mYear)
-            }, year, month, day)
+            val datePickerDialog = DatePickerDialog(
+                this,
+                DatePickerDialog.OnDateSetListener { _, mYear, mMonth, mDay ->
+                    etStartDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
+                },
+                year,
+                month,
+                day
+            )
             datePickerDialog.show()
         }
 
         ivPickEndDate.setOnClickListener {
-            val datePickerDialog = DatePickerDialog(this, DatePickerDialog.OnDateSetListener{_, mYear, mMonth, mDay ->
-                etEndDate.setText(""+(mMonth+1)+"/"+mDay+"/"+mYear)
-            }, year, month, day)
+            val datePickerDialog = DatePickerDialog(
+                this,
+                DatePickerDialog.OnDateSetListener { _, mYear, mMonth, mDay ->
+                    etEndDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
+                },
+                year,
+                month,
+                day
+            )
             datePickerDialog.show()
         }
 
@@ -147,91 +173,85 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             val location = etLocation.text.toString()
             val startDate = etStartDate.text.toString()
             val endDate = etEndDate.text.toString()
+            val active: Boolean
 
-            name = if (etName.text.toString().isEmpty()) {
-                "Trip to $location"
+            if (location.isBlank() || startDate.isBlank() || endDate.isBlank()) {
+                Toast.makeText(this, "Location & Dates are required", Toast.LENGTH_SHORT).show()
             } else {
-                etName.text.toString()
-            }
-
-            val uid = firebaseAuth.currentUser?.uid.toString()
-
-            val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
-            val curTrip = curUser.child("trips")
-
-            // This event listener waits for a change in its child (tripCount) then records the updated version
-            // We must add 1 to this because it records the previous iterations' value
-            curUser.get().addOnSuccessListener {
-                if(it.exists()){
-                    tripCount = it.child("tripCount").value.toString().toInt() + 1
+                name = etName.text.toString().ifBlank {
+                    "Trip to $location"
                 }
+
+                // This event listener waits for a change in its child (tripCount) then records the updated version
+                // We must add 1 to this because it records the previous iterations' value
+                masterTripList.get().addOnSuccessListener {
+                    if (it.exists()) {
+                        tripCount = it.child("tripCount").value.toString().toInt() + 1
+                    }
+                }
+                // check for dayInterval to set the trip 'active' status
+                var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
+                val today = LocalDate.now()
+                val endDateObj = LocalDate.parse(endDate, formatter)
+                val dayInterval = ChronoUnit.DAYS.between(endDateObj, today).toInt()
+                active = dayInterval <= 0
+
+                // Grab the initial values for database manipulation
+                val trip = Trip(
+                    name,
+                    location,
+                    startDate,
+                    endDate,
+                    deleted = false,
+                    active,
+                    tripID = tripCount
+                )
+
+                // Write to the database, then increment tripCount in the database
+                sendToDB(trip, tripCount)
+                tripCount += 1
+                Log.d("TripActivity", "tripCount updated: $tripCount")
+                masterTripList.child("tripCount").setValue(tripCount)
+                if (active) {
+                    trips.add(trip)
+                    tripAdapter.notifyDataSetChanged()
+                }
+
+                Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
             }
-
-            // Grab the initial values for database manipulation
-            val trip = Trip(name, location, startDate, endDate, deleted=false, active=true, tripID=tripCount)
-
-            // Write to the database, then increment tripCount in the database
-            SendToDB(trip,curTrip,tripCount)
-            trips.add(trip)
-            tripCount += 1
-            curUser.child("tripCount").setValue(tripCount)
-            tripsort(trips)
-            tripAdapter.notifyDataSetChanged()
-
-            Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
         }
-
         newDialog.setNegativeButton("Cancel") { dialog, _ ->
             dialog.dismiss()
             Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
         }
-
         newDialog.create()
         newDialog.show()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun checkUser(count : Int){
+    private fun checkUser(count: Int) {
         val firebaseUser = firebaseAuth.currentUser
         // If the use is not current logged in:
-        if(firebaseUser == null) {
+        if (firebaseUser == null) {
             startActivity(Intent(this, GoogleLogin::class.java))
-        }
-        else{
-            val uid = firebaseUser.uid
-
+        } else {
+            uid = firebaseUser.uid
+            curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+            curTrips = curUser.child("trips")
             // for realtime database, find the current user by its uid
-            readData(uid, count)
+            readData(count)
         }
-
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun readData(uid: String, count : Int){
-        val userReference = FirebaseDatabase.getInstance().getReference("users")
-        val checkTrips = userReference.child(uid).child("trips")
+    private fun readData(count: Int) {
 
-        for(i in 0 until count) {
-            checkTrips.child("$i").get().addOnSuccessListener {
+        for (i in 0 until count) {
+            curTrips.child("Trip $i").get().addOnSuccessListener {
                 if (it.exists()) {
-                    val name = it.child("Name").value.toString()
-                    val location = it.child("Location").value.toString()
-                    val stDate = it.child("Start Date").value.toString()
-                    val endDate = it.child("End Date").value.toString()
-                    val deleted = it.child("Deleted").value.toString()
-                    val active = it.child("Active").value.toString()
-
-                    // make a trip
-                    val trip = Trip(name, location, stDate, endDate, stringToBoolean(deleted), stringToBoolean(active),tripID=i)
-                    // add trip as long as it is not deleted and it is active
-                    if(deleted == "false" && active == "true") {
-                        trips.add(trip)
-                        tripsort(trips)
-                        tripAdapter.notifyDataSetChanged()
-                    }
-                }
-                else {
+                    accessMasterTripList(i)
+                } else {
                     Log.d("print", "User does not exist")
                 }
             }.addOnCanceledListener {
@@ -240,8 +260,57 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun sendToDB(trip: Trip, id: Int) {
+
+        // Navigates to the correct directory (masterTripList)
+        val tripInstance = masterTripList.child(id.toString())
+
+        tripInstance.child("Name").setValue(trip.name)
+        tripInstance.child("Location").setValue(trip.location)
+        tripInstance.child("Start Date").setValue(trip.startDate)
+        tripInstance.child("End Date").setValue(trip.endDate)
+        tripInstance.child("Deleted").setValue(trip.deleted)
+        tripInstance.child("Active").setValue(trip.active)
+
+        // Record trips in the individual user
+        curTrips.child("Trip $id").setValue(id)
+
+    }
+
+    // function used to access the masterTripList
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun accessMasterTripList(i: Int) {
+
+        masterTripList.child("$i").get().addOnSuccessListener {
+            if (it.exists()) {
+                val name = it.child("Name").value.toString()
+                val location = it.child("Location").value.toString()
+                val stDate = it.child("Start Date").value.toString()
+                val endDate = it.child("End Date").value.toString()
+                val deleted = it.child("Deleted").value.toString()
+                var active = it.child("Active").value.toString()
+
+                val trip = Trip(
+                    name,
+                    location,
+                    stDate,
+                    endDate,
+                    stringToBoolean(deleted),
+                    stringToBoolean(active),
+                    tripID = i
+                )
+
+                if (deleted == "false" && active == "true") {
+                    trips.add(trip)
+                    tripAdapter.notifyDataSetChanged()
+                }
+            }
+        }
+    }
+
     // function to set up the bottom navigation bar
-    private fun bottomNavBarSetup(){
+    private fun bottomNavBarSetup() {
         // makes the bottom navigation bar
 
         var bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavView_Bar)
@@ -274,23 +343,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun SendToDB(trip : Trip, curTrip : DatabaseReference, id : Int){
-
-        // Navigates to the correct directory
-        val tripInstance = curTrip.child(id.toString())
-
-        tripInstance.child("Name").setValue(trip.name)
-        tripInstance.child("Location").setValue(trip.location)
-        tripInstance.child("Start Date").setValue(trip.startDate)
-        tripInstance.child("End Date").setValue(trip.endDate)
-        tripInstance.child("Deleted").setValue(trip.deleted)
-        tripInstance.child("Active").setValue(trip.active)
-    }
-
     // convert a string to a boolean
-    private fun stringToBoolean(str : String): Boolean {
-        if (str == "false"){
+    private fun stringToBoolean(str: String): Boolean {
+        if (str == "false") {
             return false
         }
         return true
