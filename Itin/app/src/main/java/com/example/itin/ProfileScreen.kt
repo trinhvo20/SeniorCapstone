@@ -1,30 +1,32 @@
 package com.example.itin
 
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.telephony.PhoneNumberUtils
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.itin.classes.Trip
 import com.example.itin.databinding.ActivityProfileScreenBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_profile_screen.*
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
+import java.io.File
+
 
 class ProfileScreen : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileScreenBinding
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var uid : String
-
-    // for realtime database
     private lateinit var curUser: DatabaseReference
+    private lateinit var storageReference: StorageReference
+    private lateinit var imageUri: Uri
 
     private lateinit var fullName: String
     private lateinit var username: String
@@ -182,6 +184,26 @@ class ProfileScreen : AppCompatActivity() {
         }
     }
 
+    private fun uploadProfilePic() {
+        imageUri = Uri.parse("android.resource://$packageName/${R.drawable.profile}")
+        storageReference = FirebaseStorage.getInstance().getReference("Users/$uid.jpg")
+        storageReference.putFile(imageUri).addOnSuccessListener {
+            Toast.makeText(this,"Profile successfully updated", Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener {
+            Toast.makeText(this,"Failed to upload image", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun getUserProfile() {
+        storageReference = FirebaseStorage.getInstance().getReference("Users/$uid.jpg")
+        val localFile = File.createTempFile("tempImage","jpg")
+        storageReference.getFile(localFile).addOnSuccessListener {
+            val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+            profileImageIV.setImageBitmap(bitmap)
+        }.addOnFailureListener {
+            Toast.makeText(this,"Failed to retrieve image", Toast.LENGTH_SHORT).show()
+        }
+    }
     // function to set up the bottom navigation bar
     private fun bottomNavBarSetup(){
         // create the bottom navigation bar
