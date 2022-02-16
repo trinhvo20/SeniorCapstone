@@ -95,8 +95,6 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
 
                     var j = i - 1
 
-                    /* Move elements of arr[0..i-1], that are greater than key, to one position ahead of their current position */
-
                     if (key != null) {
                         while (j >= 0 && LocalTime.parse(day.activities[j]?.time, formatter).isAfter(LocalTime.parse(key.time, formatter))){
                             day.activities[j + 1] = day.activities[j]

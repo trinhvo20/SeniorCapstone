@@ -106,6 +106,11 @@ class TripAdapter(
                             .show()
                         true
                     }
+
+                    R.id.copy -> {
+                        Toast.makeText(context, "Duplicated", Toast.LENGTH_SHORT).show()
+                        true
+                    }
                     else -> true
                 }
             }
