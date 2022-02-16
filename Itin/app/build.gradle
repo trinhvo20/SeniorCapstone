@@ -67,7 +67,9 @@ dependencies {
     // The following dependency is for Firebase Realtime Database
     implementation 'com.google.firebase:firebase-database:20.0.3'
     implementation 'com.google.firebase:firebase-database-ktx:20.0.3'
-    implementation 'androidx.preference:preference-ktx:1.2.0'
+    implementation 'com.google.firebase:firebase-bom:29.1.0'
+    implementation 'androidx.preference:preference-ktx'
+    implementation 'com.google.firebase:firebase-storage-ktx:20.0.0'
 
     // for unit test
     testImplementation 'junit:junit:4.13.2'
