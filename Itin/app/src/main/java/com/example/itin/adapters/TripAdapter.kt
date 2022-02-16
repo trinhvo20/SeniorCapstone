@@ -15,8 +15,6 @@ import com.example.itin.classes.Trip
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
 
@@ -130,6 +128,7 @@ class TripAdapter(
                                 curTrip.delByName(curTrip.name)
                                 curTrip.sendToDB()
                                 trips.removeAt(adapterPosition)
+                                tripsort(trips)
                                 notifyDataSetChanged()
 
                                 Toast.makeText(context, "Successfully Deleted", Toast.LENGTH_SHORT).show()

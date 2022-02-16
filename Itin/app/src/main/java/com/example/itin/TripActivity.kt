@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.itin.adapters.TripAdapter
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
@@ -23,9 +24,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_trip.*
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 import java.util.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -106,6 +104,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         // make the bottom navigation bar
         bottomNavBarSetup()
+
 
     }
 
@@ -214,6 +213,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 masterTripList.child("tripCount").setValue(tripCount)
                 if (active) {
                     trips.add(trip)
+                    tripsort(trips)
                     tripAdapter.notifyDataSetChanged()
                 }
 
@@ -303,6 +303,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
                 if (deleted == "false" && active == "true") {
                     trips.add(trip)
+                    tripsort(trips)
                     tripAdapter.notifyDataSetChanged()
                 }
             }
