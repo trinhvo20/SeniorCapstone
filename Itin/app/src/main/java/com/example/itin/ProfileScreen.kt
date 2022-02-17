@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.itin.databinding.ActivityProfileScreenBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.FirebaseError
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -109,15 +110,31 @@ class ProfileScreen : AppCompatActivity() {
 
     // function to update user info
     private fun update() {
+        val newUsername = usernameInput.editText?.text.toString()
+        val usernameQuery = FirebaseDatabase.getInstance().reference.child("users")
+        usernameQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+            var isExist = false
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (userInfoSnapshot : DataSnapshot in snapshot.children) {
+                    val existingUsername = userInfoSnapshot.child("userInfo").child("username").value.toString()
+                    if (existingUsername == newUsername) {
+                        isExist = true
+                        break
+                    }
+                }
+                Log.d("INSIDE",isExist.toString())
 
-        if (isNameChanged() || isUsernameChanged() || isPhoneNoChanged()) {
-            Toast.makeText(this,"Updated", Toast.LENGTH_SHORT).show()
-        } else {
-
-            Toast.makeText(this,"Update at least one field", Toast.LENGTH_SHORT).show()
-        }
-
-        readData(uid)
+                if (isNameChanged() || isUsernameChanged(isExist) || isPhoneNoChanged()) {
+                    Toast.makeText(this@ProfileScreen,"Updated", Toast.LENGTH_SHORT).show()
+                } else{
+                    Toast.makeText(this@ProfileScreen,"Update at least one field", Toast.LENGTH_SHORT).show()
+                }
+                    readData(uid)
+            }
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 
     private fun isNameChanged(): Boolean {
@@ -133,22 +150,12 @@ class ProfileScreen : AppCompatActivity() {
         }
     }
 
-    private fun isUsernameChanged(): Boolean {
+    private fun isUsernameChanged(isExist:Boolean): Boolean {
         val newUsername = usernameInput.editText?.text.toString()
         val noWhiteSpace = Regex("^(.*\\s+.*)+\$")
-        var isExist = false
-        val usernameQuery = FirebaseDatabase.getInstance().reference.child("users").child("userInfo").orderByChild("username").equalTo(newUsername)
-        usernameQuery.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                isExist = snapshot.childrenCount > 0
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-
-        })
-        if (newUsername == username) {
+        if (isExist) {
+            usernameInput.error = "Username exists"
             return false
         }
         else if (newUsername.length < 6) {
@@ -157,10 +164,6 @@ class ProfileScreen : AppCompatActivity() {
         }
         else if (newUsername.matches(noWhiteSpace)) {
             usernameInput.error = "Cannot contain whitespaces"
-            return false
-        }
-        else if (isExist) {
-            usernameInput.error = "This username is exist"
             return false
         }
         else {
@@ -240,3 +243,4 @@ class ProfileScreen : AppCompatActivity() {
             }
         }
 }
+
