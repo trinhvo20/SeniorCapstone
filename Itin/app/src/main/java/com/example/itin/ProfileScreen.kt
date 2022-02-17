@@ -83,17 +83,6 @@ class ProfileScreen : AppCompatActivity() {
     // function to read data from Realtime Database
     private fun readData(uid: String) {
         curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
-        curUser.get().addOnSuccessListener {
-            if (it.exists()){
-                val previousTripCount = it.child("previousTripCount").value.toString()
-                Log.d("ProfileScreen","previousTripCount: $previousTripCount")
-                if (previousTripCount == "null") {
-                    previousTripCountTV.text = "0"
-                } else {
-                    previousTripCountTV.text = previousTripCount
-                }
-            }
-        }
         curUserInfo = curUser.child("userInfo")
         curUserInfo.get().addOnSuccessListener {
             if (it.exists()){

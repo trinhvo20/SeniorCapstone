@@ -27,7 +27,6 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
     private lateinit var uid : String
     private lateinit var curUser: DatabaseReference
     private lateinit var masterTripList: DatabaseReference
-    private var previousTripCount : Int = 0
     private var tripCount : Int = 0
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -63,29 +62,19 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
         else{
             uid = firebaseUser.uid
             Log.d("PreviousTripActivity", "uid: $uid")
+            curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
             masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
             masterTripList.get().addOnSuccessListener {
                 if (it.exists()) {
                     // Try to grab the value from the DB for tripCount, if it doesn't exist, create the child
                     try {
                         tripCount = it.child("tripCount").value.toString().toInt()
+                        readData(tripCount)
                     } catch (e: NumberFormatException) {
                         Toast.makeText(this,"Current trip list is empty", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     Log.d("PreviousTripActivity", "There is no MasterTripList")
-                }
-            }
-            curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
-            curUser.get().addOnSuccessListener {
-                if (it.exists()) {
-                    // Try to get the previousTripCount value, if it is not exist, create a new one
-                    try {
-                        previousTripCount = it.child("previousTripCount").value.toString().toInt()
-                    } catch (e: NumberFormatException) {
-                        curUser.child("previousTripCount").setValue(0)
-                    }
-                    readData(tripCount)
                 }
             }
         }
@@ -135,8 +124,6 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
                 if (deleted == "false" && active == "false") {
                     previousTrips.add(trip)
                     previousTripAdapter.notifyDataSetChanged()
-                    previousTripCount = previousTrips.size
-                    curUser.child("previousTripCount").setValue(previousTripCount)
                 }
             }
         }
