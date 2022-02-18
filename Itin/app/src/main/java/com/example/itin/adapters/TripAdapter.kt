@@ -143,6 +143,18 @@ class TripAdapter(
                     }
 
                     R.id.copy -> {
+                        val dupetrip = Trip(
+                            curTrip.name,
+                            curTrip.location,
+                            curTrip.startDate,
+                            curTrip.endDate,
+                            deleted = curTrip.deleted,
+                            active = curTrip.active,
+                            tripID = -1
+                        )
+                        trips.add(dupetrip)
+                        tripsort(trips)
+                        notifyDataSetChanged()
                         Toast.makeText(context, "Duplicated", Toast.LENGTH_SHORT).show()
                         true
                     }
