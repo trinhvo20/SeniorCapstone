@@ -112,9 +112,9 @@ class ProfileScreen : AppCompatActivity() {
     private fun update() {
         val newUsername = usernameInput.editText?.text.toString()
         val usernameQuery = FirebaseDatabase.getInstance().reference.child("users")
-        usernameQuery.addValueEventListener(object : ValueEventListener {
+        usernameQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+            var isExist = false
             override fun onDataChange(snapshot: DataSnapshot) {
-                var isExist = false
                 for (userInfoSnapshot : DataSnapshot in snapshot.children) {
                     val existingUsername = userInfoSnapshot.child("userInfo").child("username").value.toString()
                     if (existingUsername == newUsername) {
@@ -125,22 +125,16 @@ class ProfileScreen : AppCompatActivity() {
                 Log.d("INSIDE",isExist.toString())
 
                 if (isNameChanged() || isUsernameChanged(isExist) || isPhoneNoChanged()) {
-
                     Toast.makeText(this@ProfileScreen,"Updated", Toast.LENGTH_SHORT).show()
-                } else {
-
+                } else{
                     Toast.makeText(this@ProfileScreen,"Update at least one field", Toast.LENGTH_SHORT).show()
                 }
                     readData(uid)
-
             }
             override fun onCancelled(error: DatabaseError) {
                 TODO("Not yet implemented")
             }
-
         })
-
-
     }
 
     private fun isNameChanged(): Boolean {
@@ -155,35 +149,13 @@ class ProfileScreen : AppCompatActivity() {
             return true
         }
     }
-/*
-    private fun isUsernameExists(newUsername : String) : Boolean {
-        var isExist = false
-        val usernameQuery = FirebaseDatabase.getInstance().reference.child("users")
-        usernameQuery.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                for (userInfoSnapshot : DataSnapshot in snapshot.children) {
-                    val existingUsername = userInfoSnapshot.child("userInfo").child("username").value.toString()
-                    if (existingUsername == newUsername) {
-                        isExist = true
-                        break
-                    }
-                }
-                Log.d("INSIDE",isExist.toString())
-            }
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
 
-        })
-        Log.d("OUTSIDE",isExist.toString())
-        return isExist
-    }
-*/
     private fun isUsernameChanged(isExist:Boolean): Boolean {
         val newUsername = usernameInput.editText?.text.toString()
         val noWhiteSpace = Regex("^(.*\\s+.*)+\$")
 
         if (isExist) {
+            usernameInput.error = "Username exists"
             return false
         }
         else if (newUsername.length < 6) {
