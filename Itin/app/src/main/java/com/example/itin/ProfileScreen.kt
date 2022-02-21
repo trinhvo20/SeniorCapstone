@@ -63,6 +63,8 @@ class ProfileScreen : AppCompatActivity() {
             startActivity(intent)
         }
 
+        editProfileIV.setOnClickListener { openGallery() }
+
         // bottom Navigation Bar
         bottomNavBarSetup()
     }
@@ -102,6 +104,8 @@ class ProfileScreen : AppCompatActivity() {
                 fullNameInput.editText?.setText(fullName)
                 usernameInput.editText?.setText(username)
                 phoneNumberInput.editText?.setText(phoneNo)
+
+                getUserProfile()
             } else {
                 Log.d("print", "User does not exist")
             }
@@ -199,17 +203,26 @@ class ProfileScreen : AppCompatActivity() {
         startActivityForResult(gallery, PICK_IMAGE)
     }
 
+    // handle the profile_picture change
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE){
+            if (data != null) {
+                imageUri = data.data!!
+                Log.d("Profile",imageUri.toString())
+                profileImageIV.setImageURI(imageUri)
+                uploadProfilePic()
+            }
+        }
     }
 
     private fun uploadProfilePic() {
-        imageUri = Uri.parse("android.resource://$packageName/${R.drawable.profile}")
+        //imageUri = Uri.parse("android.resource://$packageName/${R.drawable.profile}")
         storageReference = FirebaseStorage.getInstance().getReference("Users/$uid.jpg")
         storageReference.putFile(imageUri).addOnSuccessListener {
-            Toast.makeText(this,"Profile successfully updated", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@ProfileScreen,"Profile successfully updated", Toast.LENGTH_SHORT).show()
         }.addOnFailureListener {
-            Toast.makeText(this,"Failed to upload image", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@ProfileScreen,"Failed to upload image", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -220,7 +233,7 @@ class ProfileScreen : AppCompatActivity() {
             val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
             profileImageIV.setImageBitmap(bitmap)
         }.addOnFailureListener {
-            Toast.makeText(this,"Failed to retrieve image", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@ProfileScreen,"Failed to retrieve image", Toast.LENGTH_SHORT).show()
         }
     }
     // function to set up the bottom navigation bar
