@@ -28,6 +28,8 @@ class GoogleLogin : AppCompatActivity() {
     // Creating variables for our authentication services through Firebase
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var masterUserList: DatabaseReference
+
 
     // Constants
     private companion object {
@@ -112,10 +114,18 @@ class GoogleLogin : AppCompatActivity() {
                 // Check if this is a new user or existing
                 if (authResult.additionalUserInfo!!.isNewUser) {
                     Log.d(TAG, "firebaseAuthWithGoogleAccount: Account created... \n$email")
-                    Toast.makeText(this@GoogleLogin, "Account created... \n$email", Toast.LENGTH_LONG).show()
                     // create a new user account in realtime database (unique id = uid)
-                    val user = User(fullName,username,email,phoneNumber)
+                    val user = User(fullName, username, email, phoneNumber)
                     databaseReference.child(uid).child("userInfo").setValue(user)
+                    // Add the new user to the MasterUserList upon first sign in
+                    masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
+                    masterUserList.get().addOnSuccessListener {
+                        if (it.exists()) {
+                            masterUserList.child(username).setValue(uid)
+                        } else {
+                            Log.d("TripActivity", "There is no masterUserList")
+                        }
+                    }
                 }
                 else {
                     Log.d(TAG, "firebaseAuthWithGoogleAccount: Existing user... \n$email")
