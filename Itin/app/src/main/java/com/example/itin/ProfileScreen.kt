@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.telephony.PhoneNumberUtils
 import android.util.Log
 import android.widget.Toast
@@ -33,6 +34,8 @@ class ProfileScreen : AppCompatActivity() {
     private lateinit var email: String
     private lateinit var phoneNo: String
 
+    private val PICK_IMAGE = 100
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProfileScreenBinding.inflate(layoutInflater)
@@ -59,6 +62,8 @@ class ProfileScreen : AppCompatActivity() {
             val intent = Intent(this, FriendActivity::class.java)
             startActivity(intent)
         }
+
+        editProfileIV.setOnClickListener { openGallery() }
 
         // bottom Navigation Bar
         bottomNavBarSetup()
@@ -99,6 +104,8 @@ class ProfileScreen : AppCompatActivity() {
                 fullNameInput.editText?.setText(fullName)
                 usernameInput.editText?.setText(username)
                 phoneNumberInput.editText?.setText(phoneNo)
+
+                getUserProfile()
             } else {
                 Log.d("print", "User does not exist")
             }
@@ -109,15 +116,31 @@ class ProfileScreen : AppCompatActivity() {
 
     // function to update user info
     private fun update() {
+        val newUsername = usernameInput.editText?.text.toString()
+        val usernameQuery = FirebaseDatabase.getInstance().reference.child("users")
+        usernameQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+            var isExist = false
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (userInfoSnapshot : DataSnapshot in snapshot.children) {
+                    val existingUsername = userInfoSnapshot.child("userInfo").child("username").value.toString()
+                    if (existingUsername == newUsername) {
+                        isExist = true
+                        break
+                    }
+                }
+                Log.d("INSIDE",isExist.toString())
 
-        if (isNameChanged() || isUsernameChanged() || isPhoneNoChanged()) {
-            Toast.makeText(this,"Updated", Toast.LENGTH_SHORT).show()
-        } else {
-
-            Toast.makeText(this,"Update at least one field", Toast.LENGTH_SHORT).show()
-        }
-
-        readData(uid)
+                if (isNameChanged() || isUsernameChanged(isExist) || isPhoneNoChanged()) {
+                    Toast.makeText(this@ProfileScreen,"Updated", Toast.LENGTH_SHORT).show()
+                } else{
+                    Toast.makeText(this@ProfileScreen,"Update at least one field", Toast.LENGTH_SHORT).show()
+                }
+                    readData(uid)
+            }
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 
     private fun isNameChanged(): Boolean {
@@ -133,22 +156,12 @@ class ProfileScreen : AppCompatActivity() {
         }
     }
 
-    private fun isUsernameChanged(): Boolean {
+    private fun isUsernameChanged(isExist:Boolean): Boolean {
         val newUsername = usernameInput.editText?.text.toString()
         val noWhiteSpace = Regex("^(.*\\s+.*)+\$")
-        var isExist = false
-        val usernameQuery = FirebaseDatabase.getInstance().reference.child("users").child("userInfo").orderByChild("username").equalTo(newUsername)
-        usernameQuery.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                isExist = snapshot.childrenCount > 0
-            }
 
-            override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
-            }
-
-        })
-        if (newUsername == username) {
+        if (isExist) {
+            usernameInput.error = "Username exists"
             return false
         }
         else if (newUsername.length < 6) {
@@ -157,10 +170,6 @@ class ProfileScreen : AppCompatActivity() {
         }
         else if (newUsername.matches(noWhiteSpace)) {
             usernameInput.error = "Cannot contain whitespaces"
-            return false
-        }
-        else if (isExist) {
-            usernameInput.error = "This username is exist"
             return false
         }
         else {
@@ -189,13 +198,31 @@ class ProfileScreen : AppCompatActivity() {
         }
     }
 
+    private fun openGallery() {
+        val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+        startActivityForResult(gallery, PICK_IMAGE)
+    }
+
+    // handle the profile_picture change
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE){
+            if (data != null) {
+                imageUri = data.data!!
+                Log.d("Profile",imageUri.toString())
+                profileImageIV.setImageURI(imageUri)
+                uploadProfilePic()
+            }
+        }
+    }
+
     private fun uploadProfilePic() {
-        imageUri = Uri.parse("android.resource://$packageName/${R.drawable.profile}")
+        //imageUri = Uri.parse("android.resource://$packageName/${R.drawable.profile}")
         storageReference = FirebaseStorage.getInstance().getReference("Users/$uid.jpg")
         storageReference.putFile(imageUri).addOnSuccessListener {
-            Toast.makeText(this,"Profile successfully updated", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@ProfileScreen,"Profile successfully updated", Toast.LENGTH_SHORT).show()
         }.addOnFailureListener {
-            Toast.makeText(this,"Failed to upload image", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@ProfileScreen,"Failed to upload image", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -206,7 +233,7 @@ class ProfileScreen : AppCompatActivity() {
             val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
             profileImageIV.setImageBitmap(bitmap)
         }.addOnFailureListener {
-            Toast.makeText(this,"Failed to retrieve image", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@ProfileScreen,"Failed to retrieve image", Toast.LENGTH_SHORT).show()
         }
     }
     // function to set up the bottom navigation bar
@@ -240,3 +267,4 @@ class ProfileScreen : AppCompatActivity() {
             }
         }
 }
+
