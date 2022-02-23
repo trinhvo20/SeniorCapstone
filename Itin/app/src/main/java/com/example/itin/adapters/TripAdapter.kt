@@ -4,6 +4,8 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,11 +21,15 @@ import com.example.itin.classes.Trip
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.android.synthetic.main.activity_profile_screen.*
 import kotlinx.android.synthetic.main.trip_item.view.*
+import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 
 class TripAdapter(
     private val context: Context,
@@ -274,6 +280,18 @@ class TripAdapter(
             tvName.text = curTrip.name
             tvStartDate.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
+
+            if (curTrip.viewers.size > 0) {
+                var uid = curTrip.viewers[0]
+
+                val storageReference = FirebaseStorage.getInstance().getReference("Users/$uid.jpg")
+                val localFile = File.createTempFile("tempImage", "jpg")
+                storageReference.getFile(localFile).addOnSuccessListener {
+                    val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                    ivViewers.setImageBitmap(bitmap)
+                }.addOnFailureListener {
+                }
+            }
         }
 
         // handle RecyclerView clickable
@@ -291,5 +309,5 @@ class TripAdapter(
     interface  OnItemClickListener {
         fun onItemClick(position: Int)
     }
-
+    
 }
