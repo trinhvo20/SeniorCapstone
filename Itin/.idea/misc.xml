@@ -18,7 +18,7 @@
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/activity_main.xml" value="0.240625" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/activity_previous_trip.xml" value="0.2546875" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/activity_profile.xml" value="0.2546875" />
-        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/activity_profile_screen.xml" value="0.268" />
+        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/activity_profile_screen.xml" value="0.1" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/activity_settings.xml" value="0.2546875" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/activity_trip.xml" value="0.2546875" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/activity_trip_viewer.xml" value="0.2546875" />
@@ -42,11 +42,11 @@
         <entry key="..\:/Users/colto/OneDrive/Documents/School-Work/Coding/CSC 405 - Capstone/Itin/app/src/main/res/layout/google_login.xml" value="0.14666666666666667" />
         <entry key="..\:/Users/gargr/AndroidStudioProjects/SeniorCapstone/Itin/app/src/main/res/drawable/ic_calendar.xml" value="0.333" />
         <entry key="..\:/Users/gargr/AndroidStudioProjects/SeniorCapstone/Itin/app/src/main/res/layout/activity_details.xml" value="0.4041666666666667" />
-        <entry key="..\:/Users/gargr/AndroidStudioProjects/SeniorCapstone/Itin/app/src/main/res/layout/activity_profile_screen.xml" value="0.4041666666666667" />
         <entry key="..\:/Users/gargr/AndroidStudioProjects/SeniorCapstone/Itin/app/src/main/res/layout/add_activity.xml" value="0.4041666666666667" />
         <entry key="..\:/Users/gargr/AndroidStudioProjects/SeniorCapstone/Itin/app/src/main/res/layout/create_trip.xml" value="0.4041666666666667" />
         <entry key="..\:/Users/gargr/AndroidStudioProjects/SeniorCapstone/Itin/app/src/main/res/layout/edit_activity.xml" value="0.4041666666666667" />
-        <entry key="..\:/Users/gargr/AndroidStudioProjects/SeniorCapstone/Itin/app/src/main/res/layout/trip_item.xml" value="0.4041666666666667" />
+        <entry key="..\:/Users/gargr/StudioProjects/SeniorCapstone/Itin/app/src/main/res/layout/activity_profile_screen.xml" value="0.1" />
+        <entry key="..\:/Users/gargr/StudioProjects/SeniorCapstone/Itin/app/src/main/res/layout/trip_item.xml" value="0.1796875" />
         <entry key="..\:/Users/gargr/StudioProjects/SeniorCapstone/Itin/app/src/main/res/menu/show_menu.xml" value="0.1796875" />
       </map>
     </option>

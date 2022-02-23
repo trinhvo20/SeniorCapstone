@@ -8,7 +8,7 @@
     android:layout_marginTop="5dp"
     android:background="@drawable/shape_background">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivViewers3"
         android:layout_width="30dp"
         android:layout_height="30dp"
@@ -17,7 +17,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvEndDate"
         app:srcCompat="@drawable/bottom_sheet_background" />
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivViewers2"
         android:layout_width="30dp"
         android:layout_height="30dp"
@@ -86,7 +86,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivViewers1"
         android:layout_width="30dp"
         android:layout_height="30dp"
