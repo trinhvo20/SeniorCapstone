@@ -273,10 +273,31 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         tripInstance.child("End Date").setValue(trip.endDate)
         tripInstance.child("Deleted").setValue(trip.deleted)
         tripInstance.child("Active").setValue(trip.active)
+        tripInstance.child("ID").setValue(trip.tripID)
+
+        // create days folder
+        // will be accessed later in itinerary activity
+        val itineraryInstance = tripInstance.child("Days")
+        var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
+        var startdate = LocalDate.parse(trip.startDate, formatter)
+        var enddate = LocalDate.parse(trip.endDate, formatter)
+        val dayNum = ChronoUnit.DAYS.between(startdate, enddate)
+        for (i in 0 until dayNum+1) {
+            makeDayInstance(itineraryInstance,i.toInt(), trip)
+        }
 
         // Record trips in the individual user
         curTrips.child("Trip $id").setValue(id)
 
+    }
+
+    private fun makeDayInstance(itineraryInstance: DatabaseReference, dayNum: Int, trip: Trip) {
+        // log the day Count
+        itineraryInstance.child("DayCount").setValue(dayNum+1)
+        val dayInstance = itineraryInstance.child(dayNum.toString())
+        dayInstance.child("Day Number").setValue(dayNum + 1)
+        dayInstance.child("TripID").setValue(trip.tripID)
+        dayInstance.child("ActivityCount").setValue(0)
     }
 
     // function used to access the masterTripList
@@ -291,6 +312,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 val endDate = it.child("End Date").value.toString()
                 val deleted = it.child("Deleted").value.toString()
                 var active = it.child("Active").value.toString()
+                var tripId = it.child("ID").value.toString().toInt()
 
                 val trip = Trip(
                     name,
@@ -299,7 +321,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     endDate,
                     stringToBoolean(deleted),
                     stringToBoolean(active),
-                    tripID = i
+                    tripId
                 )
 
                 if (deleted == "false" && active == "true") {

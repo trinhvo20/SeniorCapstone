@@ -2,6 +2,7 @@ package com.example.itin
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,9 @@ import com.example.itin.R
 import com.example.itin.adapters.ActivityAdapter
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.trip_day_item.view.*
 import kotlinx.android.synthetic.main.trip_item.view.tvName
 import java.time.LocalTime
@@ -24,7 +28,7 @@ import java.time.format.DateTimeFormatter
 class DayAdapter(
     private val context: Context,
     private val days: MutableList<Day>, // parameter: a mutable list of day items
-    private val listener: ActivityAdapter.OnItemClickListener
+    private val listener: ActivityAdapter.OnItemClickListener,
 ) : RecyclerView.Adapter<DayAdapter.DayViewHolder>() {
 
 
@@ -42,7 +46,12 @@ class DayAdapter(
         // function to add an activity to a day
         @RequiresApi(Build.VERSION_CODES.O)
         private fun addAnActivity(view : View) {
+            val firebaseAuth = FirebaseAuth.getInstance()
+            val masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
+
             val curDay = days[adapterPosition]
+            val tripInstance = masterTripList.child(curDay.tripID.toString())
+            val dayInstance = tripInstance.child("Days").child((curDay.dayInt-1).toString())
 
 
             val view = LayoutInflater.from(context).inflate(R.layout.add_activity, null)
@@ -69,7 +78,10 @@ class DayAdapter(
                     etName.text.toString()
                 }
 
-                val activity = Activity(name, time, location, cost, notes)
+                val activity = Activity(name, time, location, cost, notes,curDay.tripID,curDay.activities.size)
+
+                sendToDB(dayInstance,activity)
+
                 curDay.activities.add(activity)
 
                 activitysort(curDay)
@@ -143,5 +155,20 @@ class DayAdapter(
         return  days.size
     }
 
-
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun sendToDB(dayInstance: DatabaseReference, activity: Activity) {
+        // increment the activity count by 1
+        dayInstance.child("ActivityCount").setValue(activity.actID+1)
+        // navigate to the correct activity in the day
+        val activityInstance = dayInstance.child(activity.actID.toString())
+        if (activity != null) {
+            activityInstance.child("Name").setValue(activity.name)
+            activityInstance.child("Time").setValue(activity.time)
+            activityInstance.child("Location").setValue(activity.location)
+            activityInstance.child("Cost").setValue(activity.cost)
+            activityInstance.child("Notes").setValue(activity.notes)
+            activityInstance.child("ActivityID").setValue(activity.actID)
+            activityInstance.child("TripID").setValue(activity.tripID)
+        }
+    }
 }
