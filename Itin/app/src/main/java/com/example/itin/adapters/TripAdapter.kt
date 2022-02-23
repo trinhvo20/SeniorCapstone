@@ -289,6 +289,7 @@ class TripAdapter(
                         val bitmap = BitmapFactory.decodeFile(localFileV1.absolutePath)
                         ivViewers1.setImageBitmap(bitmap)
                     }.addOnFailureListener {
+                        ivViewers1.setImageResource(R.drawable.profile)
                     }
 
                     storageReference = FirebaseStorage.getInstance().getReference("Users/$uid2.jpg")
@@ -298,6 +299,7 @@ class TripAdapter(
                         val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
                         ivViewers2.setImageBitmap(bitmap)
                     }.addOnFailureListener {
+                        ivViewers2.setImageResource(R.drawable.profile)
                     }
 
                     storageReference = FirebaseStorage.getInstance().getReference("Users/$uid1.jpg")
@@ -307,7 +309,11 @@ class TripAdapter(
                         val bitmap = BitmapFactory.decodeFile(localFileV3.absolutePath)
                         ivViewers3.setImageBitmap(bitmap)
                     }.addOnFailureListener {
+                        ivViewers3.setImageResource(R.drawable.profile)
                     }
+                    ivViewers1.visibility = View.VISIBLE
+                    ivViewers2.visibility = View.VISIBLE
+                    ivViewers3.visibility = View.VISIBLE
                 }
 
                 if (curTrip.viewers.size == 2) {
@@ -322,6 +328,7 @@ class TripAdapter(
                         val bitmap = BitmapFactory.decodeFile(localFileV1.absolutePath)
                         ivViewers1.setImageBitmap(bitmap)
                     }.addOnFailureListener {
+                        ivViewers1.setImageResource(R.drawable.profile)
                     }
 
                     storageReference = FirebaseStorage.getInstance().getReference("Users/$uid1.jpg")
@@ -331,7 +338,10 @@ class TripAdapter(
                         val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
                         ivViewers2.setImageBitmap(bitmap)
                     }.addOnFailureListener {
+                        ivViewers2.setImageResource(R.drawable.profile)
                     }
+                    ivViewers1.visibility = View.VISIBLE
+                    ivViewers2.visibility = View.VISIBLE
                 }
 
                 if (curTrip.viewers.size == 1) {
@@ -345,7 +355,9 @@ class TripAdapter(
                         val bitmap = BitmapFactory.decodeFile(localFileV1.absolutePath)
                         ivViewers1.setImageBitmap(bitmap)
                     }.addOnFailureListener {
+                        ivViewers1.setImageResource(R.drawable.profile)
                     }
+                    ivViewers1.visibility = View.VISIBLE
                 }
 
                 else{
@@ -362,6 +374,7 @@ class TripAdapter(
                         val bitmap = BitmapFactory.decodeFile(localFileV1.absolutePath)
                         ivViewers1.setImageBitmap(bitmap)
                     }.addOnFailureListener {
+                        ivViewers1.setImageResource(R.drawable.profile)
                     }
 
                     storageReference = FirebaseStorage.getInstance().getReference("Users/$uid2.jpg")
@@ -371,6 +384,7 @@ class TripAdapter(
                         val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
                         ivViewers2.setImageBitmap(bitmap)
                     }.addOnFailureListener {
+                        ivViewers2.setImageResource(R.drawable.profile)
                     }
 
                     storageReference = FirebaseStorage.getInstance().getReference("Users/$uid1.jpg")
@@ -380,7 +394,13 @@ class TripAdapter(
                         val bitmap = BitmapFactory.decodeFile(localFileV3.absolutePath)
                         ivViewers3.setImageBitmap(bitmap)
                     }.addOnFailureListener {
+                        ivViewers3.setImageResource(R.drawable.profile)
                     }
+                    ivViewers1.visibility = View.VISIBLE
+                    ivViewers2.visibility = View.VISIBLE
+                    ivViewers3.visibility = View.VISIBLE
+                    tvViewersE.text = "+${curTrip.viewers.size - 3}"
+                    tvViewersE.visibility = View.VISIBLE
                 }
             }
         }

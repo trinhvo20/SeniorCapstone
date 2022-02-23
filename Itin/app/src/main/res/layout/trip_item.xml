@@ -8,24 +8,6 @@
     android:layout_marginTop="5dp"
     android:background="@drawable/shape_background">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/ivViewers3"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/ivViewers2"
-        app:layout_constraintTop_toBottomOf="@+id/tvEndDate"
-        app:srcCompat="@drawable/bottom_sheet_background" />
-
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/ivViewers2"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintEnd_toStartOf="@+id/ivViewers1"
-        app:layout_constraintTop_toBottomOf="@+id/tvEndDate"
-        app:srcCompat="@drawable/bottom_sheet_background" />
-
     <TextView
         android:id="@+id/tvName"
         android:layout_width="0dp"
@@ -88,10 +70,51 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivViewers1"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="4dp"
+        android:visibility="invisible"
+        app:civ_border_color="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tvViewersE"
         app:layout_constraintTop_toBottomOf="@+id/tvEndDate"
-        app:srcCompat="@drawable/bottom_sheet_background" />
+        app:srcCompat="@drawable/profile" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ivViewers2"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="-16dp"
+        android:visibility="invisible"
+        app:civ_circle_background_color="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ivViewers1"
+        app:layout_constraintTop_toBottomOf="@+id/tvEndDate"
+        app:srcCompat="@drawable/profile" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/ivViewers3"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="-16dp"
+        android:visibility="invisible"
+        app:civ_circle_background_color="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ivViewers2"
+        app:layout_constraintTop_toBottomOf="@+id/tvEndDate"
+        app:srcCompat="@drawable/profile" />
+
+    <TextView
+        android:id="@+id/tvViewersE"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:fontFamily="@font/candal"
+        android:text="+0"
+        android:textColor="@color/mint"
+        android:textSize="25dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvEndDate" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
