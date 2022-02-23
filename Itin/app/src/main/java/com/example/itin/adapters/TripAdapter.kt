@@ -347,6 +347,41 @@ class TripAdapter(
                     }.addOnFailureListener {
                     }
                 }
+
+                else{
+                    var uid1 = curTrip.viewers[0]
+                    var uid2 = curTrip.viewers[1]
+                    var uid3 = curTrip.viewers[2]
+
+
+                    var storageReference =
+                        FirebaseStorage.getInstance().getReference("Users/$uid3.jpg")
+                    val localFileV1 =
+                        File.createTempFile("tempImage_${curTrip.tripID}_viewer1", "jpg")
+                    storageReference.getFile(localFileV1).addOnSuccessListener {
+                        val bitmap = BitmapFactory.decodeFile(localFileV1.absolutePath)
+                        ivViewers1.setImageBitmap(bitmap)
+                    }.addOnFailureListener {
+                    }
+
+                    storageReference = FirebaseStorage.getInstance().getReference("Users/$uid2.jpg")
+                    val localFileV2 =
+                        File.createTempFile("tempImage_${curTrip.tripID}_viewer2", "jpg")
+                    storageReference.getFile(localFileV2).addOnSuccessListener {
+                        val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
+                        ivViewers2.setImageBitmap(bitmap)
+                    }.addOnFailureListener {
+                    }
+
+                    storageReference = FirebaseStorage.getInstance().getReference("Users/$uid1.jpg")
+                    val localFileV3 =
+                        File.createTempFile("tempImage_${curTrip.tripID}_viewer3", "jpg")
+                    storageReference.getFile(localFileV3).addOnSuccessListener {
+                        val bitmap = BitmapFactory.decodeFile(localFileV3.absolutePath)
+                        ivViewers3.setImageBitmap(bitmap)
+                    }.addOnFailureListener {
+                    }
+                }
             }
         }
 
