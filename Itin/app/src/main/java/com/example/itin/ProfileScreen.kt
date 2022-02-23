@@ -233,7 +233,7 @@ class ProfileScreen : AppCompatActivity() {
             val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
             profileImageIV.setImageBitmap(bitmap)
         }.addOnFailureListener {
-            Toast.makeText(this@ProfileScreen,"Failed to retrieve image", Toast.LENGTH_SHORT).show()
+            Log.d("ProfilePicture","Failed to retrieve image")
         }
     }
     // function to set up the bottom navigation bar
