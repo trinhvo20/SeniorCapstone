@@ -8,6 +8,24 @@
     android:layout_marginTop="5dp"
     android:background="@drawable/shape_background">
 
+    <ImageView
+        android:id="@+id/ivViewers3"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/ivViewers2"
+        app:layout_constraintTop_toBottomOf="@+id/tvEndDate"
+        app:srcCompat="@drawable/bottom_sheet_background" />
+
+    <ImageView
+        android:id="@+id/ivViewers2"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/ivViewers1"
+        app:layout_constraintTop_toBottomOf="@+id/tvEndDate"
+        app:srcCompat="@drawable/bottom_sheet_background" />
+
     <TextView
         android:id="@+id/tvName"
         android:layout_width="0dp"
@@ -69,7 +87,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/ivViewers"
+        android:id="@+id/ivViewers1"
         android:layout_width="30dp"
         android:layout_height="30dp"
         app:layout_constraintEnd_toEndOf="parent"
