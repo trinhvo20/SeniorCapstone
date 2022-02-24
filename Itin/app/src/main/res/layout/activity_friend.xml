@@ -7,10 +7,11 @@
     android:orientation="vertical">
 
     <RelativeLayout
-        android:padding="10dp"
+        android:paddingHorizontal="10dp"
+        android:paddingBottom="10dp"
         android:background="@color/mint"
         android:layout_width="match_parent"
-        android:layout_height="70dp">
+        android:layout_height="50dp">
 
         <ImageView
             android:id="@+id/backBtn"
