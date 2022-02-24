@@ -121,11 +121,16 @@ class ProfileScreen : AppCompatActivity() {
         usernameQuery.addListenerForSingleValueEvent(object : ValueEventListener {
             var isExist = false
             override fun onDataChange(snapshot: DataSnapshot) {
-                for (userInfoSnapshot : DataSnapshot in snapshot.children) {
-                    val existingUsername = userInfoSnapshot.child("userInfo").child("username").value.toString()
-                    if (existingUsername == newUsername) {
-                        isExist = true
-                        break
+                for (userSnapshot : DataSnapshot in snapshot.children) {
+                    if (userSnapshot.key != uid) {
+                        val existingUsername =
+                            userSnapshot.child("userInfo").child("username").value.toString()
+                        if (existingUsername == newUsername) {
+                            isExist = true
+                            break
+                        }
+                    } else {
+                        continue
                     }
                 }
                 Log.d("INSIDE",isExist.toString())
@@ -162,6 +167,9 @@ class ProfileScreen : AppCompatActivity() {
 
         if (isExist) {
             usernameInput.error = "Username exists"
+            return false
+        }
+        else if (newUsername == username) {
             return false
         }
         else if (newUsername.length < 6) {
