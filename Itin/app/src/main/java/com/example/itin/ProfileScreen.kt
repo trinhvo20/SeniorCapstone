@@ -171,6 +171,8 @@ class ProfileScreen : AppCompatActivity() {
             curUserInfo.child("username").setValue(newUsername)
             usernameInput.error = null
             usernameInput.isErrorEnabled = false
+
+            // This will update the masterUserList with the new username
             masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
             masterUserList.get().addOnSuccessListener {
                 if (it.exists()) {

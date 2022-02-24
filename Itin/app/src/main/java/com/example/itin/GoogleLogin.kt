@@ -29,7 +29,7 @@ class GoogleLogin : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var masterUserList: DatabaseReference
-
+    private var userCount: Int = 0
 
     // Constants
     private companion object {
@@ -56,6 +56,23 @@ class GoogleLogin : AppCompatActivity() {
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
+
+        masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
+
+        // Overwrites the initial value of 0 for numFriends if user has any friends
+        masterUserList.get().addOnSuccessListener {
+            if (it.exists()) {
+                // Try to grab the value from the DB for tripCount, if it doesn't exist, create the child
+                try {
+                    userCount = it.child("userCount").value.toString().toInt()
+                    Log.d("FriendActivity", "numFriends: $userCount")
+                } catch (e: NumberFormatException) {
+                    masterUserList.child("userCount").setValue(0)
+                }
+            } else {
+                Log.d("FriendActivity", "The user that is logged in doesn't exist?")
+            }
+        }
 
         // Initiate Firebase Authentication
         firebaseAuth = FirebaseAuth.getInstance()
@@ -121,7 +138,12 @@ class GoogleLogin : AppCompatActivity() {
                     masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
                     masterUserList.get().addOnSuccessListener {
                         if (it.exists()) {
-                            masterUserList.child(username).setValue(uid)
+                            masterUserList.child(userCount.toString()).child(username).setValue(uid)
+                            masterUserList.child(username).setValue(userCount)
+                            userCount += 1
+                            Log.d("TripActivity", "tripCount updated: $userCount")
+                            masterUserList.child("userCount").setValue(userCount)
+
                         } else {
                             Log.d("TripActivity", "There is no masterUserList")
                         }
