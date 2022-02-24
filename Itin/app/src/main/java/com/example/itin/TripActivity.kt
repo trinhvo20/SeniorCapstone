@@ -77,7 +77,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 "1/2/2022",
                 deleted = false,
                 active = true,
-                tripID = -1
+                tripID = -1,
+                viewers = mutableListOf("JFn2cxxk1xWl83eXDWsXf5fSwvu1","uSWyidP8E2axSFnBf1WZgGlcUgF3","JFn2cxxk1xWl83eXDWsXf5fSwvu1","uSWyidP8E2axSFnBf1WZgGlcUgF3")
             )
             trips.add(trip)
             tripAdapter.notifyDataSetChanged()

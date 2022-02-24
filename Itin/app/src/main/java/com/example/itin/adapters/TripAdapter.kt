@@ -3,7 +3,7 @@ package com.example.itin.adapters
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
-import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,19 +11,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.example.itin.GoogleLogin
 import com.example.itin.R
 import com.example.itin.classes.Trip
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.trip_item.view.*
+import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
+import com.google.firebase.storage.FirebaseStorage
 
 class TripAdapter(
     private val context: Context,
@@ -274,6 +274,135 @@ class TripAdapter(
             tvName.text = curTrip.name
             tvStartDate.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
+
+            if (curTrip.viewers.size > 0) {
+                if (curTrip.viewers.size == 3) {
+                    var uid1 = curTrip.viewers[0]
+                    var uid2 = curTrip.viewers[1]
+                    var uid3 = curTrip.viewers[2]
+
+                    var storageReference =
+                        FirebaseStorage.getInstance().getReference("Users/$uid3.jpg")
+                    val localFileV1 =
+                        File.createTempFile("tempImage_${curTrip.tripID}_viewer1", "jpg")
+                    storageReference.getFile(localFileV1).addOnSuccessListener {
+                        val bitmap = BitmapFactory.decodeFile(localFileV1.absolutePath)
+                        ivViewers1.setImageBitmap(bitmap)
+                    }.addOnFailureListener {
+                        ivViewers1.setImageResource(R.drawable.profile)
+                    }
+
+                    storageReference = FirebaseStorage.getInstance().getReference("Users/$uid2.jpg")
+                    val localFileV2 =
+                        File.createTempFile("tempImage_${curTrip.tripID}_viewer2", "jpg")
+                    storageReference.getFile(localFileV2).addOnSuccessListener {
+                        val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
+                        ivViewers2.setImageBitmap(bitmap)
+                    }.addOnFailureListener {
+                        ivViewers2.setImageResource(R.drawable.profile)
+                    }
+
+                    storageReference = FirebaseStorage.getInstance().getReference("Users/$uid1.jpg")
+                    val localFileV3 =
+                        File.createTempFile("tempImage_${curTrip.tripID}_viewer3", "jpg")
+                    storageReference.getFile(localFileV3).addOnSuccessListener {
+                        val bitmap = BitmapFactory.decodeFile(localFileV3.absolutePath)
+                        ivViewers3.setImageBitmap(bitmap)
+                    }.addOnFailureListener {
+                        ivViewers3.setImageResource(R.drawable.profile)
+                    }
+                    ivViewers1.visibility = View.VISIBLE
+                    ivViewers2.visibility = View.VISIBLE
+                    ivViewers3.visibility = View.VISIBLE
+                }
+
+                if (curTrip.viewers.size == 2) {
+                    var uid1 = curTrip.viewers[0]
+                    var uid2 = curTrip.viewers[1]
+
+                    var storageReference =
+                        FirebaseStorage.getInstance().getReference("Users/$uid2.jpg")
+                    val localFileV1 =
+                        File.createTempFile("tempImage_${curTrip.tripID}_viewer1", "jpg")
+                    storageReference.getFile(localFileV1).addOnSuccessListener {
+                        val bitmap = BitmapFactory.decodeFile(localFileV1.absolutePath)
+                        ivViewers1.setImageBitmap(bitmap)
+                    }.addOnFailureListener {
+                        ivViewers1.setImageResource(R.drawable.profile)
+                    }
+
+                    storageReference = FirebaseStorage.getInstance().getReference("Users/$uid1.jpg")
+                    val localFileV2 =
+                        File.createTempFile("tempImage_${curTrip.tripID}_viewer2", "jpg")
+                    storageReference.getFile(localFileV2).addOnSuccessListener {
+                        val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
+                        ivViewers2.setImageBitmap(bitmap)
+                    }.addOnFailureListener {
+                        ivViewers2.setImageResource(R.drawable.profile)
+                    }
+                    ivViewers1.visibility = View.VISIBLE
+                    ivViewers2.visibility = View.VISIBLE
+                }
+
+                if (curTrip.viewers.size == 1) {
+                    var uid = curTrip.viewers[0]
+
+                    var storageReference =
+                        FirebaseStorage.getInstance().getReference("Users/$uid.jpg")
+                    val localFileV1 =
+                        File.createTempFile("tempImage_${curTrip.tripID}_viewer1", "jpg")
+                    storageReference.getFile(localFileV1).addOnSuccessListener {
+                        val bitmap = BitmapFactory.decodeFile(localFileV1.absolutePath)
+                        ivViewers1.setImageBitmap(bitmap)
+                    }.addOnFailureListener {
+                        ivViewers1.setImageResource(R.drawable.profile)
+                    }
+                    ivViewers1.visibility = View.VISIBLE
+                }
+
+                else{
+                    var uid1 = curTrip.viewers[0]
+                    var uid2 = curTrip.viewers[1]
+                    var uid3 = curTrip.viewers[2]
+
+
+                    var storageReference =
+                        FirebaseStorage.getInstance().getReference("Users/$uid3.jpg")
+                    val localFileV1 =
+                        File.createTempFile("tempImage_${curTrip.tripID}_viewer1", "jpg")
+                    storageReference.getFile(localFileV1).addOnSuccessListener {
+                        val bitmap = BitmapFactory.decodeFile(localFileV1.absolutePath)
+                        ivViewers1.setImageBitmap(bitmap)
+                    }.addOnFailureListener {
+                        ivViewers1.setImageResource(R.drawable.profile)
+                    }
+
+                    storageReference = FirebaseStorage.getInstance().getReference("Users/$uid2.jpg")
+                    val localFileV2 =
+                        File.createTempFile("tempImage_${curTrip.tripID}_viewer2", "jpg")
+                    storageReference.getFile(localFileV2).addOnSuccessListener {
+                        val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
+                        ivViewers2.setImageBitmap(bitmap)
+                    }.addOnFailureListener {
+                        ivViewers2.setImageResource(R.drawable.profile)
+                    }
+
+                    storageReference = FirebaseStorage.getInstance().getReference("Users/$uid1.jpg")
+                    val localFileV3 =
+                        File.createTempFile("tempImage_${curTrip.tripID}_viewer3", "jpg")
+                    storageReference.getFile(localFileV3).addOnSuccessListener {
+                        val bitmap = BitmapFactory.decodeFile(localFileV3.absolutePath)
+                        ivViewers3.setImageBitmap(bitmap)
+                    }.addOnFailureListener {
+                        ivViewers3.setImageResource(R.drawable.profile)
+                    }
+                    ivViewers1.visibility = View.VISIBLE
+                    ivViewers2.visibility = View.VISIBLE
+                    ivViewers3.visibility = View.VISIBLE
+                    tvViewersE.text = "+${curTrip.viewers.size - 3}"
+                    tvViewersE.visibility = View.VISIBLE
+                }
+            }
         }
 
         // handle RecyclerView clickable
@@ -291,5 +420,5 @@ class TripAdapter(
     interface  OnItemClickListener {
         fun onItemClick(position: Int)
     }
-
+    
 }
