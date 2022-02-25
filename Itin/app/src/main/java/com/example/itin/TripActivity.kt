@@ -71,7 +71,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         btAddTrip.setOnClickListener { addTrip() }
 
         //Creating Testing Trip ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        if (false) {
+        if (DEBUG_TOGGLE) {
             val trip = Trip(
                 "Trip to TEST",
                 "TEST",
