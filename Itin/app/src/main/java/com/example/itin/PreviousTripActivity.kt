@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.PreviousTripAdapter
+import com.example.itin.classes.Activity
+import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -28,6 +30,8 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
     private lateinit var curUser: DatabaseReference
     private lateinit var masterTripList: DatabaseReference
     private var tripCount : Int = 0
+    private lateinit var startdate : LocalDate
+    private lateinit var formatter : DateTimeFormatter
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +49,7 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
     }
 
     override fun onItemClick(position: Int) {
+        finish()
         // intent with ItineraryActivity
         Intent(this, ItineraryActivity::class.java).also {
             it.putExtra("EXTRA_TRIP", previousTrips[position])
@@ -100,7 +105,7 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
 
     // function used to access the masterTripList
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun accessMasterTripList(i: Int) {
+    private fun accessMasterTripList2(i: Int) {
 
         masterTripList.child("$i").get().addOnSuccessListener {
             if (it.exists()) {
@@ -126,6 +131,115 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
                     previousTripAdapter.notifyDataSetChanged()
                 }
             }
+        }
+    }
+
+    // function used to access the masterTripList
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun accessMasterTripList(i: Int) {
+
+        masterTripList.child("$i").get().addOnSuccessListener {
+            if (it.exists()) {
+                val tripInstance = masterTripList.child("$i")
+                val name = it.child("Name").value.toString()
+                val location = it.child("Location").value.toString()
+                val stDate = it.child("Start Date").value.toString()
+                val endDate = it.child("End Date").value.toString()
+                val deleted = it.child("Deleted").value.toString()
+                var active = it.child("Active").value.toString()
+                var tripId = it.child("ID").value.toString().toInt()
+
+                formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
+                startdate = LocalDate.parse(stDate, formatter)
+
+                val trip = Trip(
+                    name,
+                    location,
+                    stDate,
+                    endDate,
+                    stringToBoolean(deleted),
+                    stringToBoolean(active),
+                    tripId,
+                    days = mutableListOf()
+                )
+                if (deleted == "false" && active == "false") {
+                    previousTrips.add(trip)
+                    readDays(tripInstance, trip)
+                }
+            }
+        }
+    }
+
+    // load days from database
+    // do this in trip activity?? then just manipulate the trip directly
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun readDays(tripInstance: DatabaseReference, trip: Trip) {
+        tripInstance.child("Days").get().addOnSuccessListener {
+            if (it.exists()) {
+                // will cycle through the amount of days that we have
+                for (i in 0 until it.child("DayCount").value.toString().toInt()){
+                    // will make the day classes
+                    val dayInstance = tripInstance.child("Days").child(i.toString())
+                    readDaysHelper(dayInstance, trip)
+                }
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun readDaysHelper(dayInstance: DatabaseReference, trip: Trip) {
+        dayInstance.get().addOnSuccessListener {
+            if (it.exists()) {
+                // obtain dayNumber, dayInt, and tripID
+                var dayNumber = it.child("Day Number").value.toString()
+                val dayInt = dayNumber.toInt()
+                dayNumber = dayNumber + ": " + startdate.plusDays(dayNumber.toLong()-1).format(formatter).toString()
+                val tripID = it.child("TripID").value.toString().toInt()
+                val actCount = it.child("ActivityCount").value.toString().toInt()
+                val actList : MutableList<Activity?> = mutableListOf()
+                // pull the activity from the DB
+                for (i in 0 until actCount ) {
+                    val name = it.child(i.toString()).child("Name").value.toString()
+                    val location = it.child(i.toString()).child("Location").value.toString()
+                    val time = it.child(i.toString()).child("Time").value.toString()
+                    val cost = it.child(i.toString()).child("Cost").value.toString()
+                    val notes = it.child(i.toString()).child("Notes").value.toString()
+                    var tripID = it.child(i.toString()).child("TripID").value.toString().toInt()
+                    var activityID = it.child(i.toString()).child("ActivityID").value.toString().toInt()
+
+                    val activity = Activity(name, time, location, cost, notes, tripID, activityID)
+                    actList.add(activity)
+                }
+
+                val day = Day(dayNumber,actList,dayInt,tripID)
+                trip.days.add(day)
+                tripsort(previousTrips)
+                previousTripAdapter.notifyDataSetChanged()
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    // function to sort the activities on each of the day, it is a modified Insertion sort
+    private fun tripsort (trips: MutableList<Trip>){
+        var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
+
+        for (i in 0 until trips.size) {
+            val key = trips[i]
+
+            if (key != null) {
+                println(key.startDate)
+            }
+
+            var j = i - 1
+
+            if (key != null) {
+                while (j >= 0 && LocalDate.parse(trips[j].startDate, formatter).isAfter(LocalDate.parse(key.startDate, formatter))){
+                    trips[j + 1] = trips[j]
+                    j--
+                }
+            }
+            trips[j + 1] = key
         }
     }
 

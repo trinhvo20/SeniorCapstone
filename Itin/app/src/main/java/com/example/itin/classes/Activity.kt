@@ -8,5 +8,7 @@ class Activity (
     var location : String,
     var cost : String = "$0",
     var notes : String = "",
+    var tripID : Int,
+    var actID : Int,
 
 ): Serializable

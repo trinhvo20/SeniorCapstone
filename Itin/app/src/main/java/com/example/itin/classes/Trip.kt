@@ -17,6 +17,7 @@ class Trip (
     var active : Boolean,
     var tripID : Int,
     var days : MutableList<Day> = mutableListOf(),
+    var viewers : MutableList<String> = mutableListOf(),
 ): Serializable
 // objects of this class can be transferred between activities
 // need to implement a function to calculate countdown from NOW to startDate
