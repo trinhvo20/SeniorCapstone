@@ -26,6 +26,7 @@ class ProfileScreen : AppCompatActivity() {
     private lateinit var uid : String
     private lateinit var curUser: DatabaseReference
     private lateinit var masterUserList: DatabaseReference
+    private lateinit var ID: String
     private lateinit var curUserInfo: DatabaseReference
     private lateinit var storageReference: StorageReference
     private lateinit var imageUri: Uri
@@ -176,8 +177,11 @@ class ProfileScreen : AppCompatActivity() {
             masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
             masterUserList.get().addOnSuccessListener {
                 if (it.exists()) {
+                    ID = it.child("$username").value.toString()
                     masterUserList.child(username).removeValue()
-                    masterUserList.child(newUsername).setValue(uid)
+                    masterUserList.child(ID).child(username).removeValue()
+                    masterUserList.child(newUsername).setValue(ID)
+                    masterUserList.child(ID).child(newUsername).setValue(uid)
                 } else {
                     Log.d("TripActivity", "There is no masterUserList")
                 }

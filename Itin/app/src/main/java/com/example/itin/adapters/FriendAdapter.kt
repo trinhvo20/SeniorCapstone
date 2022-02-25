@@ -23,7 +23,7 @@ class FriendAdapter (
         val curFriend = friends[position]
 
         holder.itemView.apply {
-            friendFullName.text = curFriend.fullName
+            friendFullName.text = curFriend.username
         }
     }
 

@@ -34,8 +34,7 @@
             android:fontFamily="@font/bungee"
             android:includeFontPadding="false"
             android:text="Full Name"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:textSize="20sp" />
 
 
     </LinearLayout>

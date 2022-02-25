@@ -50,31 +50,31 @@ class FriendActivity : AppCompatActivity() {
         btAddFriend.setOnClickListener { addFriend() }
 
         // Overwrites the initial value of 0 for numFriends if user has any friends
-        curUser.get().addOnSuccessListener {
-            if (it.exists()) {
-                // Try to grab the value from the DB for tripCount, if it doesn't exist, create the child
-                try {
-                    numFriends =
-                        it.child("friendsList").child("numFriends").value.toString().toInt()
-                    Log.d("FriendActivity", "numFriends: $numFriends")
-                    // check if user is there, then read current friends from the DB
-                    checkUser(numFriends)
-                } catch (e: NumberFormatException) {
-                    curUser.child("friendsList").child("numFriends").setValue(0)
-                }
-            } else {
-                Log.d("FriendActivity", "The user that is logged in doesn't exist?")
-            }
-        }
-        // Overwrites the initial value of 0 for numFriends if user has any friends
         masterUserList.get().addOnSuccessListener {
             if (it.exists()) {
                 // Try to grab the value from the DB for tripCount, if it doesn't exist, create the child
                 try {
                     userCount = it.child("userCount").value.toString().toInt()
-                    Log.d("FriendActivity", "numFriends: $userCount")
+                    Log.d("FriendActivity", "userCount: $userCount")
                 } catch (e: NumberFormatException) {
                     masterUserList.child("userCount").setValue(0)
+                }
+            } else {
+                Log.d("FriendActivity", "The user that is logged in doesn't exist?")
+            }
+        }
+
+        // Overwrites the initial value of 0 for numFriends if user has any friends
+        curUser.get().addOnSuccessListener {
+            if (it.exists()) {
+                // Try to grab the value from the DB for tripCount, if it doesn't exist, create the child
+                try {
+                    numFriends = it.child("friendsList").child("numFriends").value.toString().toInt()
+                    Log.d("FriendActivity", "numFriends: $numFriends")
+                    // check if user is there, then read current friends from the DB
+                    readData(numFriends)
+                } catch (e: NumberFormatException) {
+                    curUser.child("friendsList").child("numFriends").setValue(0)
                 }
             } else {
                 Log.d("FriendActivity", "The user that is logged in doesn't exist?")
@@ -93,54 +93,95 @@ class FriendActivity : AppCompatActivity() {
         curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
         // Takes the given username and finds the associated UID
         val friendsID = masterUserList.child(userName)
+        var myUsername = ""
+        var myID = ""
+        var numFriends2 = ""
 
         // If the friends username exists, add them to the current users profile, else tell the user that it does not exist
         friendsID.get().addOnSuccessListener {
             if (it.exists()) {
+                val friendsIDStr = it.value.toString()
                 // In the users friend lists it is stored as username:UID
-                curUser.child("friendsList").child("Friend $numFriends")
-                    .setValue(it.value.toString())
+                curUser.child("friendsList").child("Friend $numFriends").setValue(it.value.toString())
 
                 numFriends += 1
                 Log.d("TripActivity", "tripCount updated: $numFriends")
                 curUser.child("friendsList").child("numFriends").setValue(numFriends)
+
+                curUser.get().addOnSuccessListener {
+                    if (it.exists()) {
+                        myUsername = it.child("userInfo").child("username").value.toString()
+                    }
+                }
+                masterUserList.get().addOnSuccessListener {
+                    if (it.exists()){
+                        val friendsUID = it.child(friendsIDStr).child("UID").value.toString()
+                        val friendsUser = FirebaseDatabase.getInstance().getReference("users").child(friendsUID)
+                        myID = it.child(myUsername).value.toString()
+
+                        friendsUser.get().addOnSuccessListener {
+                            if (it.exists()) {
+                                numFriends2 = it.child("friendsList").child("numFriends").value.toString()
+                            }
+                        }
+                        FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("friendsList").child("Friend $numFriends2").setValue(myID)
+                        FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("friendsList").child("numFriends").setValue(numFriends2 + 1)
             } else {
                 Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()
+            }
+                }
+
+
             }
         }
     }
 
-    private fun checkUser(numFriends: Int) {
-        val firebaseUser = firebaseAuth.currentUser
-
-        // If the use is not current logged in, log them in
-        if (firebaseUser == null) {
-            startActivity(Intent(this, GoogleLogin::class.java))
-        } else {
-            // If they are, pull the current data
-            readData(numFriends)
-        }
-    }
-
     private fun readData(numFriends: Int) {
+        Log.d("FriendActivity", "Reading Data")
         val firebaseUser = firebaseAuth.currentUser
         val uid = firebaseUser!!.uid
         var curFriend = FirebaseDatabase.getInstance().getReference("users").child(uid).child("friendsList")
 
-        for (i in 0 until numFriends) {
+        for (i in 0 until numFriends)
+            curFriend.child("Friend $i").get().addOnSuccessListener {
+                if (it.exists()) {
+                    var curID = it.value
+                    if (curID != null) {
+                        accessMasterUserList(curID)
+                        Log.d("FriendActivity", "CurID: $curID")
+                    }
+                } else {
+                    Log.d("FriendActivity", "Friend does not exist")
+                }
+            }.addOnCanceledListener {
+                Log.d("FriendActivity", "Failed to fetch the Friend")
+            }
+    }
 
+    private fun accessMasterUserList(curID: Any) {
+        val masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
+        val curFriend = FirebaseDatabase.getInstance().getReference("users")
+
+        masterUserList.child(curID.toString()).get().addOnSuccessListener {
+            if (it.exists()) {
+                val friendsUid = it.child("UID").value.toString()
+
+                curFriend.child(friendsUid).get().addOnSuccessListener {
+                    if (it.exists()) {
+                        val username = it.child("userInfo").child("username").value.toString()
+
+                        val user = User(
+                            "null",
+                            username,
+                            "null",
+                            "null"
+                        )
+                        friends.add(user)
+                        friendAdater.notifyDataSetChanged()
+                    }
+                }
+            }
         }
     }
 }
 
-
-/*//       /*
-After you get the user object:
-    friends.add(user)
-    friendAdapter.notifyDataSetChanged()
-
-    or on removed... friends.remove(user)'
-                     friendAdapter.notifyDataSetChanged()
- */
-}
-}
