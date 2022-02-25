@@ -169,7 +169,7 @@ class TripAdapter(
                     }
 
                     R.id.copy -> {
-                        dupetrip2(curTrip)
+                        dupetrip(curTrip)
                         Toast.makeText(context, "Duplicated", Toast.LENGTH_SHORT).show()
                         true
                     }
@@ -184,7 +184,7 @@ class TripAdapter(
                 .invoke(menu, true)
         }
 
-        private fun dupetrip2(curTrip: Trip) {
+        private fun dupetrip(curTrip: Trip) {
             masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
             masterTripList.get().addOnSuccessListener {
                 if (it.exists()) {
@@ -205,7 +205,7 @@ class TripAdapter(
                     val size = dupeTrip.days.size//[i.toInt()].activities.size
                     Log.d("DUPETRIP: ", "$size")
 
-                    sendToDB2(dupeTrip, tripCount)
+                    sendToDB(dupeTrip, tripCount)
                     tripCount += 1
                     Log.d("TripActivity", "tripCount updated: $tripCount")
                     masterTripList.child("tripCount").setValue(tripCount)
@@ -220,40 +220,8 @@ class TripAdapter(
             }
         }
 
-        private fun dupetrip(curTrip: Trip) {
-            masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
-            masterTripList.get().addOnSuccessListener {
-                if (it.exists()) {
-                    var tripCount = it.child("tripCount").value.toString().toInt()
-
-                    val dupetrip = Trip(
-                        "Copy of " + curTrip.name,
-                        curTrip.location,
-                        curTrip.startDate,
-                        curTrip.endDate,
-                        deleted = curTrip.deleted,
-                        active = curTrip.active,
-                        tripID = tripCount,
-                        curTrip.days
-                    )
-
-                    sendToDB(dupetrip, tripCount)
-                    tripCount += 1
-                    Log.d("TripActivity", "tripCount updated: $tripCount")
-                    masterTripList.child("tripCount").setValue(tripCount)
-
-                    if (dupetrip.active) {
-                        trips.add(dupetrip)
-                        tripsort(trips)
-                        notifyDataSetChanged()
-                    }
-
-                }
-            }
-        }
-
         @RequiresApi(Build.VERSION_CODES.O)
-        private fun sendToDB2(trip: Trip, id: Int) {
+        private fun sendToDB(trip: Trip, id: Int) {
             val firebaseAuth = FirebaseAuth.getInstance()
             val firebaseUser = firebaseAuth.currentUser
             var curTrips: DatabaseReference? = null
@@ -326,37 +294,6 @@ class TripAdapter(
                 activityInstance.child("Notes").setValue(activity.notes)
                 activityInstance.child("ActivityID").setValue(activity.actID)
                 activityInstance.child("TripID").setValue(activity.tripID)
-            }
-        }
-
-        @RequiresApi(Build.VERSION_CODES.O)
-        private fun sendToDB(trip: Trip, id: Int) {
-
-            val firebaseAuth = FirebaseAuth.getInstance()
-            val firebaseUser = firebaseAuth.currentUser
-            var curTrips: DatabaseReference? = null
-            // If the use is not current logged in:
-            if (firebaseUser == null) {
-
-            } else {
-                val uid = firebaseUser.uid
-                val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
-                curTrips = curUser.child("trips")
-            }
-
-            // Navigates to the correct directory (masterTripList)
-            val tripInstance = masterTripList.child(id.toString())
-
-            tripInstance.child("Name").setValue(trip.name)
-            tripInstance.child("Location").setValue(trip.location)
-            tripInstance.child("Start Date").setValue(trip.startDate)
-            tripInstance.child("End Date").setValue(trip.endDate)
-            tripInstance.child("Deleted").setValue(trip.deleted)
-            tripInstance.child("Active").setValue(trip.active)
-
-            // Record trips in the individual user
-            if (curTrips != null) {
-                curTrips.child("Trip $id").setValue(id)
             }
         }
     }

@@ -77,9 +77,17 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
 
         backBtn.setOnClickListener {
             finish()
-            Intent(this, TripActivity::class.java).also {
-                // start TripActivity
-                startActivity(it)
+            //if active go to TripActivity, if not active go to Previous trips
+            if(trip.active) {
+                Intent(this, TripActivity::class.java).also {
+                    // start TripActivity
+                    startActivity(it)
+                }
+            }else{
+                Intent(this, PreviousTripActivity::class.java).also {
+                    // start PreviousTripActivity
+                    startActivity(it)
+                }
             }
         }
     }
