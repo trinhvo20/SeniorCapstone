@@ -69,9 +69,27 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         val tripInstance = masterTripList.child(trip.tripID.toString())
 
         // read days from DB
-        readDays(tripInstance)
+        // may seem redundant considering that a lot of this code is implemented in tripActivity
+            // but it does catch some cases that tripActivity wouldn't
+        //readDays(tripInstance)
+        activitysort(days)
+        dayAdapter.notifyDataSetChanged()
 
-        backBtn.setOnClickListener { finish() }
+        backBtn.setOnClickListener {
+            finish()
+            //if active go to TripActivity, if not active go to Previous trips
+            if(trip.active) {
+                Intent(this, TripActivity::class.java).also {
+                    // start TripActivity
+                    startActivity(it)
+                }
+            }else{
+                Intent(this, PreviousTripActivity::class.java).also {
+                    // start PreviousTripActivity
+                    startActivity(it)
+                }
+            }
+        }
     }
 
     override fun onItemClick(position: Int, daypos: Int) {
@@ -110,31 +128,8 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             }
     }
 
-    // dont actually need this here, since the only time you send to DB is if you add an activity, which doesnt happen here
-    // will keep just in case
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun sendToDB(tripInstance: DatabaseReference, days: MutableList<Day>) {
-        for (i in 0 until days.size) {
-            // navigate to the correct day in the trip
-            val dayInstance = tripInstance.child("Days").child(i.toString())
-            for (j in 0 until days[i].activities.size) {
-                val activity = days[i].activities[j]
-                // navigate to the correct day in the day
-                val activityInstance = dayInstance.child(j.toString())
-                if (activity != null) {
-                    activityInstance.child("Name").setValue(activity.name)
-                    activityInstance.child("Time").setValue(activity.time)
-                    activityInstance.child("Location").setValue(activity.location)
-                    activityInstance.child("Cost").setValue(activity.cost)
-                    activityInstance.child("Notes").setValue(activity.notes)
-                    activityInstance.child("TripID").setValue(activity.tripID)
-                    activityInstance.child("ActivityID").setValue(activity.actID)
-                }
-            }
-        }
-    }
-
     // load days from database
+    // dont think we need this anymore ... but will keep it here until we are sure
     @RequiresApi(Build.VERSION_CODES.O)
     private fun readDays(tripInstance: DatabaseReference) {
         tripInstance.child("Days").get().addOnSuccessListener {
@@ -174,7 +169,10 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
                     actList.add(activity)
                 }
                 val day = Day(dayNumber,actList,dayInt,tripID)
-                days.add(day)
+                trip.days.add(day)
+                days = trip.days
+
+                Log.d("READ:", trip.days.size.toString())
                 // not the most efficient... but itll have to do
                 activitysort(days)
                 dayAdapter.notifyDataSetChanged()
