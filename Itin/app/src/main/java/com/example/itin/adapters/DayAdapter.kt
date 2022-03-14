@@ -3,8 +3,10 @@ package com.example.itin
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.os.Build
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -72,7 +74,12 @@ class DayAdapter(
                 val tpd = TimePickerDialog(context,TimePickerDialog.OnTimeSetListener(function = { view, h, m ->
 
                     //Toast.makeText(context, h.toString() + " : " + m , Toast.LENGTH_LONG).show()
-                    tvTime.text = h.toString() + ":" + m
+                    var input = h.toString() + ":" + m
+
+                    val df = SimpleDateFormat("H:m")
+                    val outputformat = SimpleDateFormat("h:ma")
+                    tvTime.text = outputformat.format(df.parse(input))
+
 
                 }),hour,minute,false)
 
