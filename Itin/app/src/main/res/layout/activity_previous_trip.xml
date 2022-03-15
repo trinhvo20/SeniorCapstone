@@ -11,7 +11,7 @@
         android:padding="10dp"
         android:background="@color/mint"
         android:layout_width="match_parent"
-        android:layout_height="70dp">
+        android:layout_height="60dp">
 
         <ImageView
             android:id="@+id/backBtn"

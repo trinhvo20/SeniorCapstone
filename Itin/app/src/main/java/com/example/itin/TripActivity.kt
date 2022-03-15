@@ -72,6 +72,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         //Creating Testing Trip ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if (DEBUG_TOGGLE) {
+            val day1 = Day("1", mutableListOf(),1,-1)
+            val day2 = Day("2", mutableListOf(),2,-1)
+            val daylist = mutableListOf<Day>(day1,day2)
             val trip = Trip(
                 "Trip to TEST",
                 "TEST",
@@ -80,7 +83,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 deleted = false,
                 active = true,
                 tripID = -1,
-                viewers = mutableListOf("JFn2cxxk1xWl83eXDWsXf5fSwvu1","uSWyidP8E2axSFnBf1WZgGlcUgF3","JFn2cxxk1xWl83eXDWsXf5fSwvu1","uSWyidP8E2axSFnBf1WZgGlcUgF3")
+                days = daylist,
+                viewers = mutableListOf("CNIyURFyEhRrb1sZNLJo47yMF4o2","LW4U6jdzqqcdLvqMMdw7tt1M9b73","dwJLMqs0Y5M65fmvS4lIJS5xFgf1","eZuf0wlulMe64K6ZXgFPBXTlFJs1","JFn2cxxk1xWl83eXDWsXf5fSwvu1","uSWyidP8E2axSFnBf1WZgGlcUgF3")
             )
             trips.add(trip)
             tripAdapter.notifyDataSetChanged()

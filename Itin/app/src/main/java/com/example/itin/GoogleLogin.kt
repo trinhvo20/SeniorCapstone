@@ -132,7 +132,7 @@ class GoogleLogin : AppCompatActivity() {
                 if (authResult.additionalUserInfo!!.isNewUser) {
                     Log.d(TAG, "firebaseAuthWithGoogleAccount: Account created... \n$email")
                     // create a new user account in realtime database (unique id = uid)
-                    val user = User(fullName, username, email, phoneNumber)
+                    val user = User(uid, fullName, username, email, phoneNumber)
                     databaseReference.child(uid).child("userInfo").setValue(user)
                     // Add the new user to the MasterUserList upon first sign in
                     masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")

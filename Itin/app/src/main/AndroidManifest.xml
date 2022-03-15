@@ -13,9 +13,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Itin">
         <activity
-            android:name=".DetailsActivity"
+            android:name=".ChatActivity"
             android:exported="false" />
-            android:name=".test"
+        <activity
+            android:name=".DetailsActivity"
             android:exported="false" />
         <activity
             android:name=".FriendActivity"

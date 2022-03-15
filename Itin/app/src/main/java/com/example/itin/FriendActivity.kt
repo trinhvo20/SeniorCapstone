@@ -172,6 +172,7 @@ class FriendActivity : AppCompatActivity() {
 
                         val user = User(
                             "null",
+                            "null",
                             username,
                             "null",
                             "null"
