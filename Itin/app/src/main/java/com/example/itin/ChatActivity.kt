@@ -3,6 +3,8 @@ package com.example.itin
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -51,7 +53,19 @@ class ChatActivity : AppCompatActivity() {
         loadMessagesFromDB()
 
         // Send message to Database
-        sendMessageBtn.setOnClickListener { sendMessagesToDB() }
+        sendMessageBtn.isEnabled = false
+
+        messageBox.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                sendMessageBtn.isEnabled = false
+            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                sendMessageBtn.isEnabled = s.toString() != ""
+            }
+            override fun afterTextChanged(s: Editable?) {
+                sendMessageBtn.setOnClickListener { sendMessagesToDB(s.toString()) }
+            }
+        })
 
         backBtn.setOnClickListener {
             /*
@@ -63,20 +77,16 @@ class ChatActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendMessagesToDB() {
-        val message = messageBox.text.toString()
-        if (message.isNotBlank()) {
-            val messageObj = Message(message, senderUid)
+    private fun sendMessagesToDB(message: String) {
+        val messageObj = Message(message, senderUid)
 
-            databaseReference.child("chats").child(groupName!!).child(senderRoom!!).push()
-                .setValue(messageObj).addOnSuccessListener {
-                    databaseReference.child("chats").child(groupName!!).child(receiverRoom!!).push()
-                        .setValue(messageObj)
-                }
-            messageBox.setText("")
-        }
-        else {
-        }
+        databaseReference.child("chats").child(groupName!!).child(senderRoom!!).push()
+            .setValue(messageObj).addOnSuccessListener {
+                databaseReference.child("chats").child(groupName!!).child(receiverRoom!!).push()
+                    .setValue(messageObj)
+            }
+        messageBox.setText("")
+
     }
 
     private fun loadMessagesFromDB() {
