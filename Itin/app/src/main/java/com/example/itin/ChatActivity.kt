@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.MessageAdapter
 import com.example.itin.classes.Message
@@ -22,6 +23,7 @@ class ChatActivity : AppCompatActivity() {
 
     var receiverRoom: String? = null
     var senderRoom: String? = null
+    var groupName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,8 +37,9 @@ class ChatActivity : AppCompatActivity() {
         groupChatName.text = trip.name
         receiverUidList = trip.viewers
 
-        senderRoom = "Sender Room Trip ${trip.tripID}"
-        receiverRoom = "Receiver Room Trip ${trip.tripID}"
+        groupName = "Group Chat Trip ${trip.tripID}"
+        senderRoom = "Sender Room"
+        receiverRoom = "Receiver Room"
 
         messageList = mutableListOf()
         messageAdapter = MessageAdapter(this, messageList)
@@ -62,18 +65,22 @@ class ChatActivity : AppCompatActivity() {
 
     private fun sendMessagesToDB() {
         val message = messageBox.text.toString()
-        val messageObj = Message(message, senderUid)
+        if (message.isNotBlank()) {
+            val messageObj = Message(message, senderUid)
 
-        databaseReference.child("chats").child(senderRoom!!).child("messages").push()
-            .setValue(messageObj).addOnSuccessListener {
-                databaseReference.child("chats").child(receiverRoom!!).child("messages").push()
-                    .setValue(messageObj)
-            }
-        messageBox.setText("")
+            databaseReference.child("chats").child(groupName!!).child(senderRoom!!).push()
+                .setValue(messageObj).addOnSuccessListener {
+                    databaseReference.child("chats").child(groupName!!).child(receiverRoom!!).push()
+                        .setValue(messageObj)
+                }
+            messageBox.setText("")
+        }
+        else {
+        }
     }
 
     private fun loadMessagesFromDB() {
-        databaseReference.child("chats").child(senderRoom!!).child("messages")
+        databaseReference.child("chats").child(groupName!!).child(senderRoom!!)
             .addValueEventListener(object: ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     messageList.clear()     // clear the old list to load new list
