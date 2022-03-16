@@ -9,7 +9,7 @@ class ShareTripActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_share_trip)
 
-        val tripID = intent.getStringExtra("TRIP_ID")
+        val tripID = intent.getStringExtra("TRIP_ID")?.toInt()
         textView.text = tripID.toString()
     }
 }

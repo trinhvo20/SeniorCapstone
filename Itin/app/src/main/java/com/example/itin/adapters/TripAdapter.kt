@@ -180,8 +180,9 @@ class TripAdapter(
 
                     R.id.share -> {
                         val nit = Intent(context, ShareTripActivity::class.java).apply {
-                            putExtra("TRIP_ID", curTrip.tripID)
+                            putExtra("TRIP_ID", curTrip.tripID.toString())
                         }
+                        Toast.makeText(context, curTrip.tripID.toString(), Toast.LENGTH_SHORT).show()
                         context.startActivity(nit)
                         true
                     }
