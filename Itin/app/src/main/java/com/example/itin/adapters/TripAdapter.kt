@@ -3,6 +3,7 @@ package com.example.itin.adapters
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
@@ -11,8 +12,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.itin.ItineraryActivity
 import com.example.itin.R
+import com.example.itin.ShareTripActivity
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Trip
 import com.google.firebase.auth.FirebaseAuth
@@ -173,6 +177,15 @@ class TripAdapter(
                         Toast.makeText(context, "Duplicated", Toast.LENGTH_SHORT).show()
                         true
                     }
+
+                    R.id.share -> {
+                        val nit = Intent(context, ShareTripActivity::class.java).apply {
+                            putExtra("TRIP_ID", curTrip.tripID)
+                        }
+                        context.startActivity(nit)
+                        true
+                    }
+
                     else -> true
                 }
             }
@@ -183,6 +196,7 @@ class TripAdapter(
             menu.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.java)
                 .invoke(menu, true)
         }
+
 
         private fun dupetrip(curTrip: Trip) {
             masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
