@@ -14,18 +14,19 @@ import com.example.itin.classes.Trip
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_chat.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ChatActivity : AppCompatActivity() {
 
     private lateinit var senderUid: String
-    private lateinit var receiverUidList: MutableList<String>
     private lateinit var messageAdapter: MessageAdapter
     private lateinit var messageList: MutableList<Message>
     private lateinit var databaseReference: DatabaseReference
 
-    var receiverRoom: String? = null
-    var senderRoom: String? = null
-    var groupName: String? = null
+    private var receiverRoom: String? = null
+    private var senderRoom: String? = null
+    private var groupName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +38,6 @@ class ChatActivity : AppCompatActivity() {
         // set the name of the chat box (= tripName)
         val trip = intent.getSerializableExtra("trip") as Trip
         groupChatName.text = trip.name
-        receiverUidList = trip.viewers
 
         groupName = "Group Chat Trip ${trip.tripID}"
         senderRoom = "Sender Room"
@@ -48,7 +48,7 @@ class ChatActivity : AppCompatActivity() {
 
         chatRV.adapter = messageAdapter
         chatRV.layoutManager = LinearLayoutManager(this)
-        //messageBox
+
         // Add data from Database to Recyclerview
         loadMessagesFromDB()
 
@@ -78,7 +78,9 @@ class ChatActivity : AppCompatActivity() {
     }
 
     private fun sendMessagesToDB(message: String) {
-        val messageObj = Message(message, senderUid)
+        val sdf = SimpleDateFormat("dd/M/yyyy  hh:mm:ss")
+        val currentDate = sdf.format(Date())
+        val messageObj = Message(message, senderUid, currentDate)
 
         databaseReference.child("chats").child(groupName!!).child(senderRoom!!).push()
             .setValue(messageObj).addOnSuccessListener {
