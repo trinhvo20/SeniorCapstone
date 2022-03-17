@@ -19,7 +19,6 @@ import kotlinx.android.synthetic.main.activity_itinerary.*
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 
 class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListener {
@@ -72,7 +71,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         // may seem redundant considering that a lot of this code is implemented in tripActivity
             // but it does catch some cases that tripActivity wouldn't
         //readDays(tripInstance)
-        activitysort(days)
+        activitySort(days)
         dayAdapter.notifyDataSetChanged()
 
         backBtn.setOnClickListener {
@@ -100,11 +99,11 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         }
     }
 
-    override fun onItemClick(position: Int, daypos: Int) {
-        Toast.makeText(this, "Day: $daypos \nActivity: $position", Toast.LENGTH_SHORT).show()
+    override fun onItemClick(position: Int, dayPos: Int) {
+        Toast.makeText(this, "Day: $dayPos \nActivity: $position", Toast.LENGTH_SHORT).show()
         Intent(this, DetailsActivity::class.java).also {
             // pass the current trip object between activities
-            it.putExtra("ACTIVITY", days[daypos][position])
+            it.putExtra("ACTIVITY", days[dayPos][position])
             // start ItineraryActivity
             startActivity(it)
         }
@@ -112,10 +111,10 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
 
     @RequiresApi(Build.VERSION_CODES.O)
     // function to sort the activities on each of the day, it is a modified Insertion sort
-    private fun activitysort (tempdays : MutableList<Day>){
+    private fun activitySort (tempDays : MutableList<Day>){
         var formatter = DateTimeFormatter.ofPattern("h:ma")
 
-            for(day in tempdays) {
+            for(day in tempDays) {
                 for (i in 0 until day.activities.size) {
                     val key = day.activities[i]
 
@@ -182,7 +181,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
 
                 Log.d("READ:", trip.days.size.toString())
                 // not the most efficient... but itll have to do
-                activitysort(days)
+                activitySort(days)
                 dayAdapter.notifyDataSetChanged()
             }
         }

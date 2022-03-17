@@ -13,7 +13,7 @@ class ActivityAdapter(
     private val context: Context,
     private val Activities: List<Activity?>, // parameter: a mutable list of Activity items
     private val listener: OnItemClickListener,
-    private val daypos: Int,
+    private val dayPos: Int,
 ) : RecyclerView.Adapter<ActivityAdapter.ActivityViewHolder>() {
 
     // create a view holder: holds a layout of a specific item
@@ -37,7 +37,7 @@ class ActivityAdapter(
 
         // handle RecyclerView clickable
         holder.itemView.setOnClickListener {
-            listener.onItemClick(position,daypos)
+            listener.onItemClick(position,dayPos)
         }
     }
 
@@ -47,6 +47,6 @@ class ActivityAdapter(
 
     // this interface will handle the RecyclerView clickable
     interface  OnItemClickListener {
-        fun onItemClick(position: Int, daypos: Int)
+        fun onItemClick(position: Int, dayPos: Int)
     }
 }

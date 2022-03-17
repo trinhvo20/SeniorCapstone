@@ -82,17 +82,15 @@ class ChatActivity : AppCompatActivity() {
         val currentDate = sdf.format(Date())
         val messageObj = Message(message, senderUid, currentDate)
 
-        databaseReference.child("chats").child(groupName!!).child(senderRoom!!).push()
+        databaseReference.child("chats").child(groupName!!).child("messages").push()
             .setValue(messageObj).addOnSuccessListener {
-                databaseReference.child("chats").child(groupName!!).child(receiverRoom!!).push()
-                    .setValue(messageObj)
             }
         messageBox.setText("")
 
     }
 
     private fun loadMessagesFromDB() {
-        databaseReference.child("chats").child(groupName!!).child(senderRoom!!)
+        databaseReference.child("chats").child(groupName!!).child("messages")
             .addValueEventListener(object: ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     messageList.clear()     // clear the old list to load new list

@@ -37,7 +37,7 @@ class DayAdapter(
     @RequiresApi(Build.VERSION_CODES.O)
     inner class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val recyclerView : RecyclerView = itemView.rvActivities
-        private var ivAdd: ImageView = itemView.findViewById<ImageView>(R.id.ivAdd)
+        private var ivAdd: ImageView = itemView.findViewById(R.id.ivAdd)
 
         init {
             ivAdd.setOnClickListener { addAnActivity(it) }
@@ -46,7 +46,6 @@ class DayAdapter(
         // function to add an activity to a day
         @RequiresApi(Build.VERSION_CODES.O)
         private fun addAnActivity(view : View) {
-            val firebaseAuth = FirebaseAuth.getInstance()
             val masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
 
             val curDay = days[adapterPosition]
