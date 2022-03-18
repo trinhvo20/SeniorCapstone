@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".TripViewer">
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:id="@+id/relativeLayout2"
@@ -42,6 +41,7 @@
             android:layout_below="@id/tvName"
             android:layout_centerHorizontal="true"
             android:fontFamily="casual"
+            android:layout_marginTop="5dp"
             android:text="00:00 AM"
             android:textSize="20dp" />
     </RelativeLayout>

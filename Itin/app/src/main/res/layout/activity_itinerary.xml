@@ -43,6 +43,7 @@
             android:layout_below="@id/tvName"
             android:layout_centerHorizontal="true"
             android:fontFamily="casual"
+            android:layout_marginTop="5dp"
             android:text="Date Range"
             android:textSize="18dp" />
     </RelativeLayout>
