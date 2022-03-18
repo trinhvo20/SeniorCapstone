@@ -2,7 +2,6 @@ package com.example.itin
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,11 +12,9 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.itin.R
 import com.example.itin.adapters.ActivityAdapter
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.trip_day_item.view.*
@@ -108,10 +105,6 @@ class DayAdapter(
             for (i in 0 until curday.activities.size) {
                 val key = curday.activities[i]
 
-//                if (key != null) {
-//                    println(key.time)
-//                }
-
                 var j = i - 1
 
                 if (key != null) {
@@ -157,7 +150,7 @@ class DayAdapter(
     @RequiresApi(Build.VERSION_CODES.O)
     private fun sendToDB(dayInstance: DatabaseReference, activity: Activity) {
         // increment the activity count by 1
-        dayInstance.child("ActivityCount").setValue(activity.actID+1)
+        dayInstance.child("ActivityCount").setValue(activity.actID + 1)
         // navigate to the correct activity in the day
         val activityInstance = dayInstance.child(activity.actID.toString())
         if (activity != null) {

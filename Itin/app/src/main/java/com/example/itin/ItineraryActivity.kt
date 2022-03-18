@@ -99,11 +99,11 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         }
     }
 
-    override fun onItemClick(position: Int, dayPos: Int) {
-        Toast.makeText(this, "Day: $dayPos \nActivity: $position", Toast.LENGTH_SHORT).show()
+    override fun onItemClick(position: Int, daypos: Int) {
+        Toast.makeText(this, "Day: $daypos \nActivity: $position", Toast.LENGTH_SHORT).show()
         Intent(this, DetailsActivity::class.java).also {
             // pass the current trip object between activities
-            it.putExtra("ACTIVITY", days[dayPos][position])
+            it.putExtra("ACTIVITY", days[daypos][position])
             // start ItineraryActivity
             startActivity(it)
         }
@@ -117,10 +117,6 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             for(day in tempDays) {
                 for (i in 0 until day.activities.size) {
                     val key = day.activities[i]
-
-//                    if (key != null) {
-//                        println(key.time)
-//                    }
 
                     var j = i - 1
 

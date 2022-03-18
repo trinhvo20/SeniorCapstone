@@ -5,8 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.MessageAdapter
 import com.example.itin.classes.Message
@@ -92,10 +90,10 @@ class ChatActivity : AppCompatActivity() {
     private fun loadMessagesFromDB() {
         databaseReference.child("chats").child(groupName!!).child("messages")
             .addValueEventListener(object: ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
+                override fun onDataChange(messages: DataSnapshot) {
                     messageList.clear()     // clear the old list to load new list
-                    for (postSnapshot in snapshot.children) {
-                        val message = postSnapshot.getValue(Message::class.java)
+                    for (eachMessage in messages.children) {
+                        val message = eachMessage.getValue(Message::class.java)
                         messageList.add(message!!)
                     }
                     messageAdapter.notifyDataSetChanged()

@@ -76,7 +76,6 @@ class MessageAdapter(
     }
 
     private fun getSenderName(message: Message, holder: ReceivedViewHolder) {
-        val uid = FirebaseAuth.getInstance().currentUser?.uid.toString()
         FirebaseDatabase.getInstance().reference.child("users")
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
