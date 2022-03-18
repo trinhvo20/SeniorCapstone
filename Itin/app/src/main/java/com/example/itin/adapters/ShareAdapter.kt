@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
 import com.example.itin.ShareTripActivity
 import com.example.itin.classes.Trip
+import kotlinx.android.synthetic.main.friend_share_item.view.*
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -20,13 +21,22 @@ import java.time.temporal.ChronoUnit
 import java.util.*
 
 class ShareAdapter(
-
     private val context: Context,
     private val Friends: MutableList<String>,
 
 ) : RecyclerView.Adapter<ShareAdapter.ShareViewHolder>() {
 
     inner class ShareViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val ibShareFriend: ImageView = itemView.findViewById(R.id.ibShareFriend)
+        init {
+            ibShareFriend.setOnClickListener { ShareByFriend(it) }
+        }
+
+        inner class ShareByFriend(it: View?) {
+            val curFriend = Friends[adapterPosition]
+            val toast = Toast.makeText(context, curFriend, Toast.LENGTH_SHORT).show()
+
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShareViewHolder {
@@ -38,16 +48,11 @@ class ShareAdapter(
         val curFriend = Friends[position]
 
         holder.itemView.apply {
-            tvName.text = curFriend
+            tvFriendName.text = curFriend
         }
     }
 
     override fun getItemCount(): Int {
         return Friends.size
-    }
-
-    // this interface will handle the RecyclerView clickable
-    interface OnItemClickListener {
-        fun onItemClick(position: Int)
     }
 }
