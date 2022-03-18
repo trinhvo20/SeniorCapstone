@@ -458,4 +458,37 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             trips[j + 1] = key
         }
     }
+    /*
+    private fun readDaysHelper(dayInstance: DatabaseReference, trip: Trip) {
+        dayInstance.get().addOnSuccessListener {
+            if (it.exists()) {
+                // obtain dayNumber, dayInt, and tripID
+                var dayNumber = it.child("Day Number").value.toString()
+                val dayInt = dayNumber.toInt()
+                dayNumber = dayNumber + ": " + startdate.plusDays(dayNumber.toLong()-1).format(formatter).toString()
+                val tripID = it.child("TripID").value.toString().toInt()
+                val actCount = it.child("ActivityCount").value.toString().toInt()
+                val actList : MutableList<Activity?> = mutableListOf()
+                // pull the activity from the DB
+                for (i in 0 until actCount ) {
+                    val name = it.child(i.toString()).child("Name").value.toString()
+                    val location = it.child(i.toString()).child("Location").value.toString()
+                    val time = it.child(i.toString()).child("Time").value.toString()
+                    val cost = it.child(i.toString()).child("Cost").value.toString()
+                    val notes = it.child(i.toString()).child("Notes").value.toString()
+                    var tripID = it.child(i.toString()).child("TripID").value.toString().toInt()
+                    var activityID = it.child(i.toString()).child("ActivityID").value.toString().toInt()
+
+                    val activity = Activity(name, time, location, cost, notes, tripID, activityID)
+                    actList.add(activity)
+                }
+
+                val day = Day(dayNumber,actList,dayInt,tripID)
+                trip.days.add(day)
+                tripsort(trips)
+                tripAdapter.notifyDataSetChanged()
+            }
+        }
+    }
+    */
 }
