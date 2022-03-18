@@ -65,14 +65,7 @@ class ChatActivity : AppCompatActivity() {
             }
         })
 
-        backBtn.setOnClickListener {
-            /*
-            finish()
-            Intent(this, ItineraryActivity::class.java).also {
-                startActivity(it)
-            }
-             */
-        }
+        backBtn.setOnClickListener { finish() }
     }
 
     private fun sendMessagesToDB(message: String) {
