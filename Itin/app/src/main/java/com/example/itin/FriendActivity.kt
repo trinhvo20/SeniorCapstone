@@ -100,6 +100,11 @@ class FriendActivity : AppCompatActivity() {
                                     }
                                 else {
                                     FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("reqList").child("Request $myID").setValue(myID)
+                                    //
+                                    // This is where I would add notifications!!!
+                                    //
+                                    //
+                                    //
                                 }
                             } else {
                                 Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()

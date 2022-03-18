@@ -1,5 +1,6 @@
 package com.example.itin.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,12 +49,13 @@ class FriendAdapter (
         }
         holder.itemView.apply {
             acceptButton.setOnClickListener {
-                masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
                 firebaseAuth = FirebaseAuth.getInstance()
                 val firebaseUser = firebaseAuth.currentUser
                 val uid = firebaseUser!!.uid
-                val userName = curFriend.username
-                val friendsID = masterUserList.child(userName)
+                masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
+                curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+                //val userName = friendsUsername.text.toString()
+                val friendsID = masterUserList.child(curFriend.username) //masterUserList.child(userName)
                 var myID = ""
                 var myUsername = ""
 
@@ -68,11 +70,11 @@ class FriendAdapter (
                                 masterUserList.get().addOnSuccessListener {
                                     if (it.exists()) {
                                         myID = it.child(myUsername).value.toString()
-                                        val friendsUID =
-                                            it.child(friendsIDStr).child("UID").value.toString()
+                                        val friendsUID = it.child(friendsIDStr).child("UID").value.toString()
 
                                         curUser.child("friendsList").child("Friend $friendsIDStr").setValue(friendsIDStr)
-                                        FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("friendsList")child("Friend $myID").setValue(myID)
+                                        FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("friendsList").child("Friend $myID").setValue(myID)
+                                        curUser.child("reqList").child("Request $friendsIDStr").removeValue()
                                     }
                                 }
                             }
