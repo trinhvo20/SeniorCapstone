@@ -91,7 +91,6 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         }
         // open chat box
         chatBoxBtn.setOnClickListener {
-            finish()
             Intent(this, ChatActivity::class.java).also {
                 it.putExtra("trip", trip)
                 startActivity(it)

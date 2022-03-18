@@ -319,11 +319,6 @@ class TripAdapter(
 
         for (i in 0 until trips.size) {
             val key = trips[i]
-
-            if (key != null) {
-                println(key.startDate)
-            }
-
             var j = i - 1
 
             if (key != null) {
