@@ -43,12 +43,7 @@ class DayAdapter(
         // function to add an activity to a day
         @RequiresApi(Build.VERSION_CODES.O)
         private fun addAnActivity(view : View) {
-            val masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
-
             val curDay = days[adapterPosition]
-            val tripInstance = masterTripList.child(curDay.tripID.toString())
-            val dayInstance = tripInstance.child("Days").child((curDay.dayInt-1).toString())
-
 
             val view = LayoutInflater.from(context).inflate(R.layout.add_activity, null)
 
@@ -76,9 +71,8 @@ class DayAdapter(
 
                 val activity = Activity(name, time, location, cost, notes,curDay.tripID,curDay.activities.size)
 
-                sendActivityToDB(dayInstance,activity)
-
                 curDay.activities.add(activity)
+                sendActivityToDB(curDay,activity)
 
                 activitysort(curDay)
                 notifyDataSetChanged()
@@ -146,7 +140,7 @@ class DayAdapter(
     override fun getItemCount(): Int {
         return  days.size
     }
-
+    /*
     @RequiresApi(Build.VERSION_CODES.O)
     private fun sendActivityToDB(dayInstance: DatabaseReference, activity: Activity) {
         // increment the activity count by 1
@@ -161,6 +155,18 @@ class DayAdapter(
             activityInstance.child("Notes").setValue(activity.notes)
             activityInstance.child("ActivityID").setValue(activity.actID)
             activityInstance.child("TripID").setValue(activity.tripID)
+        }
+    }
+    */
+
+    private fun sendActivityToDB(curDay: Day, activity: Activity) {
+        val dayInstance = FirebaseDatabase.getInstance().getReference("masterTripList")
+            .child(curDay.tripID.toString()).child("Days").child((curDay.dayInt-1).toString())
+        dayInstance.child("ActivityCount").setValue(curDay.activities.size)
+
+        val activityInstance = dayInstance.push()
+        if (activity != null) {
+            activityInstance.setValue(activity)
         }
     }
 }

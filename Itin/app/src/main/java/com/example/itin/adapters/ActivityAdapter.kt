@@ -91,26 +91,18 @@ class ActivityAdapter(
             val curDay = FirebaseDatabase.getInstance().getReference("masterTripList")
                 .child(tripID).child("Days").child(dayID)
 
-            curDay.child(actID).removeValue()
-            /*
-            curDay.addValueEventListener(object: ValueEventListener{
+            val activity = curDay.orderByChild("name").equalTo(curActivity.name)
+            activity.addListenerForSingleValueEvent(object: ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    var max = 0
-                    for (activity in snapshot.children){
-                        var x = activity.child("ActivityID").value.toString()
-                        if (x.toInt() > max) {
-                            max = x.toInt()
-                        }
+                    for (i in snapshot.children){
+                        i.ref.removeValue()
                     }
-                    curDay.child("ActivityCount").setValue(max+1)
                 }
-
                 override fun onCancelled(error: DatabaseError) {
                     TODO("Not yet implemented")
                 }
-
             })
-            */
+            //curDay.child(actID).removeValue()
             curDay.child("ActivityCount").setValue(Activities.size)
         }
     }
