@@ -76,7 +76,7 @@ class DayAdapter(
 
                 val activity = Activity(name, time, location, cost, notes,curDay.tripID,curDay.activities.size)
 
-                sendToDB(dayInstance,activity)
+                sendActivityToDB(dayInstance,activity)
 
                 curDay.activities.add(activity)
 
@@ -148,7 +148,7 @@ class DayAdapter(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun sendToDB(dayInstance: DatabaseReference, activity: Activity) {
+    private fun sendActivityToDB(dayInstance: DatabaseReference, activity: Activity) {
         // increment the activity count by 1
         dayInstance.child("ActivityCount").setValue(activity.actID + 1)
         // navigate to the correct activity in the day

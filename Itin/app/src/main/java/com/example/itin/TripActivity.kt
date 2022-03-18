@@ -332,14 +332,16 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 val actCount = it.child("ActivityCount").value.toString().toInt()
                 val actList : MutableList<Activity?> = mutableListOf()
                 // pull the activity from the DB
-                for (i in 0 until actCount ) {
-                    val name = it.child(i.toString()).child("Name").value.toString()
-                    val location = it.child(i.toString()).child("Location").value.toString()
-                    val time = it.child(i.toString()).child("Time").value.toString()
-                    val cost = it.child(i.toString()).child("Cost").value.toString()
-                    val notes = it.child(i.toString()).child("Notes").value.toString()
-                    var tripID = it.child(i.toString()).child("TripID").value.toString().toInt()
-                    var activityID = it.child(i.toString()).child("ActivityID").value.toString().toInt()
+                for (i in it.children ) {
+                    val name = i.child("Name").value.toString()
+                    Log.d("eee",name)
+                    if (name == "null") {break}
+                    val location = i.child("Location").value.toString()
+                    val time = i.child("Time").value.toString()
+                    val cost = i.child("Cost").value.toString()
+                    val notes = i.child("Notes").value.toString()
+                    var tripID = i.child("TripID").value.toString().toInt()
+                    var activityID = i.child("ActivityID").value.toString().toInt()
 
                     val activity = Activity(name, time, location, cost, notes, tripID, activityID)
                     actList.add(activity)
