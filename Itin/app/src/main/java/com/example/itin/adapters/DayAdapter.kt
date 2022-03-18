@@ -69,7 +69,7 @@ class DayAdapter(
                     etName.text.toString()
                 }
 
-                val activity = Activity(name, time, location, cost, notes,curDay.tripID,curDay.activities.size)
+                val activity = Activity(name, time, location, cost, notes,curDay.tripID,"")
 
                 curDay.activities.add(activity)
                 sendActivityToDB(curDay,activity)
@@ -165,7 +165,9 @@ class DayAdapter(
         dayInstance.child("ActivityCount").setValue(curDay.activities.size)
 
         val activityInstance = dayInstance.push()
+
         if (activity != null) {
+            activity.actID = activityInstance.key.toString()
             activityInstance.setValue(activity)
         }
     }

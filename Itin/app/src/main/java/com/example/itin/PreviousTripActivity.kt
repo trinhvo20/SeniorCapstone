@@ -202,7 +202,7 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
                     val cost = it.child(i.toString()).child("Cost").value.toString()
                     val notes = it.child(i.toString()).child("Notes").value.toString()
                     var tripID = it.child(i.toString()).child("TripID").value.toString().toInt()
-                    var activityID = it.child(i.toString()).child("ActivityID").value.toString().toInt()
+                    var activityID = it.child(i.toString()).child("ActivityID").value.toString()
 
                     val activity = Activity(name, time, location, cost, notes, tripID, activityID)
                     actList.add(activity)
