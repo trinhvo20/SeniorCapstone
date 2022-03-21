@@ -340,7 +340,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     val cost = i.child("cost").value.toString()
                     val notes = i.child("notes").value.toString()
                     var tripID = i.child("tripID").value.toString().toInt()
-                    var activityID = i.child("actID").value.toString().toInt()
+                    var activityID = i.child("actID").value.toString()
 
                     val activity = Activity(name, time, location, cost, notes, tripID, activityID)
                     actList.add(activity)
