@@ -41,7 +41,7 @@ class DayAdapter(
     @RequiresApi(Build.VERSION_CODES.O)
     inner class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val recyclerView : RecyclerView = itemView.rvActivities
-        private var ivAdd: ImageView = itemView.findViewById<ImageView>(R.id.ivAdd)
+        private var ivAdd: ImageView = itemView.findViewById(R.id.ivAdd)
 
         init {
             ivAdd.setOnClickListener { addAnActivity(it) }
@@ -102,11 +102,10 @@ class DayAdapter(
                     etName.text.toString()
                 }
 
-                val activity = Activity(name, time, location, cost, notes,curDay.tripID,curDay.activities.size)
-
-                sendToDB(dayInstance,activity)
+                val activity = Activity(name, time, location, cost, notes,curDay.tripID,"")
 
                 curDay.activities.add(activity)
+                sendActivityToDB(curDay,activity)
 
                 activitysort(curDay)
                 notifyDataSetChanged()
@@ -132,10 +131,6 @@ class DayAdapter(
 
             for (i in 0 until curday.activities.size) {
                 val key = curday.activities[i]
-
-//                if (key != null) {
-//                    println(key.time)
-//                }
 
                 var j = i - 1
 
@@ -178,11 +173,11 @@ class DayAdapter(
     override fun getItemCount(): Int {
         return  days.size
     }
-
+    /*
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun sendToDB(dayInstance: DatabaseReference, activity: Activity) {
+    private fun sendActivityToDB(dayInstance: DatabaseReference, activity: Activity) {
         // increment the activity count by 1
-        dayInstance.child("ActivityCount").setValue(activity.actID+1)
+        dayInstance.child("ActivityCount").setValue(activity.actID + 1)
         // navigate to the correct activity in the day
         val activityInstance = dayInstance.child(activity.actID.toString())
         if (activity != null) {
@@ -193,6 +188,20 @@ class DayAdapter(
             activityInstance.child("Notes").setValue(activity.notes)
             activityInstance.child("ActivityID").setValue(activity.actID)
             activityInstance.child("TripID").setValue(activity.tripID)
+        }
+    }
+    */
+
+    private fun sendActivityToDB(curDay: Day, activity: Activity) {
+        val dayInstance = FirebaseDatabase.getInstance().getReference("masterTripList")
+            .child(curDay.tripID.toString()).child("Days").child((curDay.dayInt-1).toString())
+        dayInstance.child("ActivityCount").setValue(curDay.activities.size)
+
+        val activityInstance = dayInstance.push()
+
+        if (activity != null) {
+            activity.actID = activityInstance.key.toString()
+            activityInstance.setValue(activity)
         }
     }
 }

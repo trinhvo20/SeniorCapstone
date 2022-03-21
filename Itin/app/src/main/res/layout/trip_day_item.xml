@@ -15,7 +15,7 @@
         android:fontFamily="casual"
         android:text="Name"
         android:textColor="@color/mint"
-        android:textSize="30dp"
+        android:textSize="28dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/rvActivities"
         app:layout_constraintEnd_toStartOf="@+id/ivAdd"
@@ -27,7 +27,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,12 +34,22 @@
 
     <ImageView
         android:id="@+id/ivAdd"
-        android:layout_width="34dp"
-        android:layout_height="34dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         app:layout_constraintBottom_toTopOf="@+id/rvActivities"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tvName"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ic_add_grey" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/DarkGray"
+        android:layout_marginTop="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rvActivities"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

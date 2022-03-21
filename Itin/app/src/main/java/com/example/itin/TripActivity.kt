@@ -5,8 +5,6 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.EditText
@@ -20,10 +18,8 @@ import com.example.itin.adapters.TripAdapter
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
-import com.example.itin.classes.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_trip.*
 import java.util.*
 import com.google.firebase.auth.FirebaseAuth
@@ -72,6 +68,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         //Creating Testing Trip ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if (DEBUG_TOGGLE) {
+            val day1 = Day("1", mutableListOf(),1,-1)
+            val day2 = Day("2", mutableListOf(),2,-1)
+            val daylist = mutableListOf<Day>(day1,day2)
             val trip = Trip(
                 "Trip to TEST",
                 "TEST",
@@ -80,7 +79,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 deleted = false,
                 active = true,
                 tripID = -1,
-                viewers = mutableListOf("JFn2cxxk1xWl83eXDWsXf5fSwvu1","uSWyidP8E2axSFnBf1WZgGlcUgF3","JFn2cxxk1xWl83eXDWsXf5fSwvu1","uSWyidP8E2axSFnBf1WZgGlcUgF3")
+                days = daylist,
+                viewers = mutableListOf("CNIyURFyEhRrb1sZNLJo47yMF4o2","LW4U6jdzqqcdLvqMMdw7tt1M9b73","dwJLMqs0Y5M65fmvS4lIJS5xFgf1","eZuf0wlulMe64K6ZXgFPBXTlFJs1","JFn2cxxk1xWl83eXDWsXf5fSwvu1","uSWyidP8E2axSFnBf1WZgGlcUgF3")
             )
             trips.add(trip)
             tripAdapter.notifyDataSetChanged()
@@ -329,17 +329,18 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 val dayInt = dayNumber.toInt()
                 dayNumber = dayNumber + ": " + startdate.plusDays(dayNumber.toLong()-1).format(formatter).toString()
                 val tripID = it.child("TripID").value.toString().toInt()
-                val actCount = it.child("ActivityCount").value.toString().toInt()
+                //val actCount = it.child("ActivityCount").value.toString().toInt()
                 val actList : MutableList<Activity?> = mutableListOf()
                 // pull the activity from the DB
-                for (i in 0 until actCount ) {
-                    val name = it.child(i.toString()).child("Name").value.toString()
-                    val location = it.child(i.toString()).child("Location").value.toString()
-                    val time = it.child(i.toString()).child("Time").value.toString()
-                    val cost = it.child(i.toString()).child("Cost").value.toString()
-                    val notes = it.child(i.toString()).child("Notes").value.toString()
-                    var tripID = it.child(i.toString()).child("TripID").value.toString().toInt()
-                    var activityID = it.child(i.toString()).child("ActivityID").value.toString().toInt()
+                for (i in it.children ) {
+                    val name = i.child("name").value.toString()
+                    if (name == "null") {break}
+                    val location = i.child("location").value.toString()
+                    val time = i.child("time").value.toString()
+                    val cost = i.child("cost").value.toString()
+                    val notes = i.child("notes").value.toString()
+                    var tripID = i.child("tripID").value.toString().toInt()
+                    var activityID = i.child("actID").value.toString()
 
                     val activity = Activity(name, time, location, cost, notes, tripID, activityID)
                     actList.add(activity)
@@ -457,4 +458,37 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             trips[j + 1] = key
         }
     }
+    /*
+    private fun readDaysHelper(dayInstance: DatabaseReference, trip: Trip) {
+        dayInstance.get().addOnSuccessListener {
+            if (it.exists()) {
+                // obtain dayNumber, dayInt, and tripID
+                var dayNumber = it.child("Day Number").value.toString()
+                val dayInt = dayNumber.toInt()
+                dayNumber = dayNumber + ": " + startdate.plusDays(dayNumber.toLong()-1).format(formatter).toString()
+                val tripID = it.child("TripID").value.toString().toInt()
+                val actCount = it.child("ActivityCount").value.toString().toInt()
+                val actList : MutableList<Activity?> = mutableListOf()
+                // pull the activity from the DB
+                for (i in 0 until actCount ) {
+                    val name = it.child(i.toString()).child("Name").value.toString()
+                    val location = it.child(i.toString()).child("Location").value.toString()
+                    val time = it.child(i.toString()).child("Time").value.toString()
+                    val cost = it.child(i.toString()).child("Cost").value.toString()
+                    val notes = it.child(i.toString()).child("Notes").value.toString()
+                    var tripID = it.child(i.toString()).child("TripID").value.toString().toInt()
+                    var activityID = it.child(i.toString()).child("ActivityID").value.toString().toInt()
+
+                    val activity = Activity(name, time, location, cost, notes, tripID, activityID)
+                    actList.add(activity)
+                }
+
+                val day = Day(dayNumber,actList,dayInt,tripID)
+                trip.days.add(day)
+                tripsort(trips)
+                tripAdapter.notifyDataSetChanged()
+            }
+        }
+    }
+    */
 }

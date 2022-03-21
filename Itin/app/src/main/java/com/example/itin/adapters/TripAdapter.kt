@@ -18,6 +18,7 @@ import com.example.itin.ItineraryActivity
 import com.example.itin.R
 import com.example.itin.ShareTripActivity
 import com.example.itin.classes.Activity
+import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -290,15 +291,15 @@ class TripAdapter(
 
                 val activity = trip.days[dayNum].activities[i]
                 if (activity != null) {
-                    sendActivityToDB(dayInstance, activity)
+                    sendActivityToDB(trip.days[dayNum], activity)
                 }
             }
         }
-
+        /*
         @RequiresApi(Build.VERSION_CODES.O)
         private fun sendActivityToDB(dayInstance: DatabaseReference, activity: Activity) {
             // increment the activity count by 1
-            dayInstance.child("ActivityCount").setValue(activity.actID + 1)
+            //dayInstance.child("ActivityCount").setValue(activity.actID + 1)
             // navigate to the correct activity in the day
             val activityInstance = dayInstance.child(activity.actID.toString())
             if (activity != null) {
@@ -309,6 +310,17 @@ class TripAdapter(
                 activityInstance.child("Notes").setValue(activity.notes)
                 activityInstance.child("ActivityID").setValue(activity.actID)
                 activityInstance.child("TripID").setValue(activity.tripID)
+            }
+        }
+        */
+        private fun sendActivityToDB(curDay: Day, activity: Activity) {
+            val dayInstance = FirebaseDatabase.getInstance().getReference("masterTripList")
+                .child(curDay.tripID.toString()).child("Days").child((curDay.dayInt-1).toString())
+            dayInstance.child("ActivityCount").setValue(curDay.activities.size)
+
+            val activityInstance = dayInstance.push()
+            if (activity != null) {
+                activityInstance.setValue(activity)
             }
         }
     }
@@ -322,11 +334,6 @@ class TripAdapter(
 
         for (i in 0 until trips.size) {
             val key = trips[i]
-
-            if (key != null) {
-                println(key.startDate)
-            }
-
             var j = i - 1
 
             if (key != null) {

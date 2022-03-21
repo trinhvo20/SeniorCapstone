@@ -19,7 +19,6 @@ import kotlinx.android.synthetic.main.activity_itinerary.*
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 
 
 class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListener {
@@ -72,7 +71,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         // may seem redundant considering that a lot of this code is implemented in tripActivity
             // but it does catch some cases that tripActivity wouldn't
         //readDays(tripInstance)
-        activitysort(days)
+        activitySort(days)
         dayAdapter.notifyDataSetChanged()
 
         backBtn.setOnClickListener {
@@ -90,6 +89,13 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
                 }
             }
         }
+        // open chat box
+        chatBoxBtn.setOnClickListener {
+            Intent(this, ChatActivity::class.java).also {
+                it.putExtra("trip", trip)
+                startActivity(it)
+            }
+        }
     }
 
     override fun onItemClick(position: Int, daypos: Int) {
@@ -104,16 +110,12 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
 
     @RequiresApi(Build.VERSION_CODES.O)
     // function to sort the activities on each of the day, it is a modified Insertion sort
-    private fun activitysort (tempdays : MutableList<Day>){
+    private fun activitySort (tempDays : MutableList<Day>){
         var formatter = DateTimeFormatter.ofPattern("h:ma")
 
-            for(day in tempdays) {
+            for(day in tempDays) {
                 for (i in 0 until day.activities.size) {
                     val key = day.activities[i]
-
-//                    if (key != null) {
-//                        println(key.time)
-//                    }
 
                     var j = i - 1
 
@@ -126,58 +128,6 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
                     day.activities[j + 1] = key
                 }
             }
-    }
-
-    // load days from database
-    // dont think we need this anymore ... but will keep it here until we are sure
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun readDays(tripInstance: DatabaseReference) {
-        tripInstance.child("Days").get().addOnSuccessListener {
-            if (it.exists()) {
-                // will cycle through the amount of days that we have
-                for (i in 0 until it.child("DayCount").value.toString().toInt()){
-                    // will make the day classes
-                    val dayInstance = tripInstance.child("Days").child(i.toString())
-                    readDaysHelper(dayInstance)
-                }
-            }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun readDaysHelper(dayInstance: DatabaseReference) {
-        dayInstance.get().addOnSuccessListener {
-            if (it.exists()) {
-                // obtain dayNumber, dayInt, and tripID
-                var dayNumber = it.child("Day Number").value.toString()
-                val dayInt = dayNumber.toInt()
-                dayNumber = dayNumber + ": " + startdate.plusDays(dayNumber.toLong()-1).format(formatter).toString()
-                val tripID = it.child("TripID").value.toString().toInt()
-                val actCount = it.child("ActivityCount").value.toString().toInt()
-                val actList : MutableList<Activity?> = mutableListOf()
-                // pull the activity from the DB
-                for (i in 0 until actCount ) {
-                    val name = it.child(i.toString()).child("Name").value.toString()
-                    val location = it.child(i.toString()).child("Location").value.toString()
-                    val time = it.child(i.toString()).child("Time").value.toString()
-                    val cost = it.child(i.toString()).child("Cost").value.toString()
-                    val notes = it.child(i.toString()).child("Notes").value.toString()
-                    var tripID = it.child(i.toString()).child("TripID").value.toString().toInt()
-                    var activityID = it.child(i.toString()).child("ActivityID").value.toString().toInt()
-
-                    val activity = Activity(name, time, location, cost, notes, tripID, activityID)
-                    actList.add(activity)
-                }
-                val day = Day(dayNumber,actList,dayInt,tripID)
-                trip.days.add(day)
-                days = trip.days
-
-                Log.d("READ:", trip.days.size.toString())
-                // not the most efficient... but itll have to do
-                activitysort(days)
-                dayAdapter.notifyDataSetChanged()
-            }
-        }
     }
 
 }

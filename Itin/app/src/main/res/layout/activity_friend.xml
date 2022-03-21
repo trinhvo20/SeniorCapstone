@@ -9,11 +9,10 @@
     tools:context=".FriendActivity">
 
     <RelativeLayout
-        android:paddingHorizontal="10dp"
-        android:paddingBottom="10dp"
+        android:padding="10dp"
         android:background="@color/mint"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="60dp">
 
         <ImageView
             android:id="@+id/backBtn"

@@ -128,7 +128,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="Where is the activity takeing place?"
+            android:text="Where is the activity taking place?"
             android:textColor="@color/mint"
             android:textSize="20dp"
             android:textStyle="bold"
