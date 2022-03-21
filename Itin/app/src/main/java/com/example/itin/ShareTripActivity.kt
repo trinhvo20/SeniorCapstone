@@ -62,17 +62,19 @@ class ShareTripActivity : AppCompatActivity() {
                 curUser.get().addOnSuccessListener {
                     if (it.exists()) {
                         masterUserList.get().addOnSuccessListener {
-                            if (it.exists()){
-                                val friendsUID = it.child(friendsIDStr).child("UID").value.toString()
-                                FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("trips").child("Trip $tripID").setValue(tripID)
+                            if (it.exists()) {
+                                val friendsUID =
+                                    it.child(friendsIDStr).child("UID").value.toString()
+                                FirebaseDatabase.getInstance().getReference("users")
+                                    .child(friendsUID).child("trips").child("Trip $tripID")
+                                    .setValue(tripID)
                                 Toast.makeText(this, "Trip Shared", Toast.LENGTH_SHORT).show()
-                            }
-                            else {
-                                Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
                 }
+            } else {
+                Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()
             }
         }
     }
