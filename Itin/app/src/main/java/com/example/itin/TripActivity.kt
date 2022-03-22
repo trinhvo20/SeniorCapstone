@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.EditText
@@ -24,6 +25,7 @@ import kotlinx.android.synthetic.main.activity_trip.*
 import java.util.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.google.firebase.messaging.FirebaseMessaging
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -50,6 +52,11 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         setContentView(R.layout.activity_trip)
 
         firebaseAuth = FirebaseAuth.getInstance()
+
+        // functions to retrieve FCM token (for notifications)
+        // it is here so that no redundant code happens
+        // (i.e. everyone is logged in at the point of ItineraryActivity)
+        checkToken()
 
         // set trip list
         trips = mutableListOf()
@@ -458,6 +465,22 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             trips[j + 1] = key
         }
     }
+
+    private fun checkToken() {
+        FirebaseService.sharedPref = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        // get to the current user in the DB
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+        val uid = firebaseUser!!.uid
+        curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+        // retrieve the token
+        FirebaseMessaging.getInstance().token.addOnSuccessListener {
+            // set the token of the user
+            FirebaseService.token = it
+            curUser.child("userInfo").child("token").setValue(it)
+        }
+        FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
+    }
+
     /*
     private fun readDaysHelper(dayInstance: DatabaseReference, trip: Trip) {
         dayInstance.get().addOnSuccessListener {

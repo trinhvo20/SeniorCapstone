@@ -1,5 +1,6 @@
 package com.example.itin
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -14,13 +15,21 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_friend.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class FriendActivity : AppCompatActivity() {
 
     private lateinit var friends: MutableList<Pair<User, Boolean>>
     private lateinit var friendAdater: FriendAdapter
+
+    // for error messages
+    val TAG = "FriendActivity"
 
     // Some global variables that are accessed throughout the activity
     private var userCount: Int = 0
@@ -100,11 +109,8 @@ class FriendActivity : AppCompatActivity() {
                                     }
                                 else {
                                     FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("reqList").child("Request $myID").setValue(myID)
-                                    //
-                                    // This is where I would add notifications!!!
-                                    //
-                                    //
-                                    //
+                                    // send notification
+                                    createNotification(friendsUID)
                                 }
                             } else {
                                 Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()
@@ -181,6 +187,38 @@ class FriendActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+    }
+
+    // function to make get the token of who we are sending the notification to
+    // then fills out notification
+    private fun createNotification(friendUID: String){
+        FirebaseDatabase.getInstance().getReference("users").child(friendUID).get().addOnSuccessListener {
+            val friendToken = it.child("userInfo").child("token").value.toString()
+            val friendName = it.child("userInfo").child("fullName").value.toString()
+            val title = "Friend Request"
+            val message = "$friendName would like to be your friend!"
+            PushNotification(
+                NotificationData(title,message),
+                friendToken
+            ).also{
+                sendNotification(it)
+            }
+        }
+
+    }
+
+
+    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitInstance.api.postNotification(notification)
+            if(response.isSuccessful) {
+                Log.d(TAG, "Response: ${Gson().toJson(response)}")
+            } else {
+                Log.e(TAG, response.errorBody().toString())
+            }
+        } catch(e: Exception) {
+            Log.e(TAG, e.toString())
         }
     }
 }
