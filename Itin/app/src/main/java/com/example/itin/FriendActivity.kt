@@ -110,7 +110,7 @@ class FriendActivity : AppCompatActivity() {
                                 else {
                                     FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("reqList").child("Request $myID").setValue(myID)
                                     // send notification
-                                    createNotification(friendsUID)
+                                    //createNotification(friendsUID)
                                 }
                             } else {
                                 Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()
@@ -178,6 +178,7 @@ class FriendActivity : AppCompatActivity() {
 
                         val user = User(
                             uid,
+                            "null",
                             username,
                             "null",
                             "null"

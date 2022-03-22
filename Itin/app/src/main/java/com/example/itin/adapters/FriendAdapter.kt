@@ -40,9 +40,9 @@ class FriendAdapter (
 
         holder.itemView.apply {
 
-            var storageReference = FirebaseStorage.getInstance().getReference("Users/${curFriend.fullName}.jpg")
+            var storageReference = FirebaseStorage.getInstance().getReference("Users/${curFriend.uid}.jpg")
             val localFileV2 =
-                File.createTempFile("tempImage_${curFriend.fullName}", "jpg")
+                File.createTempFile("tempImage_${curFriend.uid}", "jpg")
             storageReference.getFile(localFileV2).addOnSuccessListener {
                 val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
                 friendsPP.setImageBitmap(bitmap)
