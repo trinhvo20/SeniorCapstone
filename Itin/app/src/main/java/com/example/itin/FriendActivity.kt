@@ -168,9 +168,10 @@ class FriendActivity : AppCompatActivity() {
                 curFriend.child(friendsUid).get().addOnSuccessListener {
                     if (it.exists()) {
                         val username = it.child("userInfo").child("username").value.toString()
+                        val uid = it.child("userInfo").child("uid").value.toString()
 
                         val user = User(
-                            "null",
+                            uid,
                             username,
                             "null",
                             "null"
