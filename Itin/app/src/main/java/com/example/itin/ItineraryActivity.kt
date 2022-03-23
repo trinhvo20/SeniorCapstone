@@ -3,6 +3,7 @@ package com.example.itin
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -15,11 +16,14 @@ import com.example.itin.classes.Trip
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_itinerary.*
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
+// for notifications / FCM
+const val TOPIC = "/topics/myTopic2"
 
 class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListener {
     private lateinit var dayAdapter : DayAdapter

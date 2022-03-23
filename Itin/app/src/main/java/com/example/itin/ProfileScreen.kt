@@ -193,9 +193,9 @@ class ProfileScreen : AppCompatActivity() {
                 if (it.exists()) {
                     ID = it.child("$username").value.toString()
                     masterUserList.child(username).removeValue()
-                    masterUserList.child(ID).child(username).removeValue()
-                    masterUserList.child(newUsername).setValue(ID)
-                    masterUserList.child(ID).child(newUsername).setValue(uid)
+                    masterUserList.child(ID).child("UID").removeValue()
+                    masterUserList.child(newUsername).setValue("$ID")
+                    masterUserList.child(ID).child("UID").setValue(uid)
                 } else {
                     Log.d("TripActivity", "There is no masterUserList")
                 }

@@ -1,5 +1,6 @@
 package com.example.itin.adapters
 
+import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,8 +12,12 @@ import com.example.itin.classes.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.activity_friend.*
 import kotlinx.android.synthetic.main.friend_item.view.*
+import kotlinx.android.synthetic.main.trip_item.view.*
+import java.io.File
 
 class FriendAdapter (
     private val friends: MutableList<Pair<User, Boolean>>
@@ -30,20 +35,33 @@ class FriendAdapter (
         lateinit var firebaseAuth: FirebaseAuth
         lateinit var masterUserList: DatabaseReference
 
-
         val curFriend = friends[position].first
         val friend = friends[position].second
 
+        holder.itemView.apply {
+
+            var storageReference = FirebaseStorage.getInstance().getReference("Users/${curFriend.uid}.jpg")
+            val localFileV2 =
+                File.createTempFile("tempImage_${curFriend.uid}", "jpg")
+            storageReference.getFile(localFileV2).addOnSuccessListener {
+                val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
+                friendsPP.setImageBitmap(bitmap)
+            }.addOnFailureListener {
+                friendsPP.setImageResource(R.drawable.profile)
+            }
+        }
+
         if (friend == true) {
             holder.itemView.apply {
+                pendingReq.visibility = View.INVISIBLE
+                pendingReq.height = 0
                 acceptButton.visibility = View.INVISIBLE
-                rejButton.visibility = View.INVISIBLE
                 friendFullName.text = curFriend.username
             }
         } else {
             holder.itemView.apply {
+                pendingReq.visibility = View.VISIBLE
                 acceptButton.visibility = View.VISIBLE
-                rejButton.visibility = View.VISIBLE
                 friendFullName.text = curFriend.username
             }
         }

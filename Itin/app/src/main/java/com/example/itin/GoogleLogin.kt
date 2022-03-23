@@ -18,6 +18,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import java.lang.Exception
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_profile_screen.*
 
 class GoogleLogin : AppCompatActivity() {

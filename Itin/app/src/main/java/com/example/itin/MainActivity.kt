@@ -1,5 +1,6 @@
 package com.example.itin
 
+import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -14,6 +15,7 @@ import androidx.core.os.HandlerCompat.postDelayed
 //import androidx.preference.PreferenceManager
 import com.example.itin.classes.Trip
 import com.google.firebase.database.*
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.create_trip.*
 import kotlinx.android.synthetic.main.activity_main.*
 
