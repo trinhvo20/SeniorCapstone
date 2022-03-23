@@ -14,8 +14,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.itin.classes.Activity
 import kotlinx.android.synthetic.main.activity_details.*
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 class DetailsActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.N)
@@ -51,7 +49,7 @@ class DetailsActivity : AppCompatActivity() {
 
         // auto fill fields with existing data, very convenient
         etName.setText(activity.name)
-        tvTime.setText(activity.time)
+        tvTime.text = activity.time
         etLocation.setText(activity.location)
         etCost.setText(activity.cost)
         etNotes.setText(activity.notes)
@@ -68,8 +66,8 @@ class DetailsActivity : AppCompatActivity() {
                 var input = h.toString() + ":" + m
 
                 val df = SimpleDateFormat("H:m")
-                val outputformat = SimpleDateFormat("h:ma")
-                tvTime.text = outputformat.format(df.parse(input))
+                val outputFormat = SimpleDateFormat("h:ma")
+                tvTime.text = outputFormat.format(df.parse(input))
 
 
             }),hour,minute,false)
@@ -111,4 +109,5 @@ class DetailsActivity : AppCompatActivity() {
         newDialog.create()
         newDialog.show()
     }
+    
 }
