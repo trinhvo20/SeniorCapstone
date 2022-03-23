@@ -14,7 +14,6 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.example.itin.ItineraryActivity
 import com.example.itin.R
 import com.example.itin.ShareTripActivity
 import com.example.itin.classes.Activity
