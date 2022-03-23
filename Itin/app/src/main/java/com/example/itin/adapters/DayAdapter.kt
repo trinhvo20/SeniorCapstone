@@ -1,24 +1,31 @@
 package com.example.itin
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Context
+import android.icu.text.SimpleDateFormat
+import android.icu.util.Calendar
 import android.os.Build
+import android.text.format.DateFormat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.Toast
+import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.itin.R
 import com.example.itin.adapters.ActivityAdapter
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.trip_day_item.view.*
 import kotlinx.android.synthetic.main.trip_item.view.tvName
+import org.w3c.dom.Text
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -43,15 +50,41 @@ class DayAdapter(
         // function to add an activity to a day
         @RequiresApi(Build.VERSION_CODES.O)
         private fun addAnActivity(view : View) {
+            val firebaseAuth = FirebaseAuth.getInstance()
+            val masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
+
             val curDay = days[adapterPosition]
+            val tripInstance = masterTripList.child(curDay.tripID.toString())
+            val dayInstance = tripInstance.child("Days").child((curDay.dayInt-1).toString())
+
 
             val view = LayoutInflater.from(context).inflate(R.layout.add_activity, null)
 
             val etName = view.findViewById<EditText>(R.id.etName)
-            val etTime = view.findViewById<EditText>(R.id.etTime)
+            val tvTime = view.findViewById<TextView>(R.id.tvTime)
             val etLocation = view.findViewById<EditText>(R.id.etLocation)
             val etCost = view.findViewById<EditText>(R.id.etCost)
             val etNotes = view.findViewById<EditText>(R.id.etNotes)
+
+            val ibTimePicker = view.findViewById<View>(R.id.ibTimePick)
+            ibTimePicker.setOnClickListener{
+                val hour = 11
+                val minute = 59
+
+                val tpd = TimePickerDialog(context,TimePickerDialog.OnTimeSetListener(function = { view, h, m ->
+
+                    //Toast.makeText(context, h.toString() + " : " + m , Toast.LENGTH_LONG).show()
+                    var input = h.toString() + ":" + m
+
+                    val df = SimpleDateFormat("H:m")
+                    val outputformat = SimpleDateFormat("h:ma")
+                    tvTime.text = outputformat.format(df.parse(input))
+
+
+                }),hour,minute,false)
+
+                tpd.show()
+            }
 
 
             val newDialog = AlertDialog.Builder(context)
@@ -61,7 +94,7 @@ class DayAdapter(
                 val location = etLocation.text.toString()
                 val cost = etCost.text.toString()
                 val notes = etNotes.text.toString()
-                val time = etTime.text.toString()
+                val time = tvTime.text.toString()
 
                 val name = if (etName.text.toString().isEmpty()) {
                     "$location"
@@ -69,7 +102,7 @@ class DayAdapter(
                     etName.text.toString()
                 }
 
-                val activity = Activity(name, time, location, cost, notes,curDay.tripID,curDay.activities.size)
+                val activity = Activity(name, time, location, cost, notes,curDay.tripID,"")
 
                 curDay.activities.add(activity)
                 sendActivityToDB(curDay,activity)
@@ -165,7 +198,9 @@ class DayAdapter(
         dayInstance.child("ActivityCount").setValue(curDay.activities.size)
 
         val activityInstance = dayInstance.push()
+
         if (activity != null) {
+            activity.actID = activityInstance.key.toString()
             activityInstance.setValue(activity)
         }
     }

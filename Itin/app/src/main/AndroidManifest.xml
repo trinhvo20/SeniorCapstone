@@ -15,6 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Itin">
         <activity
+            android:name=".ShareTripActivity"
+            android:exported="false" />
+        <activity
             android:name=".ChatActivity"
             android:exported="false" />
         <activity
