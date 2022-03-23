@@ -107,7 +107,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         Intent(this, DetailsActivity::class.java).also {
             // pass the current trip object between activities
             it.putExtra("ACTIVITY", days[daypos][position])
-            // start ItineraryActivity
+            it.putExtra("DAY_ID", days[daypos].dayInt)
             startActivity(it)
         }
     }
