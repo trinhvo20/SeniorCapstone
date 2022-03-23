@@ -15,8 +15,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.messaging.FirebaseMessaging
-import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_friend.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,6 +36,7 @@ class FriendActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var masterUserList: DatabaseReference
     private lateinit var curUser: DatabaseReference
+    private lateinit var uid: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +49,7 @@ class FriendActivity : AppCompatActivity() {
 
         firebaseAuth = FirebaseAuth.getInstance()
         val firebaseUser = firebaseAuth.currentUser
-        val uid = firebaseUser!!.uid
+        uid = firebaseUser!!.uid
         curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
         masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
 
@@ -65,7 +64,7 @@ class FriendActivity : AppCompatActivity() {
                 try {
                     userCount = it.child("userCount").value.toString().toInt()
                     Log.d("FriendActivity", "userCount: $userCount")
-                    readData(userCount - 1)
+                    readData(userCount)
                 } catch (e: NumberFormatException) {
                     masterUserList.child("userCount").setValue(0)
                 }
@@ -110,7 +109,7 @@ class FriendActivity : AppCompatActivity() {
                                 else {
                                     FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("reqList").child("Request $myID").setValue(myID)
                                     // send notification
-                                    //createNotification(friendsUID)
+                                    createNotification(friendsUID)
                                 }
                             } else {
                                 Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()
@@ -190,15 +189,14 @@ class FriendActivity : AppCompatActivity() {
             }
         }
     }
-
     // function to make get the token of who we are sending the notification to
     // then fills out notification
     private fun createNotification(friendUID: String){
-        FirebaseDatabase.getInstance().getReference("users").child(friendUID).get().addOnSuccessListener {
-            val friendToken = it.child("userInfo").child("token").value.toString()
-            val friendName = it.child("userInfo").child("fullName").value.toString()
+        FirebaseDatabase.getInstance().getReference("users").get().addOnSuccessListener {
+            val friendToken = it.child(friendUID).child("userInfo").child("token").value.toString()
+            val fullName = it.child(uid).child("userInfo").child("fullName").value.toString()
             val title = "Friend Request"
-            val message = "$friendName would like to be your friend!"
+            val message = "$fullName would like to be your friend!"
             PushNotification(
                 NotificationData(title,message),
                 friendToken
@@ -214,7 +212,7 @@ class FriendActivity : AppCompatActivity() {
         try {
             val response = RetrofitInstance.api.postNotification(notification)
             if(response.isSuccessful) {
-                Log.d(TAG, "Response: ${Gson().toJson(response)}")
+                Log.d(TAG, "Response: Success!")
             } else {
                 Log.e(TAG, response.errorBody().toString())
             }
