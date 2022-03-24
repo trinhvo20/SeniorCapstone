@@ -115,7 +115,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
     @RequiresApi(Build.VERSION_CODES.O)
     // function to sort the activities on each of the day, it is a modified Insertion sort
     private fun activitySort (tempDays : MutableList<Day>){
-        var formatter = DateTimeFormatter.ofPattern("h:ma")
+        var formatter = DateTimeFormatter.ofPattern("h:mm a")
 
             for(day in tempDays) {
                 for (i in 0 until day.activities.size) {

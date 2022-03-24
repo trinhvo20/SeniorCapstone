@@ -75,10 +75,10 @@ class DetailsActivity : AppCompatActivity() {
                 TimePickerDialog.OnTimeSetListener(function = { view, h, m ->
 
                 //Toast.makeText(this, h.toString() + " : " + m , Toast.LENGTH_LONG).show()
-                var input = h.toString() + ":" + m
+                var input = "$h:$m"
 
-                val df = SimpleDateFormat("H:m")
-                val outputFormat = SimpleDateFormat("h:ma")
+                val df = SimpleDateFormat("H:mm")
+                val outputFormat = SimpleDateFormat("h:mm a")
                 tvTime.text = outputFormat.format(df.parse(input))
 
 
