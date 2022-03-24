@@ -133,7 +133,7 @@ class GoogleLogin : AppCompatActivity() {
                     .setDescription("Fingerprint Authentication")
                     .setNegativeButton("", this.mainExecutor, DialogInterface.OnClickListener { dialog, which ->
                     }).build()
-                //biometricPrompt.authenticate(getCancellationSignal(), mainExecutor, authenticationCallback)
+                biometricPrompt.authenticate(getCancellationSignal(), mainExecutor, authenticationCallback)
                 finish()
             }
         }
@@ -164,7 +164,9 @@ class GoogleLogin : AppCompatActivity() {
     private fun getCancellationSignal(): CancellationSignal {
         cancellationSignal = CancellationSignal()
         cancellationSignal?.setOnCancelListener {
-            notifyUser("Authentication was cancelled by the user")
+            finish()
+            startActivity(Intent(this@GoogleLogin, MainActivity::class.java))
+            //notifyUser("Authentication was cancelled by the user")
         }
         return cancellationSignal as CancellationSignal
     }
