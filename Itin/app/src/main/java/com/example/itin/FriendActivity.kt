@@ -105,18 +105,29 @@ class FriendActivity : AppCompatActivity() {
 
                                 if (friendsList.contains(friendsIDInt)) {
                                         Toast.makeText(this, "This user is already your friend!", Toast.LENGTH_SHORT).show()
-                                    }
+                                        friendsUsername.text.clear()
+                                }
                                 else {
                                     FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("reqList").child("Request $myID").setValue(myID)
+                                    // User feedback
+                                    Toast.makeText(this, "Request Sent", Toast.LENGTH_SHORT).show()
+                                    friendsUsername.text.clear()
                                     // send notification
                                     createNotification(friendsUID)
                                 }
-                            } else {
+                            }
+                            // User does not exist
+                            else {
                                 Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()
+                                friendsUsername.text.clear()
                             }
                         }
                     }
                 }
+            }
+            else{
+                Toast.makeText(this, "User does not exist!", Toast.LENGTH_SHORT).show()
+                friendsUsername.text.clear()
             }
         }
     }
