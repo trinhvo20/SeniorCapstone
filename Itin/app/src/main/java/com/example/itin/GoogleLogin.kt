@@ -2,9 +2,16 @@
 package com.example.itin
 
 import android.content.Intent
+import android.content.Context
+import android.content.DialogInterface
+import android.hardware.biometrics.BiometricPrompt
+import android.os.Build
 import android.os.Bundle
+import android.os.CancellationSignal
+import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.itin.classes.User
 import com.example.itin.databinding.GoogleLoginBinding
@@ -22,6 +29,25 @@ import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_profile_screen.*
 
 class GoogleLogin : AppCompatActivity() {
+
+    // values needed for fingerprint authentication
+    // source code from Briana Nzivu
+    private var useFingerprint: Boolean = false
+    private var cancellationSignal: CancellationSignal? = null
+    private val  authenticationCallback: BiometricPrompt.AuthenticationCallback
+        get() =
+            @RequiresApi(Build.VERSION_CODES.P)
+            object: BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence?) {
+                    super.onAuthenticationError(errorCode, errString)
+                    notifyUser("Authentication error: $errString")
+                }
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult?) {
+                    super.onAuthenticationSucceeded(result)
+                    notifyUser("Authentication Success!")
+                    startActivity(Intent(this@GoogleLogin, TripActivity::class.java))
+                }
+            }
 
     // View binding
     private lateinit var binding: GoogleLoginBinding
@@ -42,10 +68,15 @@ class GoogleLogin : AppCompatActivity() {
     private lateinit var rootNode: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
 
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = GoogleLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // for biometric authentication
+        val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        useFingerprint = sp.getBoolean("fingerprint_key", false)
 
         // for realtime database
         rootNode = FirebaseDatabase.getInstance()
@@ -87,12 +118,25 @@ class GoogleLogin : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
     private fun checkUser() {
         val firebaseUser = firebaseAuth.currentUser
         // This is the case if user is already logged in, skips login screen if that is the case
         if (firebaseUser != null) {
-            startActivity(Intent(this@GoogleLogin, TripActivity::class.java))
-            finish()
+            if(!useFingerprint) {
+                startActivity(Intent(this@GoogleLogin, TripActivity::class.java))
+                finish()
+            }
+            else{
+                val biometricPrompt : BiometricPrompt = BiometricPrompt.Builder(this)
+                    .setTitle("Title")
+                    .setSubtitle("Authenticaion is required")
+                    .setDescription("Fingerprint Authentication")
+                    .setNegativeButton("Cancel", this.mainExecutor, DialogInterface.OnClickListener { dialog, which ->
+                    }).build()
+                biometricPrompt.authenticate(getCancellationSignal(), mainExecutor, authenticationCallback)
+                finish()
+            }
         }
     }
 
@@ -110,6 +154,20 @@ class GoogleLogin : AppCompatActivity() {
                 Log.d(TAG, "onActivityResult: ${e.message}")
             }
         }
+    }
+
+    // create a toast
+    private fun notifyUser(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    // if the user hits cancel instead of giving fingerprint
+    private fun getCancellationSignal(): CancellationSignal {
+        cancellationSignal = CancellationSignal()
+        cancellationSignal?.setOnCancelListener {
+            notifyUser("Authentication was cancelled by the user")
+        }
+        return cancellationSignal as CancellationSignal
     }
 
     private fun firebaseAuthWithGoogleAccount(account: GoogleSignInAccount?) {
