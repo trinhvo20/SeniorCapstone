@@ -53,22 +53,28 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvActivityList"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/swipeContainer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" >
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvActivityList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/chatBoxBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_chat"
-            app:layout_constraintBottom_toBottomOf="@+id/rvActivityList"
+            app:layout_constraintBottom_toBottomOf="@+id/swipeContainer"
             android:layout_marginBottom="10dp"
             android:layout_marginRight="10dp"
             app:layout_constraintEnd_toEndOf="parent" />

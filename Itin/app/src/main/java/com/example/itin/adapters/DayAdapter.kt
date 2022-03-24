@@ -187,4 +187,16 @@ class DayAdapter(
             activityInstance.setValue(activity)
         }
     }
+
+    // Clean all elements of the recycler
+    fun clear() {
+        days.clear()
+        notifyDataSetChanged()
+    }
+
+    // Add a list of items -- change to type used
+    fun addAll(dayList: MutableList<Day>) {
+        days.addAll(dayList)
+        notifyDataSetChanged()
+    }
 }
