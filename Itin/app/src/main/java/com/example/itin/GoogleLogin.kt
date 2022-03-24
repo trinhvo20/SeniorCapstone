@@ -129,12 +129,11 @@ class GoogleLogin : AppCompatActivity() {
             }
             else{
                 val biometricPrompt : BiometricPrompt = BiometricPrompt.Builder(this)
-                    .setTitle("Title")
-                    .setSubtitle("Authenticaion is required")
+                    .setTitle("Itin Security")
                     .setDescription("Fingerprint Authentication")
-                    .setNegativeButton("Cancel", this.mainExecutor, DialogInterface.OnClickListener { dialog, which ->
+                    .setNegativeButton("", this.mainExecutor, DialogInterface.OnClickListener { dialog, which ->
                     }).build()
-                biometricPrompt.authenticate(getCancellationSignal(), mainExecutor, authenticationCallback)
+                //biometricPrompt.authenticate(getCancellationSignal(), mainExecutor, authenticationCallback)
                 finish()
             }
         }
