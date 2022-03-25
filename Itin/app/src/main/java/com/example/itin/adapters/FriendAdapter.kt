@@ -107,4 +107,10 @@ class FriendAdapter (
         return friends.size
     }
 
+    // Clean all elements of the recycler
+    fun clear() {
+        friends.clear()
+        notifyDataSetChanged()
+    }
+
 }
