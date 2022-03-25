@@ -1,20 +1,19 @@
 package com.example.itin
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.LinearLayout
+import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.FriendAdapter
 import com.example.itin.classes.User
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_friend.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,10 +22,11 @@ import kotlinx.coroutines.launch
 
 class FriendActivity : AppCompatActivity() {
 
+    // Variables for recycler view
     private lateinit var friends: MutableList<Pair<User, Boolean>>
     private lateinit var friendAdater: FriendAdapter
 
-    // for error messages
+    // Variable for error messages
     val TAG = "FriendActivity"
 
     // Some global variables that are accessed throughout the activity
@@ -38,7 +38,15 @@ class FriendActivity : AppCompatActivity() {
     private lateinit var curUser: DatabaseReference
     private lateinit var uid: String
 
+    // Variables for floating button animations
+    private val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_open_anim) }
+    private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_close_anim) }
+    private val fromBottom: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.from_bottom_anim) }
+    private val toBottom: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.to_bottom_anim) }
+    private var clicked = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Set up and bind recycler view
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_friend)
 
@@ -47,15 +55,24 @@ class FriendActivity : AppCompatActivity() {
         rvFriends.adapter = friendAdater
         rvFriends.layoutManager = LinearLayoutManager(this)
 
+        // Firebase initialization information
         firebaseAuth = FirebaseAuth.getInstance()
         val firebaseUser = firebaseAuth.currentUser
         uid = firebaseUser!!.uid
         curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
         masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
 
-        // Functions that are called when the buttons are clicked (finish just closes the page)
+        // Setting up floating buttons
+        btExpandMenu.setOnClickListener { onExpandButtonClicked() }
+        btSendReq.setOnClickListener { onSendButtonClicked() }
+        btSearchFriend.setOnClickListener { searchVisibility() }
+
+        btRmFriend.setOnClickListener {
+
+        }
+
+        // Finishes activity when back button is finished
         backBtn.setOnClickListener { finish() }
-        btAddFriend.setOnClickListener { addFriendReq() }
 
         // Overwrites the initial value of 0 for numFriends if user has any friends
         masterUserList.get().addOnSuccessListener {
@@ -104,14 +121,14 @@ class FriendActivity : AppCompatActivity() {
                                 val friendsUID = it.child(friendsIDStr).child("UID").value.toString()
 
                                 if (friendsList.contains(friendsIDInt)) {
-                                        Toast.makeText(this, "This user is already your friend!", Toast.LENGTH_SHORT).show()
-                                        friendsUsername.text.clear()
+                                    Toast.makeText(this, "This user is already your friend!", Toast.LENGTH_SHORT).show()
+                                    friendsUsername.text?.clear()
                                 }
                                 else {
                                     FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("reqList").child("Request $myID").setValue(myID)
                                     // User feedback
                                     Toast.makeText(this, "Request Sent", Toast.LENGTH_SHORT).show()
-                                    friendsUsername.text.clear()
+                                    friendsUsername.text?.clear()
                                     // send notification
                                     createNotification(friendsUID)
                                 }
@@ -119,7 +136,7 @@ class FriendActivity : AppCompatActivity() {
                             // User does not exist
                             else {
                                 Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()
-                                friendsUsername.text.clear()
+                                friendsUsername.text?.clear()
                             }
                         }
                     }
@@ -127,7 +144,7 @@ class FriendActivity : AppCompatActivity() {
             }
             else{
                 Toast.makeText(this, "User does not exist!", Toast.LENGTH_SHORT).show()
-                friendsUsername.text.clear()
+                friendsUsername.text?.clear()
             }
         }
     }
@@ -217,7 +234,75 @@ class FriendActivity : AppCompatActivity() {
         }
 
     }
+    private fun onExpandButtonClicked() {
+        setVisibility(clicked)
+        setAnimation(clicked)
+        setClickable(clicked)
+        clicked = !clicked
+    }
 
+    private fun searchVisibility() {
+        btSearchFriend.visibility = View.INVISIBLE
+        btRmFriend.visibility = View.INVISIBLE
+        btExpandMenu.visibility = View.INVISIBLE
+        btSearchFriend.isClickable = false
+        btRmFriend.isClickable = false
+        btExpandMenu.isClickable = false
+        btSearchFriend.startAnimation(toBottom)
+        btRmFriend.startAnimation(toBottom)
+        btExpandMenu.startAnimation(toBottom)
+        clicked = !clicked
+
+        btSendReq.visibility = View.VISIBLE
+        friendsUsername.visibility = View.VISIBLE
+        btSendReq.isClickable = true
+        friendsUsername.clearFocus()
+    }
+
+    private fun onSendButtonClicked() {
+        addFriendReq()
+
+        btSendReq.visibility = View.INVISIBLE
+        friendsUsername.visibility = View.INVISIBLE
+        btSendReq.isClickable = false
+
+        btExpandMenu.visibility = View.VISIBLE
+        btExpandMenu.isClickable = true
+        btExpandMenu.startAnimation(fromBottom)
+
+    }
+
+    private fun setAnimation(clicked: Boolean) {
+        if (!clicked) {
+            btSearchFriend.startAnimation(fromBottom)
+            btRmFriend.startAnimation(fromBottom)
+            btExpandMenu.startAnimation(rotateOpen)
+        } else {
+            btSearchFriend.startAnimation(toBottom)
+            btRmFriend.startAnimation(toBottom)
+            btExpandMenu.startAnimation(rotateClose)
+        }
+    }
+
+    private fun setVisibility(clicked: Boolean) {
+        if (!clicked) {
+            btSearchFriend.visibility = View.VISIBLE
+            btRmFriend.visibility = View.VISIBLE
+        } else {
+            btSearchFriend.visibility = View.INVISIBLE
+            btRmFriend.visibility = View.INVISIBLE
+        }
+    }
+    
+    private fun setClickable(clicked: Boolean) {
+        if (!clicked) {
+            btSearchFriend.isClickable = true
+            btRmFriend.isClickable = true
+        } else {
+            btSearchFriend.isClickable = false
+            btRmFriend.isClickable = false
+        }
+    }
 
     private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
         try {
