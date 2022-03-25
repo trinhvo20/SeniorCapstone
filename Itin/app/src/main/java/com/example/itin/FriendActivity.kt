@@ -1,9 +1,12 @@
 package com.example.itin
 
+import android.content.Intent
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.FriendAdapter
 import com.example.itin.classes.User
@@ -36,6 +39,7 @@ class FriendActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_friend)
+        loadSettings()
 
         friends = mutableListOf()
         friendAdapter = FriendAdapter(friends)
@@ -49,7 +53,10 @@ class FriendActivity : AppCompatActivity() {
         masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
 
         // Functions that are called when the buttons are clicked (finish just closes the page)
-        backBtn.setOnClickListener { finish() }
+        backBtn.setOnClickListener {
+            finish()
+            startActivity(Intent(this, ProfileScreen::class.java))
+        }
         btAddFriend.setOnClickListener { addFriendReq() }
 
         // Overwrites the initial value of 0 for numFriends if user has any friends
@@ -214,8 +221,6 @@ class FriendActivity : AppCompatActivity() {
         }
 
     }
-
-
     private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
         try {
             val response = RetrofitInstance.api.postNotification(notification)
@@ -226,6 +231,21 @@ class FriendActivity : AppCompatActivity() {
             }
         } catch(e: Exception) {
             Log.e(TAG, e.toString())
+        }
+    }
+    private fun loadSettings(){
+        val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+
+        val dark = sp.getBoolean("dark_mode_key",false)
+        if("$dark" == "false"){
+            // this is light mode
+            val theme = AppCompatDelegate.MODE_NIGHT_NO
+            AppCompatDelegate.setDefaultNightMode(theme)
+        }
+        else{
+            // this is dark mode
+            val theme = AppCompatDelegate.MODE_NIGHT_YES
+            AppCompatDelegate.setDefaultNightMode(theme)
         }
     }
 }
