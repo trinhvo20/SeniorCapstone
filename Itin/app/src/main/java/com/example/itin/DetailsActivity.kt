@@ -73,8 +73,6 @@ class DetailsActivity : AppCompatActivity() {
 
             val tpd = TimePickerDialog(this,
                 TimePickerDialog.OnTimeSetListener(function = { view, h, m ->
-
-                //Toast.makeText(this, h.toString() + " : " + m , Toast.LENGTH_LONG).show()
                 var input = "$h:$m"
 
                 val df = SimpleDateFormat("H:mm")

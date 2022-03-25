@@ -106,7 +106,6 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
     }
 
     override fun onItemClick(position: Int, daypos: Int) {
-        Toast.makeText(this, "Day: $daypos \nActivity: $position", Toast.LENGTH_SHORT).show()
         Intent(this, DetailsActivity::class.java).also {
             // pass the current trip object between activities
             it.putExtra("ACTIVITY", days[daypos][position])

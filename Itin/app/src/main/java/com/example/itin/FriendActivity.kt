@@ -1,20 +1,15 @@
 package com.example.itin
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.FriendAdapter
 import com.example.itin.classes.User
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_friend.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +19,7 @@ import kotlinx.coroutines.launch
 class FriendActivity : AppCompatActivity() {
 
     private lateinit var friends: MutableList<Pair<User, Boolean>>
-    private lateinit var friendAdater: FriendAdapter
+    private lateinit var friendAdapter: FriendAdapter
 
     // for error messages
     val TAG = "FriendActivity"
@@ -43,8 +38,8 @@ class FriendActivity : AppCompatActivity() {
         setContentView(R.layout.activity_friend)
 
         friends = mutableListOf()
-        friendAdater = FriendAdapter(friends)
-        rvFriends.adapter = friendAdater
+        friendAdapter = FriendAdapter(friends)
+        rvFriends.adapter = friendAdapter
         rvFriends.layoutManager = LinearLayoutManager(this)
 
         firebaseAuth = FirebaseAuth.getInstance()
@@ -72,6 +67,19 @@ class FriendActivity : AppCompatActivity() {
                 Log.d("FriendActivity", "The user that is logged in doesn't exist?")
             }
         }
+
+        // This following codes handle Pull-to-Refresh the Days RecyclerView
+        // It will clear the days list and load all days from the DB again
+        friendSwipeContainer.setOnRefreshListener {
+            friendAdapter.clear()
+            readData(userCount)
+            friendSwipeContainer.isRefreshing = false
+        }
+        // Configure the refreshing colors
+        friendSwipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+            android.R.color.holo_green_light,
+            android.R.color.holo_orange_light,
+            android.R.color.holo_red_light);
     }
 
     private fun addFriendReq() {
@@ -183,7 +191,7 @@ class FriendActivity : AppCompatActivity() {
                             "null"
                         )
                         friends.add(Pair(user, friend))
-                        friendAdater.notifyDataSetChanged()
+                        friendAdapter.notifyDataSetChanged()
                     }
                 }
             }
