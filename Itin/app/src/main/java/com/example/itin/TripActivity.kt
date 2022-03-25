@@ -84,7 +84,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 // Try to grab the value from the DB for tripCount, if it doesn't exist, create the child
                 try {
                     tripCount = it.child("tripCount").value.toString().toInt()
-                    Log.d("TripActivity", "tripCount: $tripCount")
                     // check if user is there, then add in previous trips from database
                     checkUser(tripCount)
                 } catch (e: NumberFormatException) {
@@ -219,7 +218,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 // Write to the database, then increment tripCount in the database
                 sendToDB(trip, tripCount)
                 tripCount += 1
-                Log.d("TripActivity", "tripCount updated: $tripCount")
+                //Log.d("TripActivity", "tripCount updated: $tripCount")
                 masterTripList.child("tripCount").setValue(tripCount)
                 if (active) {
                     trips.add(trip)
@@ -261,8 +260,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             curTrips.child("Trip $i").get().addOnSuccessListener {
                 if (it.exists()) {
                     accessMasterTripList(i)
-                } else {
-                    Log.d("print", "User does not exist")
                 }
             }.addOnCanceledListener {
                 Log.d("print", "Failed to fetch the user")
