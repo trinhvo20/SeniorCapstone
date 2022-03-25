@@ -64,6 +64,8 @@ class ShareTripActivity : AppCompatActivity() {
                 Log.d("FriendActivity", "The user that is logged in doesn't exist?")
             }
         }
+
+        backBtn.setOnClickListener{finish()}
     }
 
     private fun ShareByUsername(Username: String, tripID: Int?) {
