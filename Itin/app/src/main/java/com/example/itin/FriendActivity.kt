@@ -1,20 +1,18 @@
 package com.example.itin
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.FriendAdapter
 import com.example.itin.classes.User
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import kotlinx.android.synthetic.main.activity_friend.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +22,7 @@ import kotlinx.coroutines.launch
 class FriendActivity : AppCompatActivity() {
 
     private lateinit var friends: MutableList<Pair<User, Boolean>>
-    private lateinit var friendAdater: FriendAdapter
+    private lateinit var friendAdapter: FriendAdapter
 
     // for error messages
     val TAG = "FriendActivity"
@@ -41,10 +39,11 @@ class FriendActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_friend)
+        loadSettings()
 
         friends = mutableListOf()
-        friendAdater = FriendAdapter(friends)
-        rvFriends.adapter = friendAdater
+        friendAdapter = FriendAdapter(friends)
+        rvFriends.adapter = friendAdapter
         rvFriends.layoutManager = LinearLayoutManager(this)
 
         firebaseAuth = FirebaseAuth.getInstance()
@@ -54,7 +53,10 @@ class FriendActivity : AppCompatActivity() {
         masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
 
         // Functions that are called when the buttons are clicked (finish just closes the page)
-        backBtn.setOnClickListener { finish() }
+        backBtn.setOnClickListener {
+            finish()
+            startActivity(Intent(this, ProfileScreen::class.java))
+        }
         btAddFriend.setOnClickListener { addFriendReq() }
 
         // Overwrites the initial value of 0 for numFriends if user has any friends
@@ -72,6 +74,19 @@ class FriendActivity : AppCompatActivity() {
                 Log.d("FriendActivity", "The user that is logged in doesn't exist?")
             }
         }
+
+        // This following codes handle Pull-to-Refresh the Days RecyclerView
+        // It will clear the days list and load all days from the DB again
+        friendSwipeContainer.setOnRefreshListener {
+            friendAdapter.clear()
+            readData(userCount)
+            friendSwipeContainer.isRefreshing = false
+        }
+        // Configure the refreshing colors
+        friendSwipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+            android.R.color.holo_green_light,
+            android.R.color.holo_orange_light,
+            android.R.color.holo_red_light);
     }
 
     private fun addFriendReq() {
@@ -105,18 +120,29 @@ class FriendActivity : AppCompatActivity() {
 
                                 if (friendsList.contains(friendsIDInt)) {
                                         Toast.makeText(this, "This user is already your friend!", Toast.LENGTH_SHORT).show()
-                                    }
+                                        friendsUsername.text.clear()
+                                }
                                 else {
                                     FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("reqList").child("Request $myID").setValue(myID)
+                                    // User feedback
+                                    Toast.makeText(this, "Request Sent", Toast.LENGTH_SHORT).show()
+                                    friendsUsername.text.clear()
                                     // send notification
                                     createNotification(friendsUID)
                                 }
-                            } else {
+                            }
+                            // User does not exist
+                            else {
                                 Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()
+                                friendsUsername.text.clear()
                             }
                         }
                     }
                 }
+            }
+            else{
+                Toast.makeText(this, "User does not exist!", Toast.LENGTH_SHORT).show()
+                friendsUsername.text.clear()
             }
         }
     }
@@ -183,7 +209,7 @@ class FriendActivity : AppCompatActivity() {
                             "null"
                         )
                         friends.add(Pair(user, friend))
-                        friendAdater.notifyDataSetChanged()
+                        friendAdapter.notifyDataSetChanged()
                     }
                 }
             }
@@ -206,8 +232,6 @@ class FriendActivity : AppCompatActivity() {
         }
 
     }
-
-
     private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
         try {
             val response = RetrofitInstance.api.postNotification(notification)
@@ -218,6 +242,21 @@ class FriendActivity : AppCompatActivity() {
             }
         } catch(e: Exception) {
             Log.e(TAG, e.toString())
+        }
+    }
+    private fun loadSettings(){
+        val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+
+        val dark = sp.getBoolean("dark_mode_key",false)
+        if("$dark" == "false"){
+            // this is light mode
+            val theme = AppCompatDelegate.MODE_NIGHT_NO
+            AppCompatDelegate.setDefaultNightMode(theme)
+        }
+        else{
+            // this is dark mode
+            val theme = AppCompatDelegate.MODE_NIGHT_YES
+            AppCompatDelegate.setDefaultNightMode(theme)
         }
     }
 }

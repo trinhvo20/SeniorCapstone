@@ -102,4 +102,7 @@ dependencies {
     // for biometric scanner
     def biometricLibraryVersion = "1.0.1"
     implementation "androidx.biometric:biometric:$biometricLibraryVersion"
+    
+    // swipe to refresh layout
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 }

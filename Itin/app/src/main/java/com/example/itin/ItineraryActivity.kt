@@ -3,8 +3,6 @@ package com.example.itin
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.preference.PreferenceManager
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -16,8 +14,8 @@ import com.example.itin.classes.Trip
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_itinerary.*
+import kotlinx.android.synthetic.main.activity_itinerary.tvName
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -32,19 +30,18 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
     private lateinit var uid : String
     private lateinit var startdate : LocalDate
     private lateinit var formatter : DateTimeFormatter
-    private lateinit var curUser: DatabaseReference
-    private lateinit var curTrips: DatabaseReference
+    private lateinit var databaseReference: DatabaseReference
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var masterTripList: DatabaseReference
-    @RequiresApi(Build.VERSION_CODES.O)
-    
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_itinerary)
 
         firebaseAuth = FirebaseAuth.getInstance()
         masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
+        databaseReference = FirebaseDatabase.getInstance().reference
 
         // get the trip object from MainActivity
         trip = intent.getSerializableExtra("EXTRA_TRIP") as Trip
@@ -68,13 +65,6 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         startdate = LocalDate.parse(trip.startDate, formatter)
         var enddate = LocalDate.parse(trip.endDate, formatter)
 
-        // Navigates to the correct directory (masterTripList)
-        val tripInstance = masterTripList.child(trip.tripID.toString())
-
-        // read days from DB
-        // may seem redundant considering that a lot of this code is implemented in tripActivity
-            // but it does catch some cases that tripActivity wouldn't
-        //readDays(tripInstance)
         activitySort(days)
         dayAdapter.notifyDataSetChanged()
 
@@ -93,45 +83,105 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
                 }
             }
         }
-        // open chat box
+
         chatBoxBtn.setOnClickListener {
             Intent(this, ChatActivity::class.java).also {
                 it.putExtra("trip", trip)
                 startActivity(it)
             }
         }
+
+        // This following codes handle Pull-to-Refresh the Days RecyclerView
+        // It will clear the days list and load all days from the DB again
+        swipeContainer.setOnRefreshListener {
+            dayAdapter.clear()
+            loadDaysFromDB()
+            swipeContainer.isRefreshing = false
+        }
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+            android.R.color.holo_green_light,
+            android.R.color.holo_orange_light,
+            android.R.color.holo_red_light);
     }
 
     override fun onItemClick(position: Int, daypos: Int) {
-        Toast.makeText(this, "Day: $daypos \nActivity: $position", Toast.LENGTH_SHORT).show()
         Intent(this, DetailsActivity::class.java).also {
             // pass the current trip object between activities
             it.putExtra("ACTIVITY", days[daypos][position])
-            // start ItineraryActivity
+            it.putExtra("DAY_ID", days[daypos].dayInt)
             startActivity(it)
+        }
+    }
+
+    // This function helps the Pull-to-Refresh feature
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun loadDaysFromDB() {
+        val tripID = trip.tripID.toString()
+        databaseReference.child("masterTripList").child(tripID).child("Days")
+            .get().addOnSuccessListener {
+                if (it.exists()) {
+                    // will cycle through the amount of days that we have
+                    for (i in 0 until it.child("DayCount").value.toString().toInt()){
+                        // will make the day classes
+                        val dayInstance = databaseReference.child("masterTripList").child(tripID).child("Days").child(i.toString())
+                        loadActivitiesFromDB(dayInstance, trip)
+                    }
+                }
+            }
+    }
+    // This function helps the Pull-to-Refresh feature
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun loadActivitiesFromDB(dayInstance: DatabaseReference, trip: Trip) {
+        dayInstance.get().addOnSuccessListener {
+            if (it.exists()) {
+                // obtain dayNumber, dayInt, and tripID
+                var dayNumber = it.child("Day Number").value.toString()
+                val dayInt = dayNumber.toInt()
+                dayNumber = dayNumber + ": " + startdate.plusDays(dayNumber.toLong()-1).format(formatter).toString()
+                val tripID = it.child("TripID").value.toString().toInt()
+                val actList : MutableList<Activity?> = mutableListOf()
+                // pull the activity from the DB
+                for (i in it.children ) {
+                    val name = i.child("name").value.toString()
+                    if (name == "null") {break}
+                    val location = i.child("location").value.toString()
+                    val time = i.child("time").value.toString()
+                    val cost = i.child("cost").value.toString()
+                    val notes = i.child("notes").value.toString()
+                    var tripID = i.child("tripID").value.toString().toInt()
+                    var activityID = i.child("actID").value.toString()
+
+                    val activity = Activity(name, time, location, cost, notes, tripID, activityID)
+                    actList.add(activity)
+                }
+
+                val day = Day(dayNumber,actList,dayInt,tripID)
+                days.add(day)
+                dayAdapter.notifyDataSetChanged()
+            }
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     // function to sort the activities on each of the day, it is a modified Insertion sort
     private fun activitySort (tempDays : MutableList<Day>){
-        var formatter = DateTimeFormatter.ofPattern("h:ma")
+        var formatter = DateTimeFormatter.ofPattern("h:mm a")
 
-            for(day in tempDays) {
-                for (i in 0 until day.activities.size) {
-                    val key = day.activities[i]
+        for(day in tempDays) {
+            for (i in 0 until day.activities.size) {
+                val key = day.activities[i]
 
-                    var j = i - 1
+                var j = i - 1
 
-                    if (key != null) {
-                        while (j >= 0 && LocalTime.parse(day.activities[j]?.time, formatter).isAfter(LocalTime.parse(key.time, formatter))){
-                            day.activities[j + 1] = day.activities[j]
-                            j--
-                        }
+                if (key != null) {
+                    while (j >= 0 && LocalTime.parse(day.activities[j]?.time, formatter).isAfter(LocalTime.parse(key.time, formatter))){
+                        day.activities[j + 1] = day.activities[j]
+                        j--
                     }
-                    day.activities[j + 1] = key
                 }
+                day.activities[j + 1] = key
             }
+        }
     }
-
 }
