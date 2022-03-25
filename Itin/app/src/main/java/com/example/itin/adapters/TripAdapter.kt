@@ -511,6 +511,11 @@ class TripAdapter(
         return trips.size
     }
 
+    fun clear() {
+        trips.clear()
+        notifyDataSetChanged()
+    }
+
     // this interface will handle the RecyclerView clickable
     interface OnItemClickListener {
         fun onItemClick(position: Int)

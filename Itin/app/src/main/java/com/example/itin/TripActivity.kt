@@ -26,6 +26,7 @@ import java.util.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.android.synthetic.main.activity_itinerary.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -69,29 +70,11 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         // determine how items are arrange in our list
         rvTripList.layoutManager = LinearLayoutManager(this)
+        createTestTrip()
 
         // what happen when click on AddTodo button -> call the addTrip function
         btAddTrip.setOnClickListener { addTrip() }
 
-        //Creating Testing Trip ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        if (DEBUG_TOGGLE) {
-            val day1 = Day("1", mutableListOf(),1,-1)
-            val day2 = Day("2", mutableListOf(),2,-1)
-            val daylist = mutableListOf<Day>(day1,day2)
-            val trip = Trip(
-                "Trip to TEST",
-                "TEST",
-                "1/1/2022",
-                "1/2/2022",
-                deleted = false,
-                active = true,
-                tripID = -1,
-                days = daylist,
-                viewers = mutableListOf("CNIyURFyEhRrb1sZNLJo47yMF4o2","LW4U6jdzqqcdLvqMMdw7tt1M9b73","dwJLMqs0Y5M65fmvS4lIJS5xFgf1","eZuf0wlulMe64K6ZXgFPBXTlFJs1","JFn2cxxk1xWl83eXDWsXf5fSwvu1","uSWyidP8E2axSFnBf1WZgGlcUgF3")
-            )
-            trips.add(trip)
-            tripAdapter.notifyDataSetChanged()
-        }
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // This here checks the value in the database to overwrite the initial value of 0
@@ -112,10 +95,22 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             }
         }
 
+        // This following codes handle Pull-to-Refresh the Days RecyclerView
+        // It will clear the days list and load all days from the DB again
+        tripsSwipeContainer.setOnRefreshListener {
+            tripAdapter.clear()
+            createTestTrip()
+            readData(tripCount)
+            tripsSwipeContainer.isRefreshing = false
+        }
+        // Configure the refreshing colors
+        tripsSwipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+            android.R.color.holo_green_light,
+            android.R.color.holo_orange_light,
+            android.R.color.holo_red_light);
+
         // make the bottom navigation bar
         bottomNavBarSetup()
-
-
     }
 
     // This function handles RecyclerView that lead you to TripDetails page
@@ -479,5 +474,27 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             curUser.child("userInfo").child("token").setValue(it)
         }
         FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
+    }
+
+    //Creating Testing Trip ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    private fun createTestTrip() {
+        if (DEBUG_TOGGLE) {
+            val day1 = Day("1", mutableListOf(),1,-1)
+            val day2 = Day("2", mutableListOf(),2,-1)
+            val daylist = mutableListOf<Day>(day1,day2)
+            val trip = Trip(
+                "Trip to TEST",
+                "TEST",
+                "1/1/2022",
+                "1/2/2022",
+                deleted = false,
+                active = true,
+                tripID = -1,
+                days = daylist,
+                viewers = mutableListOf("CNIyURFyEhRrb1sZNLJo47yMF4o2","LW4U6jdzqqcdLvqMMdw7tt1M9b73","dwJLMqs0Y5M65fmvS4lIJS5xFgf1","eZuf0wlulMe64K6ZXgFPBXTlFJs1","JFn2cxxk1xWl83eXDWsXf5fSwvu1","uSWyidP8E2axSFnBf1WZgGlcUgF3")
+            )
+            trips.add(trip)
+            tripAdapter.notifyDataSetChanged()
+        }
     }
 }
