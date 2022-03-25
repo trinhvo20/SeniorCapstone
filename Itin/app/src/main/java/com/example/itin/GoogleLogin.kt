@@ -30,24 +30,8 @@ import kotlinx.android.synthetic.main.activity_profile_screen.*
 
 class GoogleLogin : AppCompatActivity() {
 
-    // values needed for fingerprint authentication
-    // source code from Briana Nzivu
+    // values to see if phone has fingerprint authentication allowed
     private var useFingerprint: Boolean = false
-    private var cancellationSignal: CancellationSignal? = null
-    private val  authenticationCallback: BiometricPrompt.AuthenticationCallback
-        get() =
-            @RequiresApi(Build.VERSION_CODES.P)
-            object: BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationError(errorCode: Int, errString: CharSequence?) {
-                    super.onAuthenticationError(errorCode, errString)
-                    notifyUser("Authentication error: $errString")
-                }
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult?) {
-                    super.onAuthenticationSucceeded(result)
-                    notifyUser("Authentication Success!")
-                    startActivity(Intent(this@GoogleLogin, TripActivity::class.java))
-                }
-            }
 
     // View binding
     private lateinit var binding: GoogleLoginBinding
@@ -128,12 +112,7 @@ class GoogleLogin : AppCompatActivity() {
                 finish()
             }
             else{
-                val biometricPrompt : BiometricPrompt = BiometricPrompt.Builder(this)
-                    .setTitle("Itin Security")
-                    .setDescription("Fingerprint Authentication")
-                    .setNegativeButton("", this.mainExecutor, DialogInterface.OnClickListener { dialog, which ->
-                    }).build()
-                biometricPrompt.authenticate(getCancellationSignal(), mainExecutor, authenticationCallback)
+                startActivity(Intent(this@GoogleLogin, FingerprintActivity::class.java))
                 finish()
             }
         }
@@ -153,22 +132,6 @@ class GoogleLogin : AppCompatActivity() {
                 Log.d(TAG, "onActivityResult: ${e.message}")
             }
         }
-    }
-
-    // create a toast
-    private fun notifyUser(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    // if the user hits cancel instead of giving fingerprint
-    private fun getCancellationSignal(): CancellationSignal {
-        cancellationSignal = CancellationSignal()
-        cancellationSignal?.setOnCancelListener {
-            finish()
-            startActivity(Intent(this@GoogleLogin, MainActivity::class.java))
-            //notifyUser("Authentication was cancelled by the user")
-        }
-        return cancellationSignal as CancellationSignal
     }
 
     private fun firebaseAuthWithGoogleAccount(account: GoogleSignInAccount?) {

@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Itin">
         <activity
+            android:name=".FingerprintActivity"
+            android:exported="false" />
+        <activity
             android:name=".ShareTripActivity"
             android:exported="false" />
         <activity
@@ -39,7 +42,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ItineraryActivity"
             android:exported="false" />
@@ -72,7 +74,6 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
-
     </application>
 
 </manifest>
