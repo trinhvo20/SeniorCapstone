@@ -4,7 +4,6 @@
     <!-- Preference Titles -->
     <string name="display_header">Display</string>
     <string name="notification_header">Notifications</string>
-    <string name="fingerprint_header">Fingerprint Authentication</string>
 
     <!-- Display Preferences -->
     <string name="dark_mode_key">dark_mode_key</string>
@@ -13,15 +12,8 @@
     <!-- Notifications Preferences -->
     <string name="friend_request_key">friend_request_key</string>
     <string name="friend_request_title">Friend Requests</string>
-    <string name="friend_request_summary">Receive a notification when someone requests to be your friend.</string>
     <string name="trip_remind_key">trip_remind_key</string>
     <string name="trip_remind_title">Trip Reminders</string>
-    <string name="trip_remind_summary">Receive a reminder notification the day before your trip.</string>
-
-    <!-- Fingerprint preferences -->
-    <string name="fingerprint_key">fingerprint_key</string>
-    <string name="fingerprint_title">Ask For Fingerprint</string>
-    <string name="fingerprint_summary">The app will authenticate your identity with your fingerprint each time the app is opened. Biometrics must be allowed in your device\'s settings.</string>
 
     <!-- Google Sign In -->
     <string name="title_activity_google_sign_in">GoogleSignIn</string>

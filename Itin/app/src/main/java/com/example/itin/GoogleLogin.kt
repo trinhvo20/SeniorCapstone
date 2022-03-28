@@ -2,16 +2,9 @@
 package com.example.itin
 
 import android.content.Intent
-import android.content.Context
-import android.content.DialogInterface
-import android.hardware.biometrics.BiometricPrompt
-import android.os.Build
 import android.os.Bundle
-import android.os.CancellationSignal
-import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.itin.classes.User
 import com.example.itin.databinding.GoogleLoginBinding
@@ -29,9 +22,6 @@ import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_profile_screen.*
 
 class GoogleLogin : AppCompatActivity() {
-
-    // values to see if phone has fingerprint authentication allowed
-    private var useFingerprint: Boolean = false
 
     // View binding
     private lateinit var binding: GoogleLoginBinding
@@ -52,15 +42,10 @@ class GoogleLogin : AppCompatActivity() {
     private lateinit var rootNode: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
 
-    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = GoogleLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        // for biometric authentication
-        val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-        useFingerprint = sp.getBoolean("fingerprint_key", false)
 
         // for realtime database
         rootNode = FirebaseDatabase.getInstance()
@@ -102,19 +87,12 @@ class GoogleLogin : AppCompatActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.P)
     private fun checkUser() {
         val firebaseUser = firebaseAuth.currentUser
         // This is the case if user is already logged in, skips login screen if that is the case
         if (firebaseUser != null) {
-            if(!useFingerprint) {
-                startActivity(Intent(this@GoogleLogin, TripActivity::class.java))
-                finish()
-            }
-            else{
-                startActivity(Intent(this@GoogleLogin, FingerprintActivity::class.java))
-                finish()
-            }
+            startActivity(Intent(this@GoogleLogin, TripActivity::class.java))
+            finish()
         }
     }
 

@@ -13,24 +13,12 @@
         <SwitchPreferenceCompat
             app:key="@string/friend_request_key"
             app:title="@string/friend_request_title"
-            app:summary="@string/friend_request_summary"
             app:defaultValue="true"/>
 
         <SwitchPreferenceCompat
             app:key="@string/trip_remind_key"
             app:title="@string/trip_remind_title"
-            app:summary="@string/trip_remind_summary"
             app:defaultValue="true"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory app:title="@string/fingerprint_header">
-
-        <SwitchPreferenceCompat
-            app:key="@string/fingerprint_key"
-            app:title="@string/fingerprint_title"
-            app:summary="@string/fingerprint_summary"
-            app:defaultValue="false"/>
 
     </PreferenceCategory>
 

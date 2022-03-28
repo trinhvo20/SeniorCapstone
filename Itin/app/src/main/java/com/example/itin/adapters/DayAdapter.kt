@@ -74,10 +74,10 @@ class DayAdapter(
                 val tpd = TimePickerDialog(context,TimePickerDialog.OnTimeSetListener(function = { view, h, m ->
 
                     //Toast.makeText(context, h.toString() + " : " + m , Toast.LENGTH_LONG).show()
-                    var input = "$h:$m"
+                    var input = h.toString() + ":" + m
 
-                    val df = SimpleDateFormat("H:mm")
-                    val outputformat = SimpleDateFormat("h:mm a")
+                    val df = SimpleDateFormat("H:m")
+                    val outputformat = SimpleDateFormat("h:ma")
                     tvTime.text = outputformat.format(df.parse(input))
 
 
@@ -127,7 +127,7 @@ class DayAdapter(
     @RequiresApi(Build.VERSION_CODES.O)
     // function to sort the activities on each of the day, it is a modified Insertion sort
     private fun activitysort (curday: Day){
-        var formatter = DateTimeFormatter.ofPattern("h:mm a")
+        var formatter = DateTimeFormatter.ofPattern("h:ma")
 
             for (i in 0 until curday.activities.size) {
                 val key = curday.activities[i]
@@ -173,7 +173,24 @@ class DayAdapter(
     override fun getItemCount(): Int {
         return  days.size
     }
-
+    /*
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun sendActivityToDB(dayInstance: DatabaseReference, activity: Activity) {
+        // increment the activity count by 1
+        dayInstance.child("ActivityCount").setValue(activity.actID + 1)
+        // navigate to the correct activity in the day
+        val activityInstance = dayInstance.child(activity.actID.toString())
+        if (activity != null) {
+            activityInstance.child("Name").setValue(activity.name)
+            activityInstance.child("Time").setValue(activity.time)
+            activityInstance.child("Location").setValue(activity.location)
+            activityInstance.child("Cost").setValue(activity.cost)
+            activityInstance.child("Notes").setValue(activity.notes)
+            activityInstance.child("ActivityID").setValue(activity.actID)
+            activityInstance.child("TripID").setValue(activity.tripID)
+        }
+    }
+    */
 
     private fun sendActivityToDB(curDay: Day, activity: Activity) {
         val dayInstance = FirebaseDatabase.getInstance().getReference("masterTripList")
@@ -186,17 +203,5 @@ class DayAdapter(
             activity.actID = activityInstance.key.toString()
             activityInstance.setValue(activity)
         }
-    }
-
-    // Clean all elements of the recycler
-    fun clear() {
-        days.clear()
-        notifyDataSetChanged()
-    }
-
-    // Add a list of items -- change to type used
-    fun addAll(dayList: MutableList<Day>) {
-        days.addAll(dayList)
-        notifyDataSetChanged()
     }
 }

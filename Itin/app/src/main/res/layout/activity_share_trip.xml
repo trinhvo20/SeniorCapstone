@@ -6,38 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ShareTripActivity">
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/mint"
-        android:paddingHorizontal="10dp"
-        android:paddingVertical="5dp">
-
-        <ImageView
-            android:id="@+id/backBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:src="@drawable/ic_back" />
-
-        <TextView
-            android:id="@+id/tvShare"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="5dp"
-            android:layout_toRightOf="@id/backBtn"
-            android:fontFamily="@font/bungee"
-            android:includeFontPadding="false"
-            android:paddingLeft="-20dp"
-            android:text="Share Your Trip"
-            android:textAlignment="center"
-            android:textSize="30dp" />
-
-    </RelativeLayout>
-
     <EditText
         android:id="@+id/etUsername"
         android:layout_width="210dp"
@@ -45,9 +13,8 @@
         android:layout_marginStart="100dp"
         android:layout_marginTop="8dp"
         android:ems="10"
-        android:fontFamily="casual"
-        android:hint="Username"
         android:inputType="textPersonName"
+        android:text="Name"
         app:layout_constraintEnd_toStartOf="@+id/ibShareUsername"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />
@@ -58,7 +25,6 @@
         android:layout_height="45dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="100dp"
-        android:backgroundTint="@color/mint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/etUsername"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
@@ -79,22 +45,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="10dp"
-        android:fontFamily="@font/bungee"
+        android:layout_marginTop="200dp"
         android:text="From Friends:"
-        android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etUsername" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/bungee"
+        android:layout_marginTop="90dp"
         android:text="By Username:"
-        android:textSize="20dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout4" />
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

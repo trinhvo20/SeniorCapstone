@@ -14,6 +14,7 @@ import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.itin.ItineraryActivity
 import com.example.itin.R
 import com.example.itin.ShareTripActivity
 import com.example.itin.classes.Activity
@@ -218,9 +219,11 @@ class TripAdapter(
                     // when reading from DB, it does not correctly make the days list
                     // check that the heck out
                     val size = dupeTrip.days.size//[i.toInt()].activities.size
+                    Log.d("DUPETRIP: ", "$size")
 
                     sendToDB(dupeTrip, tripCount)
                     tripCount += 1
+                    Log.d("TripActivity", "tripCount updated: $tripCount")
                     masterTripList.child("tripCount").setValue(tripCount)
 
                     if (dupeTrip.active) {
@@ -506,11 +509,6 @@ class TripAdapter(
 
     override fun getItemCount(): Int {
         return trips.size
-    }
-
-    fun clear() {
-        trips.clear()
-        notifyDataSetChanged()
     }
 
     // this interface will handle the RecyclerView clickable

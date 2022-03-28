@@ -26,7 +26,6 @@ import java.util.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.android.synthetic.main.activity_itinerary.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -70,11 +69,29 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         // determine how items are arrange in our list
         rvTripList.layoutManager = LinearLayoutManager(this)
-        createTestTrip()
 
         // what happen when click on AddTodo button -> call the addTrip function
         btAddTrip.setOnClickListener { addTrip() }
 
+        //Creating Testing Trip ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        if (DEBUG_TOGGLE) {
+            val day1 = Day("1", mutableListOf(),1,-1)
+            val day2 = Day("2", mutableListOf(),2,-1)
+            val daylist = mutableListOf<Day>(day1,day2)
+            val trip = Trip(
+                "Trip to TEST",
+                "TEST",
+                "1/1/2022",
+                "1/2/2022",
+                deleted = false,
+                active = true,
+                tripID = -1,
+                days = daylist,
+                viewers = mutableListOf("CNIyURFyEhRrb1sZNLJo47yMF4o2","LW4U6jdzqqcdLvqMMdw7tt1M9b73","dwJLMqs0Y5M65fmvS4lIJS5xFgf1","eZuf0wlulMe64K6ZXgFPBXTlFJs1","JFn2cxxk1xWl83eXDWsXf5fSwvu1","uSWyidP8E2axSFnBf1WZgGlcUgF3")
+            )
+            trips.add(trip)
+            tripAdapter.notifyDataSetChanged()
+        }
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // This here checks the value in the database to overwrite the initial value of 0
@@ -84,6 +101,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 // Try to grab the value from the DB for tripCount, if it doesn't exist, create the child
                 try {
                     tripCount = it.child("tripCount").value.toString().toInt()
+                    Log.d("TripActivity", "tripCount: $tripCount")
                     // check if user is there, then add in previous trips from database
                     checkUser(tripCount)
                 } catch (e: NumberFormatException) {
@@ -94,22 +112,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             }
         }
 
-        // This following codes handle Pull-to-Refresh the Days RecyclerView
-        // It will clear the days list and load all days from the DB again
-        tripsSwipeContainer.setOnRefreshListener {
-            tripAdapter.clear()
-            createTestTrip()
-            readData(tripCount)
-            tripsSwipeContainer.isRefreshing = false
-        }
-        // Configure the refreshing colors
-        tripsSwipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-            android.R.color.holo_green_light,
-            android.R.color.holo_orange_light,
-            android.R.color.holo_red_light);
-
         // make the bottom navigation bar
         bottomNavBarSetup()
+
+
     }
 
     // This function handles RecyclerView that lead you to TripDetails page
@@ -218,7 +224,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 // Write to the database, then increment tripCount in the database
                 sendToDB(trip, tripCount)
                 tripCount += 1
-                //Log.d("TripActivity", "tripCount updated: $tripCount")
+                Log.d("TripActivity", "tripCount updated: $tripCount")
                 masterTripList.child("tripCount").setValue(tripCount)
                 if (active) {
                     trips.add(trip)
@@ -260,6 +266,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             curTrips.child("Trip $i").get().addOnSuccessListener {
                 if (it.exists()) {
                     accessMasterTripList(i)
+                } else {
+                    Log.d("print", "User does not exist")
                 }
             }.addOnCanceledListener {
                 Log.d("print", "Failed to fetch the user")
@@ -473,25 +481,37 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
     }
 
-    //Creating Testing Trip ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    private fun createTestTrip() {
-        if (DEBUG_TOGGLE) {
-            val day1 = Day("1", mutableListOf(),1,-1)
-            val day2 = Day("2", mutableListOf(),2,-1)
-            val daylist = mutableListOf<Day>(day1,day2)
-            val trip = Trip(
-                "Trip to TEST",
-                "TEST",
-                "1/1/2022",
-                "1/2/2022",
-                deleted = false,
-                active = true,
-                tripID = -1,
-                days = daylist,
-                viewers = mutableListOf("CNIyURFyEhRrb1sZNLJo47yMF4o2","LW4U6jdzqqcdLvqMMdw7tt1M9b73","dwJLMqs0Y5M65fmvS4lIJS5xFgf1","eZuf0wlulMe64K6ZXgFPBXTlFJs1","JFn2cxxk1xWl83eXDWsXf5fSwvu1","uSWyidP8E2axSFnBf1WZgGlcUgF3")
-            )
-            trips.add(trip)
-            tripAdapter.notifyDataSetChanged()
+    /*
+    private fun readDaysHelper(dayInstance: DatabaseReference, trip: Trip) {
+        dayInstance.get().addOnSuccessListener {
+            if (it.exists()) {
+                // obtain dayNumber, dayInt, and tripID
+                var dayNumber = it.child("Day Number").value.toString()
+                val dayInt = dayNumber.toInt()
+                dayNumber = dayNumber + ": " + startdate.plusDays(dayNumber.toLong()-1).format(formatter).toString()
+                val tripID = it.child("TripID").value.toString().toInt()
+                val actCount = it.child("ActivityCount").value.toString().toInt()
+                val actList : MutableList<Activity?> = mutableListOf()
+                // pull the activity from the DB
+                for (i in 0 until actCount ) {
+                    val name = it.child(i.toString()).child("Name").value.toString()
+                    val location = it.child(i.toString()).child("Location").value.toString()
+                    val time = it.child(i.toString()).child("Time").value.toString()
+                    val cost = it.child(i.toString()).child("Cost").value.toString()
+                    val notes = it.child(i.toString()).child("Notes").value.toString()
+                    var tripID = it.child(i.toString()).child("TripID").value.toString().toInt()
+                    var activityID = it.child(i.toString()).child("ActivityID").value.toString().toInt()
+
+                    val activity = Activity(name, time, location, cost, notes, tripID, activityID)
+                    actList.add(activity)
+                }
+
+                val day = Day(dayNumber,actList,dayInt,tripID)
+                trip.days.add(day)
+                tripsort(trips)
+                tripAdapter.notifyDataSetChanged()
+            }
         }
     }
+    */
 }

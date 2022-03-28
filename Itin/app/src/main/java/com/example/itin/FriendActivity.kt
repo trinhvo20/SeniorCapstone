@@ -1,8 +1,6 @@
 package com.example.itin
 
-import android.content.Intent
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
 import android.view.animation.Animation
@@ -10,7 +8,6 @@ import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.FriendAdapter
 import com.example.itin.classes.User
@@ -27,7 +24,7 @@ class FriendActivity : AppCompatActivity() {
 
     // Variables for recycler view
     private lateinit var friends: MutableList<Pair<User, Boolean>>
-    private lateinit var friendAdapter: FriendAdapter
+    private lateinit var friendAdater: FriendAdapter
 
     // Variable for error messages
     val TAG = "FriendActivity"
@@ -52,11 +49,10 @@ class FriendActivity : AppCompatActivity() {
         // Set up and bind recycler view
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_friend)
-        loadSettings()
 
         friends = mutableListOf()
-        friendAdapter = FriendAdapter(friends)
-        rvFriends.adapter = friendAdapter
+        friendAdater = FriendAdapter(friends)
+        rvFriends.adapter = friendAdater
         rvFriends.layoutManager = LinearLayoutManager(this)
 
         // Firebase initialization information
@@ -66,12 +62,17 @@ class FriendActivity : AppCompatActivity() {
         curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
         masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
 
-        // Functions that are called when the buttons are clicked (finish just closes the page)
-        backBtn.setOnClickListener {
-            finish()
-            startActivity(Intent(this, ProfileScreen::class.java))
+        // Setting up floating buttons
+        btExpandMenu.setOnClickListener { onExpandButtonClicked() }
+        btSendReq.setOnClickListener { onSendButtonClicked() }
+        btSearchFriend.setOnClickListener { searchVisibility() }
+
+        btRmFriend.setOnClickListener {
+
         }
-        btAddFriend.setOnClickListener { addFriendReq() }
+
+        // Finishes activity when back button is finished
+        backBtn.setOnClickListener { finish() }
 
         // Overwrites the initial value of 0 for numFriends if user has any friends
         masterUserList.get().addOnSuccessListener {
@@ -88,19 +89,6 @@ class FriendActivity : AppCompatActivity() {
                 Log.d("FriendActivity", "The user that is logged in doesn't exist?")
             }
         }
-
-        // This following codes handle Pull-to-Refresh the Days RecyclerView
-        // It will clear the days list and load all days from the DB again
-        friendSwipeContainer.setOnRefreshListener {
-            friendAdapter.clear()
-            readData(userCount)
-            friendSwipeContainer.isRefreshing = false
-        }
-        // Configure the refreshing colors
-        friendSwipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-            android.R.color.holo_green_light,
-            android.R.color.holo_orange_light,
-            android.R.color.holo_red_light);
     }
 
     private fun addFriendReq() {
@@ -223,7 +211,7 @@ class FriendActivity : AppCompatActivity() {
                             "null"
                         )
                         friends.add(Pair(user, friend))
-                        friendAdapter.notifyDataSetChanged()
+                        friendAdater.notifyDataSetChanged()
                     }
                 }
             }
@@ -326,21 +314,6 @@ class FriendActivity : AppCompatActivity() {
             }
         } catch(e: Exception) {
             Log.e(TAG, e.toString())
-        }
-    }
-    private fun loadSettings(){
-        val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-
-        val dark = sp.getBoolean("dark_mode_key",false)
-        if("$dark" == "false"){
-            // this is light mode
-            val theme = AppCompatDelegate.MODE_NIGHT_NO
-            AppCompatDelegate.setDefaultNightMode(theme)
-        }
-        else{
-            // this is dark mode
-            val theme = AppCompatDelegate.MODE_NIGHT_YES
-            AppCompatDelegate.setDefaultNightMode(theme)
         }
     }
 }

@@ -1,4 +1,3 @@
-// source code from Philipp Lackner
 package com.example.itin
 
 import android.app.NotificationChannel
@@ -62,7 +61,7 @@ class FirebaseService : FirebaseMessagingService() {
             val notification = NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle(message.data["title"])
                 .setContentText(message.data["message"])
-                .setSmallIcon(R.drawable.ic_logo_itin_redo)
+                .setSmallIcon(R.drawable.ic_logo_itin)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
                 .build()

@@ -157,7 +157,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clCost"
-        android:layout_width="110dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:background="@drawable/shape_background"
@@ -184,7 +184,7 @@
             android:id="@+id/etCost"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="10dp"
             android:fontFamily="casual"
             android:hint="$0"
             app:layout_constraintStart_toEndOf="@+id/tvStartDate"
