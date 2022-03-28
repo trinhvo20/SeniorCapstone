@@ -1,30 +1,34 @@
 package com.example.itin.adapters
 
-import android.app.AlertDialog
-import android.app.DatePickerDialog
 import android.content.Context
-import android.os.Build
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
-import com.example.itin.ShareTripActivity
-import com.example.itin.classes.Trip
+import com.example.itin.classes.User
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import kotlinx.android.synthetic.main.friend_item.view.*
 import kotlinx.android.synthetic.main.friend_share_item.view.*
 import kotlinx.android.synthetic.main.trip_item.view.*
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
+import java.io.File
 import java.util.*
 
 class ShareAdapter(
     private val context: Context,
-    private val Friends: MutableList<String>,
+    private val Friends: MutableList<User>,
+    private val tripID: Int?,
 
-) : RecyclerView.Adapter<ShareAdapter.ShareViewHolder>() {
+    ) : RecyclerView.Adapter<ShareAdapter.ShareViewHolder>() {
+
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var uid : String
+    private lateinit var curUser: DatabaseReference
 
     inner class ShareViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val ibShareFriend: ImageView = itemView.findViewById(R.id.ibShareFriend)
@@ -32,10 +36,43 @@ class ShareAdapter(
             ibShareFriend.setOnClickListener { ShareByFriend(it) }
         }
 
-        inner class ShareByFriend(it: View?) {
-            val curFriend = Friends[adapterPosition]
-            val toast = Toast.makeText(context, curFriend, Toast.LENGTH_SHORT).show()
+        private fun ShareByFriend(view: View) {
+            val curFriend = Friends[adapterPosition].username
 
+            // Base firebase variables
+            firebaseAuth = FirebaseAuth.getInstance()
+            val firebaseUser = firebaseAuth.currentUser
+            val uid = firebaseUser!!.uid
+
+            // Navigates to the directories within the database that we will be manipulating
+            val masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
+            curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+            // Takes the given username and finds the associated UID
+            val friendsID = masterUserList.child(curFriend)
+
+            // If the friends username exists, add them to the current users profile, else tell the user that it does not exist
+            friendsID.get().addOnSuccessListener {
+                if (it.exists()) {
+                    val friendsIDStr = it.value.toString()
+
+                    curUser.get().addOnSuccessListener {
+                        if (it.exists()) {
+                            masterUserList.get().addOnSuccessListener {
+                                if (it.exists()) {
+                                    val friendsUID =
+                                        it.child(friendsIDStr).child("UID").value.toString()
+                                    FirebaseDatabase.getInstance().getReference("users")
+                                        .child(friendsUID).child("trips").child("Trip $tripID")
+                                        .setValue(tripID)
+                                    Toast.makeText(context, "Trip Shared", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Toast.makeText(context, "User does not exist", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
@@ -45,10 +82,25 @@ class ShareAdapter(
     }
 
     override fun onBindViewHolder(holder: ShareViewHolder, position: Int) {
+        lateinit var curUser: DatabaseReference
+        lateinit var firebaseAuth: FirebaseAuth
+        lateinit var masterUserList: DatabaseReference
+
         val curFriend = Friends[position]
 
         holder.itemView.apply {
-            tvFriendName.text = curFriend
+
+            var storageReference = FirebaseStorage.getInstance().getReference("Users/${curFriend.uid}.jpg")
+            val localFileV2 =
+                File.createTempFile("tempImage_${curFriend.uid}", "jpg")
+            storageReference.getFile(localFileV2).addOnSuccessListener {
+                val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
+                ivFriendPP.setImageBitmap(bitmap)
+            }.addOnFailureListener {
+                ivFriendPP.setImageResource(R.drawable.profile)
+            }
+            tvFriendName.text = curFriend.username
+            tvFriendFullName.text = curFriend.fullName
         }
     }
 

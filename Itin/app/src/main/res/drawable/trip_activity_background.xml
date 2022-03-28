@@ -7,7 +7,7 @@
 
     <stroke
         android:color="@color/DimGray"
-        android:width="3dp"/>
+        android:width="1dp"/>
 
     <corners android:radius="10dp"/>
 
