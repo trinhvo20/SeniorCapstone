@@ -52,7 +52,7 @@
         android:id="@+id/btRmFriend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="2dp"
         android:layout_marginRight="20dp"
         android:backgroundTint="@color/DarkGray"
         android:clickable="false"
@@ -67,7 +67,7 @@
         android:id="@+id/btSearchFriend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="1dp"
         android:layout_marginRight="20dp"
         android:backgroundTint="@color/DarkGray"
         android:clickable="false"
@@ -90,6 +90,30 @@
         app:layout_constraintStart_toEndOf="@+id/friendsUsername"
         app:srcCompat="@drawable/ic_send" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvFriends"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        app:flow_verticalAlign="bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout4"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        app:flow_verticalAlign="bottom"
+        app:layout_constraintTop_toBottomOf="@+id/rvFriends">
+
+    </LinearLayout>
+
     <EditText
 
         android:id="@+id/friendsUsername"
@@ -104,28 +128,5 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvFriends"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginHorizontal="10dp"
-        android:layout_weight="1"
-        app:flow_verticalAlign="bottom"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout4"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="bottom"
-        android:orientation="horizontal"
-        app:flow_verticalAlign="bottom"
-        app:layout_constraintTop_toBottomOf="@+id/rvFriends">
-
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
