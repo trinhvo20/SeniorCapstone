@@ -197,6 +197,7 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
                 // pull the activity from the DB
                 for (i in 0 until actCount ) {
                     val name = it.child(i.toString()).child("Name").value.toString()
+                    if (name == "null") {break}
                     val location = it.child(i.toString()).child("Location").value.toString()
                     val time = it.child(i.toString()).child("Time").value.toString()
                     val cost = it.child(i.toString()).child("Cost").value.toString()

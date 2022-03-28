@@ -295,24 +295,7 @@ class TripAdapter(
                 }
             }
         }
-        /*
-        @RequiresApi(Build.VERSION_CODES.O)
-        private fun sendActivityToDB(dayInstance: DatabaseReference, activity: Activity) {
-            // increment the activity count by 1
-            //dayInstance.child("ActivityCount").setValue(activity.actID + 1)
-            // navigate to the correct activity in the day
-            val activityInstance = dayInstance.child(activity.actID.toString())
-            if (activity != null) {
-                activityInstance.child("Name").setValue(activity.name)
-                activityInstance.child("Time").setValue(activity.time)
-                activityInstance.child("Location").setValue(activity.location)
-                activityInstance.child("Cost").setValue(activity.cost)
-                activityInstance.child("Notes").setValue(activity.notes)
-                activityInstance.child("ActivityID").setValue(activity.actID)
-                activityInstance.child("TripID").setValue(activity.tripID)
-            }
-        }
-        */
+
         private fun sendActivityToDB(curDay: Day, activity: Activity) {
             val dayInstance = FirebaseDatabase.getInstance().getReference("masterTripList")
                 .child(curDay.tripID.toString()).child("Days").child((curDay.dayInt-1).toString())
