@@ -162,11 +162,17 @@ class TripAdapter(
                                     trips.removeAt(adapterPosition)
                                 }
                                 notifyDataSetChanged()
+                                if (autocompleteFragment != null) {
+                                    context.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
+                                }
                                 Toast.makeText(context, "Successfully Edited", Toast.LENGTH_SHORT)
                                     .show()
                                 dialog.dismiss()
                             }
                             .setNegativeButton("Cancel") { dialog, _ ->
+                                if (autocompleteFragment != null) {
+                                    context.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
+                                }
                                 dialog.dismiss()
                             }
                             .create()

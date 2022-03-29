@@ -149,7 +149,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
         val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
 
-        Places.initialize(this,getString(R.string.API_KEY))
+        if (!Places.isInitialized()) {
+            Places.initialize(this,getString(R.string.API_KEY))
+        }
         val placesClient = Places.createClient(this)
         // Initialize the AutocompleteSupportFragment.
         val autocompleteFragment = supportFragmentManager.findFragmentById(R.id.etLocation) as AutocompleteSupportFragment
@@ -250,11 +252,17 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     tripAdapter.notifyDataSetChanged()
                 }
 
+                if (autocompleteFragment != null) {
+                    supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
+                }
                 Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
         }
         newDialog.setNegativeButton("Cancel") { dialog, _ ->
+            if (autocompleteFragment != null) {
+                supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
+            }
             dialog.dismiss()
             Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
         }
