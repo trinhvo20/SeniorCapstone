@@ -37,6 +37,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     private lateinit var trips : MutableList<Trip>
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var user : User
+    private lateinit var location: String
     private var tripCount : Int = 0
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -110,7 +111,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         val view = LayoutInflater.from(this).inflate(R.layout.create_trip, null)
 
         val etName = view.findViewById<EditText>(R.id.etName)
-        val etLocation = view.findViewById<EditText>(R.id.etLocation)
+        //val etLocation = view.findViewById<EditText>(R.id.etLocation)
         val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
         val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
 
@@ -118,7 +119,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         val placesClient = Places.createClient(this)
 
         // Initialize the AutocompleteSupportFragment.
-        val autocompleteFragment = supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
+        val autocompleteFragment = supportFragmentManager.findFragmentById(R.id.etLocation) as AutocompleteSupportFragment
 
         // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
@@ -126,8 +127,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
-                // TODO: Get info about the selected place.
-                Log.i("Places", "Place: ${place.address}, ${place.id}")
+                location = place.name
+                Log.i("Places", "Place: ${place.name}, ${place.id}")
             }
 
             override fun onError(status: Status) {
@@ -163,15 +164,12 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         newDialog.setView(view)
 
         newDialog.setPositiveButton("Add") { dialog, _ ->
-            val name: String
-            val location = etLocation.text.toString()
+            //val location = etLocation.text.toString()
             val startDate = etStartDate.text.toString()
             val endDate = etEndDate.text.toString()
 
-            name = if (etName.text.toString().isEmpty()) {
+            val name: String = etName.text.toString().ifEmpty {
                 "Trip to $location"
-            } else {
-                etName.text.toString()
             }
 
             // Grab the initial values for database manipulation
