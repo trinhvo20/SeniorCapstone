@@ -15,6 +15,9 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.itin.adapters.TripAdapter
+import com.example.itin.classes.Activity
+import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
 import com.example.itin.classes.User
 import com.google.android.gms.common.api.Status
@@ -25,20 +28,14 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import kotlinx.android.synthetic.main.activity_trip.*
-import kotlinx.android.synthetic.main.create_trip.*
-import java.util.*
-import com.example.itin.adapters.TripAdapter
-import com.example.itin.classes.Activity
-import com.example.itin.classes.Day
-import com.example.itin.classes.Trip
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_itinerary.*
+import kotlinx.android.synthetic.main.activity_trip.*
+import kotlinx.android.synthetic.main.create_trip.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.*
 
 // Toggle Debugging
 const val DEBUG_TOGGLE: Boolean = true
@@ -49,12 +46,13 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     private lateinit var trips: MutableList<Trip>
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var user : User
-    private lateinit var location: String
     private var tripCount : Int = 0
     private lateinit var uid : String
     private lateinit var curUser: DatabaseReference
     private lateinit var curTrips: DatabaseReference
     private lateinit var masterTripList: DatabaseReference
+    private lateinit var name: String
+    private lateinit var location: String
     private lateinit var startdate : LocalDate
     private lateinit var formatter : DateTimeFormatter
 
@@ -186,10 +184,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 this,
                 DatePickerDialog.OnDateSetListener { _, mYear, mMonth, mDay ->
                     etStartDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
-                },
-                year,
-                month,
-                day
+                }, year, month, day
             )
             datePickerDialog.show()
         }
@@ -199,10 +194,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 this,
                 DatePickerDialog.OnDateSetListener { _, mYear, mMonth, mDay ->
                     etEndDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
-                },
-                year,
-                month,
-                day
+                }, year, month, day
             )
             datePickerDialog.show()
         }
