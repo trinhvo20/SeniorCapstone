@@ -252,17 +252,13 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     tripAdapter.notifyDataSetChanged()
                 }
 
-                if (autocompleteFragment != null) {
-                    supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-                }
+                supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
                 Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
         }
         newDialog.setNegativeButton("Cancel") { dialog, _ ->
-            if (autocompleteFragment != null) {
-                supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-            }
+            supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
             dialog.dismiss()
             Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
         }
