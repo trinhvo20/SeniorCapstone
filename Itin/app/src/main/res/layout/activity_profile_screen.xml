@@ -28,7 +28,7 @@
             <RelativeLayout
                 android:id="@+id/relativeLayout"
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
+                android:layout_height="200dp"
                 android:background="@color/mint"
                 android:padding="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -61,10 +61,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_above="@id/userNameTV"
-                    android:layout_marginLeft="22dp"
+                    android:layout_marginLeft="19dp"
+                    android:layout_marginBottom="5dp"
                     android:layout_toRightOf="@+id/profileImageIV"
+                    android:fontFamily="@font/bungee"
+                    android:includeFontPadding="false"
                     android:text="Full Name"
-                    android:textColor="@color/black"
                     android:textSize="22sp"
                     android:textStyle="bold" />
 
@@ -76,20 +78,20 @@
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/profileImageIV"
                     android:text="Username"
-                    android:textColor="@color/black"
-                    android:textSize="19sp" />
+                    android:fontFamily="casual"
+                    android:textStyle="bold"
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/emailTV"
-                    style="@style/TextAppearance.MaterialComponents.Body1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/userNameTV"
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@+id/profileImageIV"
+                    android:fontFamily="casual"
                     android:text="Email"
-                    android:textColor="@color/DimGray"
-                    android:textSize="17sp" />
+                    android:textSize="16sp" />
 
             </RelativeLayout>
 
@@ -97,8 +99,9 @@
                 android:id="@+id/linearLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="-70dp"
-                android:padding="20dp"
+                android:layout_marginTop="-50dp"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
@@ -106,7 +109,7 @@
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/previousTripBtn"
                     android:layout_width="0dp"
-                    android:layout_height="105dp"
+                    android:layout_height="90dp"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
                     app:cardBackgroundColor="@color/mint"
@@ -128,19 +131,12 @@
                             android:id="@+id/previousTripsTV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
+                            android:layout_centerHorizontal="true"
                             android:text="Previous Trips"
                             android:textColor="@color/black"
-                            android:textSize="18sp" />
+                            android:textSize="18sp"
+                            android:layout_marginTop="40dp"/>
 
-                        <TextView
-                            android:id="@+id/previousTripCountTV"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/previousTripsTV"
-                            android:layout_centerHorizontal="true"
-                            android:text="5"
-                            android:textSize="18sp" />
 
                     </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -148,7 +144,7 @@
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/friendBtn"
                     android:layout_width="0dp"
-                    android:layout_height="105dp"
+                    android:layout_height="90dp"
                     android:layout_margin="10dp"
                     android:layout_weight="1"
                     app:cardBackgroundColor="@color/mint"
@@ -170,19 +166,12 @@
                             android:id="@+id/friendsTV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_centerInParent="true"
+                            android:layout_centerHorizontal="true"
                             android:text="Friends"
                             android:textColor="@color/black"
-                            android:textSize="18sp" />
+                            android:textSize="18sp"
+                            android:layout_marginTop="40dp"/>
 
-                        <TextView
-                            android:id="@+id/friendCountTV"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/friendsTV"
-                            android:layout_centerHorizontal="true"
-                            android:text="10"
-                            android:textSize="18sp" />
 
                     </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -245,6 +234,7 @@
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/ic_phone"
                         android:drawablePadding="10dp"
+                        android:inputType="phone"
                         android:text="123-456-7890" />
 
                 </com.google.android.material.textfield.TextInputLayout>

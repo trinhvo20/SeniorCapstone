@@ -2,9 +2,16 @@
 package com.example.itin
 
 import android.content.Intent
+import android.content.Context
+import android.content.DialogInterface
+import android.hardware.biometrics.BiometricPrompt
+import android.os.Build
 import android.os.Bundle
+import android.os.CancellationSignal
+import android.preference.PreferenceManager
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.itin.classes.User
 import com.example.itin.databinding.GoogleLoginBinding
@@ -18,9 +25,13 @@ import com.google.firebase.auth.GoogleAuthProvider
 import java.lang.Exception
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_profile_screen.*
 
 class GoogleLogin : AppCompatActivity() {
+
+    // values to see if phone has fingerprint authentication allowed
+    private var useFingerprint: Boolean = false
 
     // View binding
     private lateinit var binding: GoogleLoginBinding
@@ -28,6 +39,8 @@ class GoogleLogin : AppCompatActivity() {
     // Creating variables for our authentication services through Firebase
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var masterUserList: DatabaseReference
+    private var userCount: Int = 0
 
     // Constants
     private companion object {
@@ -39,10 +52,15 @@ class GoogleLogin : AppCompatActivity() {
     private lateinit var rootNode: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
 
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = GoogleLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // for biometric authentication
+        val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        useFingerprint = sp.getBoolean("fingerprint_key", false)
 
         // for realtime database
         rootNode = FirebaseDatabase.getInstance()
@@ -54,6 +72,23 @@ class GoogleLogin : AppCompatActivity() {
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
+
+        masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
+
+        // Overwrites the initial value of 0 for numFriends if user has any friends
+        masterUserList.get().addOnSuccessListener {
+            if (it.exists()) {
+                // Try to grab the value from the DB for tripCount, if it doesn't exist, create the child
+                try {
+                    userCount = it.child("userCount").value.toString().toInt()
+                    Log.d("FriendActivity", "numFriends: $userCount")
+                } catch (e: NumberFormatException) {
+                    masterUserList.child("userCount").setValue(0)
+                }
+            } else {
+                Log.d("FriendActivity", "The user that is logged in doesn't exist?")
+            }
+        }
 
         // Initiate Firebase Authentication
         firebaseAuth = FirebaseAuth.getInstance()
@@ -67,12 +102,19 @@ class GoogleLogin : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
     private fun checkUser() {
         val firebaseUser = firebaseAuth.currentUser
         // This is the case if user is already logged in, skips login screen if that is the case
         if (firebaseUser != null) {
-            startActivity(Intent(this@GoogleLogin, TripActivity::class.java))
-            finish()
+            if(!useFingerprint) {
+                startActivity(Intent(this@GoogleLogin, TripActivity::class.java))
+                finish()
+            }
+            else{
+                startActivity(Intent(this@GoogleLogin, FingerprintActivity::class.java))
+                finish()
+            }
         }
     }
 
@@ -112,10 +154,23 @@ class GoogleLogin : AppCompatActivity() {
                 // Check if this is a new user or existing
                 if (authResult.additionalUserInfo!!.isNewUser) {
                     Log.d(TAG, "firebaseAuthWithGoogleAccount: Account created... \n$email")
-                    Toast.makeText(this@GoogleLogin, "Account created... \n$email", Toast.LENGTH_LONG).show()
                     // create a new user account in realtime database (unique id = uid)
-                    val user = User(fullName,username,email,phoneNumber)
+                    val user = User(uid, fullName, username, email, phoneNumber)
                     databaseReference.child(uid).child("userInfo").setValue(user)
+                    // Add the new user to the MasterUserList upon first sign in
+                    masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
+                    masterUserList.get().addOnSuccessListener {
+                        if (it.exists()) {
+                            masterUserList.child(userCount.toString()).child(username).setValue(uid)
+                            masterUserList.child(username).setValue(userCount)
+                            userCount += 1
+                            Log.d("TripActivity", "tripCount updated: $userCount")
+                            masterUserList.child("userCount").setValue(userCount)
+
+                        } else {
+                            Log.d("TripActivity", "There is no masterUserList")
+                        }
+                    }
                 }
                 else {
                     Log.d(TAG, "firebaseAuthWithGoogleAccount: Existing user... \n$email")
@@ -130,32 +185,6 @@ class GoogleLogin : AppCompatActivity() {
                 Log.d(TAG, "firebaseAuthWithGoogleAccount: Loggin Failed due to ${e.message}")
                 Toast.makeText(this@GoogleLogin, "Login failed due to ${e.message}", Toast.LENGTH_SHORT).show()
             }
-    }
-
-    private fun passUserInfo(uid: String) {
-        val checkUser = databaseReference.child(uid)
-
-        checkUser.get().addOnSuccessListener {
-            if (it.exists()){
-                val fullName = it.child("fullName").value.toString()
-                val username = it.child("username").value.toString()
-                val email = it.child("email").value.toString()
-                val phone = it.child("phone").value.toString()
-
-                val intent = Intent(this,ProfileScreen::class.java)
-                intent.putExtra("FULLNAME",fullName)
-                intent.putExtra("USERNAME",username)
-                intent.putExtra("EMAIL",email)
-                intent.putExtra("PHONE",phone)
-
-                startActivity(intent)
-
-            } else {
-                Log.d("print", "User does not exist")
-            }
-        }.addOnCanceledListener {
-            Log.d("print", "Failed to fetch the user")
-        }
     }
 }
 

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.itin">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
 
     <application
         android:allowBackup="true"
@@ -13,9 +16,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Itin">
         <activity
-            android:name=".DetailsActivity"
+            android:name=".FingerprintActivity"
             android:exported="false" />
-            android:name=".test"
+        <activity
+            android:name=".ShareTripActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DetailsActivity"
             android:exported="false" />
         <activity
             android:name=".FriendActivity"
@@ -49,13 +59,21 @@
         <activity
             android:name=".TripActivity"
             android:exported="true" />
-        <activity
-            android:name=".Settings"
-            android:exported="false"/>
+        <activity android:name=".Settings" />
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
+        <service
+            android:name=".FirebaseService"
+            android:exported="false"
+            tools:ignore="Instantiatable">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

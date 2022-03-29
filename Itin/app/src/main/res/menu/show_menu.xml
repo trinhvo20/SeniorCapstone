@@ -10,8 +10,13 @@
         android:title="Share"
         android:icon="@drawable/ic_share"/>
     <item
+        android:id="@+id/copy"
+        android:title="Duplicate"
+        android:icon="@drawable/ic_copy"/>
+    <item
         android:id="@+id/delete"
         android:title="Delete"
         android:icon="@drawable/ic_delete"/>
+
 
 </menu>

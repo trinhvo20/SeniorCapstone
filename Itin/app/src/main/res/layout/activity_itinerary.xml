@@ -4,31 +4,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
     tools:context=".ItineraryActivity"
     android:orientation="vertical">
 
     <RelativeLayout
-    android:padding="10dp"
+    android:paddingHorizontal="10dp"
+        android:paddingVertical="5dp"
     android:background="@color/mint"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
         <ImageView
-            android:id="@+id/homeBtn"
-            android:src="@drawable/ic_home"
+            android:layout_marginTop="5dp"
+            android:id="@+id/backBtn"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_back" />
+
         <TextView
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="5dp"
             android:layout_marginTop="5dp"
-            android:text="Trip Name"
-            android:textColor="@color/black"
-            android:textSize="30dp"
+            android:layout_toRightOf="@id/backBtn"
             android:fontFamily="@font/bungee"
-            android:includeFontPadding="false"/>
+            android:includeFontPadding="false"
+            android:paddingLeft="-20dp"
+            android:text="Trip Name"
+            android:textAlignment="center"
+            android:textSize="30dp" />
 
         <TextView
             android:id="@+id/tvDateRange"
@@ -36,17 +42,45 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/tvName"
             android:layout_centerHorizontal="true"
+            android:fontFamily="casual"
+            android:layout_marginTop="5dp"
             android:text="Date Range"
-            android:textColor="@color/black"
-            android:textSize="20dp"
-            android:fontFamily="casual"/>
+            android:textSize="18dp" />
     </RelativeLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvActivityList"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="4dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1">
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/swipeContainer"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" >
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvActivityList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/chatBoxBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_chat"
+            app:layout_constraintBottom_toBottomOf="@+id/swipeContainer"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
 </LinearLayout>
