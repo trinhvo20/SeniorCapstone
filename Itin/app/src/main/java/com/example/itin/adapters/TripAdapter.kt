@@ -12,23 +12,29 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat.startActivity
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
 import com.example.itin.ShareTripActivity
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
+import com.google.android.gms.common.api.Status
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.io.File
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
-import com.google.firebase.storage.FirebaseStorage
+
 
 class TripAdapter(
     private val context: Context,
@@ -41,6 +47,7 @@ class TripAdapter(
     inner class TripViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val ivMenu: ImageView = itemView.findViewById(R.id.ivMenu)
         private lateinit var masterTripList: DatabaseReference
+        private lateinit var location: String
 
         init {
             ivMenu.setOnClickListener { popupMenu(it) }
@@ -60,10 +67,34 @@ class TripAdapter(
                         val view = LayoutInflater.from(context).inflate(R.layout.create_trip, null)
 
                         val etName = view.findViewById<EditText>(R.id.etName)
-                        val etLocation = view.findViewById<EditText>(R.id.etLocation)
                         val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
                         val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
 
+                        Places.initialize(context, context.getString(R.string.API_KEY))
+                        val placesClient = Places.createClient(context)
+
+                        // Initialize the AutocompleteSupportFragment.
+                        val autocompleteFragment =
+                            (context as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.etLocation) as AutocompleteSupportFragment
+
+                        // Specify the types of place data to return.
+                        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
+
+                        // Set up a PlaceSelectionListener to handle the response.
+                        autocompleteFragment.setOnPlaceSelectedListener(object :
+                            PlaceSelectionListener {
+                            override fun onPlaceSelected(place: Place) {
+                                location = place.name
+                                Log.i("Places", "Place: ${place.name}, ${place.id}")
+                            }
+
+                            override fun onError(status: Status) {
+                                // TODO: Handle the error.
+                                Log.i("Places", "An error occurred: $status")
+                            }
+                        })
+
+                        // Calendar Picker
                         val c = Calendar.getInstance()
                         val year = c.get(Calendar.YEAR)
                         val month = c.get(Calendar.MONTH)
@@ -75,12 +106,9 @@ class TripAdapter(
                         ivPickStartDate.setOnClickListener {
                             val datePickerDialog = DatePickerDialog(
                                 context,
-                                DatePickerDialog.OnDateSetListener { _, mYear, mMonth, mDay ->
+                                { _, mYear, mMonth, mDay ->
                                     etStartDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
-                                },
-                                year,
-                                month,
-                                day
+                                }, year, month, day
                             )
                             datePickerDialog.show()
                         }
@@ -88,12 +116,9 @@ class TripAdapter(
                         ivPickEndDate.setOnClickListener {
                             val datePickerDialog = DatePickerDialog(
                                 context,
-                                DatePickerDialog.OnDateSetListener { _, mYear, mMonth, mDay ->
+                                { _, mYear, mMonth, mDay ->
                                     etEndDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
-                                },
-                                year,
-                                month,
-                                day
+                                }, year, month, day
                             )
                             datePickerDialog.show()
                         }
@@ -102,7 +127,6 @@ class TripAdapter(
                         dialog.setView(view)
                             .setPositiveButton("OK") { dialog, _ ->
                                 val name = etName.text.toString()
-                                val location = etLocation.text.toString()
                                 val startDate = etStartDate.text.toString()
                                 val endDate = etEndDate.text.toString()
 

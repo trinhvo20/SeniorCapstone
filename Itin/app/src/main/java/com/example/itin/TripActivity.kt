@@ -29,9 +29,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.android.synthetic.main.activity_itinerary.*
 import kotlinx.android.synthetic.main.activity_trip.*
-import kotlinx.android.synthetic.main.create_trip.*
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -144,7 +142,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         val view = LayoutInflater.from(this).inflate(R.layout.create_trip, null)
 
         val etName = view.findViewById<EditText>(R.id.etName)
-        //val etLocation = view.findViewById<EditText>(R.id.etLocation)
         val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
         val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
 
@@ -466,10 +463,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         for (i in 0 until trips.size) {
             val key = trips[i]
-
-                if (key != null) {
-                    println(key.startDate)
-                }
 
             var j = i - 1
 
