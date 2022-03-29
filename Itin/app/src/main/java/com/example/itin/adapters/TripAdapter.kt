@@ -31,6 +31,7 @@ import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.io.File
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -47,7 +48,9 @@ class TripAdapter(
     inner class TripViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val ivMenu: ImageView = itemView.findViewById(R.id.ivMenu)
         private lateinit var masterTripList: DatabaseReference
-        private lateinit var location: String
+        private var location: String = ""
+        private var formatter : DateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy")
+        private lateinit var startDateObj : LocalDate
 
         init {
             ivMenu.setOnClickListener { popupMenu(it) }
@@ -72,14 +75,11 @@ class TripAdapter(
 
                         Places.initialize(context, context.getString(R.string.API_KEY))
                         val placesClient = Places.createClient(context)
-
                         // Initialize the AutocompleteSupportFragment.
                         val autocompleteFragment =
                             (context as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.etLocation) as AutocompleteSupportFragment
-
                         // Specify the types of place data to return.
                         autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
-
                         // Set up a PlaceSelectionListener to handle the response.
                         autocompleteFragment.setOnPlaceSelectedListener(object :
                             PlaceSelectionListener {
@@ -108,8 +108,10 @@ class TripAdapter(
                                 context,
                                 { _, mYear, mMonth, mDay ->
                                     etStartDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
+                                    startDateObj = LocalDate.parse(etStartDate.text.toString(), formatter)
                                 }, year, month, day
                             )
+                            datePickerDialog.datePicker.minDate = c.timeInMillis
                             datePickerDialog.show()
                         }
 
@@ -120,6 +122,7 @@ class TripAdapter(
                                     etEndDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
                                 }, year, month, day
                             )
+                            datePickerDialog.datePicker.minDate = startDateObj.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
                             datePickerDialog.show()
                         }
 

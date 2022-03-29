@@ -31,6 +31,8 @@ import com.google.firebase.database.*
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_trip.*
 import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -53,6 +55,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     private lateinit var location: String
     private lateinit var startdate : LocalDate
     private lateinit var formatter : DateTimeFormatter
+    private lateinit var startDateObj : LocalDate
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +68,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // it is here so that no redundant code happens
         // (i.e. everyone is logged in at the point of ItineraryActivity)
         checkToken()
+        formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
 
         // set trip list
         trips = mutableListOf()
@@ -147,13 +151,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         Places.initialize(this,getString(R.string.API_KEY))
         val placesClient = Places.createClient(this)
-
         // Initialize the AutocompleteSupportFragment.
         val autocompleteFragment = supportFragmentManager.findFragmentById(R.id.etLocation) as AutocompleteSupportFragment
-
         // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
-
         // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
@@ -179,20 +180,23 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         ivPickStartDate.setOnClickListener {
             val datePickerDialog = DatePickerDialog(
                 this,
-                DatePickerDialog.OnDateSetListener { _, mYear, mMonth, mDay ->
+                { _, mYear, mMonth, mDay ->
                     etStartDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
+                    startDateObj = LocalDate.parse(etStartDate.text.toString(), formatter)
                 }, year, month, day
             )
+            datePickerDialog.datePicker.minDate = c.timeInMillis
             datePickerDialog.show()
         }
 
         ivPickEndDate.setOnClickListener {
             val datePickerDialog = DatePickerDialog(
                 this,
-                DatePickerDialog.OnDateSetListener { _, mYear, mMonth, mDay ->
+                { _, mYear, mMonth, mDay ->
                     etEndDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
                 }, year, month, day
             )
+            datePickerDialog.datePicker.minDate = startDateObj.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
             datePickerDialog.show()
         }
 
@@ -200,7 +204,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         newDialog.setView(view)
 
         newDialog.setPositiveButton("Add") { dialog, _ ->
-            //val location = etLocation.text.toString()
             val startDate = etStartDate.text.toString()
             val endDate = etEndDate.text.toString()
             val active: Boolean
@@ -220,7 +223,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     }
                 }
                 // check for dayInterval to set the trip 'active' status
-                var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
                 val today = LocalDate.now()
                 val endDateObj = LocalDate.parse(endDate, formatter)
                 val dayInterval = ChronoUnit.DAYS.between(endDateObj, today).toInt()
@@ -304,7 +306,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 var active = it.child("Active").value.toString()
                 var tripId = it.child("ID").value.toString().toInt()
 
-                formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
                 startdate = LocalDate.parse(stDate, formatter)
 
                 val trip = Trip(
