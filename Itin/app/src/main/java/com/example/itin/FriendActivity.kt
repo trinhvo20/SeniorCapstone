@@ -3,6 +3,8 @@ package com.example.itin
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.animation.Animation
@@ -36,6 +38,7 @@ class FriendActivity : AppCompatActivity() {
     private var userCount: Int = 0
     private var friendsList: MutableList<Int> = mutableListOf()
     private var friend:Boolean = false
+    private var sent: Boolean = false
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var masterUserList: DatabaseReference
     private lateinit var curUser: DatabaseReference
@@ -46,6 +49,8 @@ class FriendActivity : AppCompatActivity() {
     private val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.rotate_close_anim) }
     private val fromBottom: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.from_bottom_anim) }
     private val toBottom: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.to_bottom_anim) }
+    private val hide: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.hide) }
+    private val appear: Animation by lazy { AnimationUtils.loadAnimation(this, R.anim.appear_anim) }
     private var clicked = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,10 +73,39 @@ class FriendActivity : AppCompatActivity() {
 
         // Setting up floating buttons
         btExpandMenu.setOnClickListener { onExpandButtonClicked() }
-        btSendReq.setOnClickListener { onSendButtonClicked() }
         btSearchFriend.setOnClickListener { searchVisibility() }
-
+        btCancelReq.setOnClickListener { onCancelClicked() }
+        btSendReq.setOnClickListener { onSendButtonClicked() }
         btRmFriend.setOnClickListener { }
+
+        // Sets up the text box to only allow you to send request if the textbox is not empty
+        // This improves UI but also doubles as an easy way to check for null input
+        friendsUsername.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                btCancelReq.isClickable = true
+                btCancelReq.visibility = View.VISIBLE
+            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                sent == false
+                
+                if (sent == false) {
+                    if (btCancelReq.isClickable == true) {
+                        btCancelReq.isClickable = false
+                        btCancelReq.visibility = View.INVISIBLE
+                        btCancelReq.startAnimation(hide)
+
+                        btSendReq.isClickable = true
+                        btSendReq.visibility = View.VISIBLE
+                        btSendReq.startAnimation(appear)
+                    }
+                }
+                else{
+                    btSendReq.isClickable = false
+                    btSendReq.visibility = View.INVISIBLE
+                }
+            }
+            override fun afterTextChanged(s: Editable?) { }
+        })
 
         // Finishes activity when back button is finished
             backBtn.setOnClickListener {
@@ -250,8 +284,37 @@ class FriendActivity : AppCompatActivity() {
                 sendNotification(it)
             }
         }
-
     }
+
+    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitInstance.api.postNotification(notification)
+            if(response.isSuccessful) {
+                Log.d(TAG, "Response: Success!")
+            } else {
+                Log.e(TAG, response.errorBody().toString())
+            }
+        } catch(e: Exception) {
+            Log.e(TAG, e.toString())
+        }
+    }
+
+    private fun loadSettings(){
+        val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+
+        val dark = sp.getBoolean("dark_mode_key",false)
+        if("$dark" == "false"){
+            // this is light mode
+            val theme = AppCompatDelegate.MODE_NIGHT_NO
+            AppCompatDelegate.setDefaultNightMode(theme)
+        }
+        else{
+            // this is dark mode
+            val theme = AppCompatDelegate.MODE_NIGHT_YES
+            AppCompatDelegate.setDefaultNightMode(theme)
+        }
+    }
+
     private fun onExpandButtonClicked() {
         setVisibility(clicked)
         setAnimation(clicked)
@@ -261,34 +324,41 @@ class FriendActivity : AppCompatActivity() {
 
     private fun searchVisibility() {
         btSearchFriend.visibility = View.INVISIBLE
-        btRmFriend.visibility = View.INVISIBLE
-        btExpandMenu.visibility = View.INVISIBLE
         btSearchFriend.isClickable = false
-        btRmFriend.isClickable = false
-        btExpandMenu.isClickable = false
         btSearchFriend.startAnimation(toBottom)
-        btRmFriend.startAnimation(toBottom)
-        btExpandMenu.startAnimation(toBottom)
-        clicked = !clicked
 
-        btSendReq.visibility = View.VISIBLE
+        btRmFriend.visibility = View.INVISIBLE
+        btRmFriend.isClickable = false
+        btRmFriend.startAnimation(toBottom)
+
+        btExpandMenu.visibility = View.INVISIBLE
+        btExpandMenu.isClickable = false
+        btExpandMenu.startAnimation(hide)
+
+        btCancelReq.visibility = View.VISIBLE
+        btCancelReq.isClickable = true
+        btCancelReq.startAnimation(appear)
+
         friendsUsername.visibility = View.VISIBLE
-        btSendReq.isClickable = true
-        friendsUsername.clearFocus()
+        clicked = !clicked
+        sent = false
     }
 
     private fun onSendButtonClicked() {
-        addFriendReq()
 
         btSendReq.visibility = View.INVISIBLE
-        friendsUsername.visibility = View.INVISIBLE
         btSendReq.isClickable = false
+        btSendReq.startAnimation(hide)
+        friendsUsername.visibility = View.INVISIBLE
 
         btExpandMenu.visibility = View.VISIBLE
         btExpandMenu.isClickable = true
-        btExpandMenu.startAnimation(fromBottom)
+        btExpandMenu.startAnimation(appear)
+        btExpandMenu.startAnimation(rotateClose)
 
-    }
+        sent = true
+        addFriendReq()
+   }
 
     private fun setAnimation(clicked: Boolean) {
         if (!clicked) {
@@ -322,32 +392,18 @@ class FriendActivity : AppCompatActivity() {
         }
     }
 
-    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
-        try {
-            val response = RetrofitInstance.api.postNotification(notification)
-            if(response.isSuccessful) {
-                Log.d(TAG, "Response: Success!")
-            } else {
-                Log.e(TAG, response.errorBody().toString())
-            }
-        } catch(e: Exception) {
-            Log.e(TAG, e.toString())
-        }
-    }
-    private fun loadSettings(){
-        val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+    private fun onCancelClicked() {
+        btCancelReq.visibility = View.INVISIBLE
+        btCancelReq.isClickable = false
+        btCancelReq.startAnimation(hide)
+        friendsUsername.visibility = View.INVISIBLE
 
-        val dark = sp.getBoolean("dark_mode_key",false)
-        if("$dark" == "false"){
-            // this is light mode
-            val theme = AppCompatDelegate.MODE_NIGHT_NO
-            AppCompatDelegate.setDefaultNightMode(theme)
-        }
-        else{
-            // this is dark mode
-            val theme = AppCompatDelegate.MODE_NIGHT_YES
-            AppCompatDelegate.setDefaultNightMode(theme)
-        }
+        btExpandMenu.visibility = View.VISIBLE
+        btExpandMenu.isClickable = true
+        btExpandMenu.startAnimation(appear)
+        btExpandMenu.startAnimation(rotateClose)
+
+        sent = true
     }
 }
 
