@@ -67,29 +67,32 @@ class TripAdapter(
                 when (it.itemId) {
                     // for Edit button
                     R.id.edit -> {
-                        val view = LayoutInflater.from(context).inflate(R.layout.create_trip, null)
+                        val view = LayoutInflater.from(context).inflate(R.layout.edit_trip, null)
 
                         val etName = view.findViewById<EditText>(R.id.etName)
                         val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
                         val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
 
-                        Places.initialize(context, context.getString(R.string.API_KEY))
+                        etName.setText(curTrip.name)
+                        etStartDate.text = curTrip.startDate
+                        etEndDate.text = curTrip.endDate
+
+                        // Handle AutoComplete Places Search from GoogleAPI
+                        if (!Places.isInitialized()) {
+                            Places.initialize(context, context.getString(R.string.API_KEY))
+                        }
                         val placesClient = Places.createClient(context)
-                        // Initialize the AutocompleteSupportFragment.
                         val autocompleteFragment =
                             (context as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.etLocation) as AutocompleteSupportFragment
-                        // Specify the types of place data to return.
                         autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
-                        // Set up a PlaceSelectionListener to handle the response.
+                        autocompleteFragment.setText(curTrip.location)
                         autocompleteFragment.setOnPlaceSelectedListener(object :
                             PlaceSelectionListener {
                             override fun onPlaceSelected(place: Place) {
                                 location = place.name
-                                Log.i("Places", "Place: ${place.name}, ${place.id}")
+                                Log.i("Places", "Place: ${place.address}, ${place.id}")
                             }
-
                             override fun onError(status: Status) {
-                                // TODO: Handle the error.
                                 Log.i("Places", "An error occurred: $status")
                             }
                         })

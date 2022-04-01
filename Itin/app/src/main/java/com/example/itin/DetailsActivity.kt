@@ -15,6 +15,11 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.itin.classes.Activity
+import com.google.android.gms.common.api.Status
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_details.*
@@ -53,18 +58,35 @@ class DetailsActivity : AppCompatActivity() {
     private fun editActivity(activity: Activity) {
         val view = LayoutInflater.from(this).inflate(R.layout.edit_activity, null)
 
+        var location = ""
         val etName = view.findViewById<EditText>(R.id.etName)
         val tvTime = view.findViewById<TextView>(R.id.tvTime)
-        val etLocation = view.findViewById<EditText>(R.id.etLocation)
         val etCost = view.findViewById<EditText>(R.id.etCost)
         val etNotes = view.findViewById<EditText>(R.id.etNotes)
 
         // auto fill fields with existing data, very convenient
         etName.setText(activity.name)
         tvTime.text = activity.time
-        etLocation.setText(activity.location)
         etCost.setText(activity.cost)
         etNotes.setText(activity.notes)
+
+        // Handle AutoComplete Places Search from GoogleAPI
+        if (!Places.isInitialized()) {
+            Places.initialize(this,getString(R.string.API_KEY))
+        }
+        val placesClient = Places.createClient(this)
+        val autocompleteFragment = supportFragmentManager.findFragmentById(R.id.etLocation) as AutocompleteSupportFragment
+        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
+        autocompleteFragment.setText(activity.location)
+        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+            override fun onPlaceSelected(place: Place) {
+                location = place.name
+                Log.i("Places", "Place: ${place.name}, ${place.id}")
+            }
+            override fun onError(status: Status) {
+                Log.i("Places", "An error occurred: $status")
+            }
+        })
 
         val ibTimePicker = view.findViewById<View>(R.id.ibTimePick)
         ibTimePicker.setOnClickListener{
@@ -89,19 +111,17 @@ class DetailsActivity : AppCompatActivity() {
         newDialog.setView(view)
 
         newDialog.setPositiveButton("Edit") { dialog, _ ->
-            val location = etLocation.text.toString()
             activity.cost = etCost.text.toString()
             activity.notes = etNotes.text.toString()
             activity.time = tvTime.text.toString()
 
-            activity.name = if (etName.text.toString().isEmpty()) {
-                "$location"
-            } else {
-                etName.text.toString()
+            activity.name = etName.text.toString().ifEmpty {
+                location
             }
             activity.location = location
 
             sendEditedActivityToDB(activity)
+            supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
             Toast.makeText(this, "Activity Edited", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
 
@@ -113,6 +133,7 @@ class DetailsActivity : AppCompatActivity() {
         }
 
         newDialog.setNegativeButton("Cancel") { dialog, _ ->
+            supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
             dialog.dismiss()
             Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
         }

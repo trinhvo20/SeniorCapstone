@@ -149,23 +149,19 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
         val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
 
+        // Handle AutoComplete Places Search from GoogleAPI
         if (!Places.isInitialized()) {
             Places.initialize(this,getString(R.string.API_KEY))
         }
         val placesClient = Places.createClient(this)
-        // Initialize the AutocompleteSupportFragment.
         val autocompleteFragment = supportFragmentManager.findFragmentById(R.id.etLocation) as AutocompleteSupportFragment
-        // Specify the types of place data to return.
         autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
-        // Set up a PlaceSelectionListener to handle the response.
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
                 location = place.name
                 Log.i("Places", "Place: ${place.name}, ${place.id}")
             }
-
             override fun onError(status: Status) {
-                // TODO: Handle the error.
                 Log.i("Places", "An error occurred: $status")
             }
         })
