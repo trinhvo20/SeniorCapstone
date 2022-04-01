@@ -130,7 +130,7 @@
         app:layout_constraintTop_toBottomOf="@+id/clLocation">
 
         <TextView
-            android:id="@+id/tvStartDate"
+            android:id="@+id/tvCost"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -154,7 +154,7 @@
             android:textAlignment="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ivPickStartDate"
-            app:layout_constraintStart_toEndOf="@+id/tvStartDate"
+            app:layout_constraintStart_toEndOf="@+id/tvCost"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView

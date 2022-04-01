@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_previous_trip.*
+import kotlinx.android.synthetic.main.activity_previous_trip.prevTripsSwipeContainer
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -41,6 +42,19 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
         rvPreviousTrip.layoutManager = LinearLayoutManager(this)
 
         checkUser()
+
+        // This following codes handle Pull-to-Refresh the Days RecyclerView
+        // It will clear the days list and load all days from the DB again
+        prevTripsSwipeContainer.setOnRefreshListener {
+            previousTripAdapter.clear()
+            readData(tripCount)
+            prevTripsSwipeContainer.isRefreshing = false
+        }
+        // Configure the refreshing colors
+        prevTripsSwipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+            android.R.color.holo_green_light,
+            android.R.color.holo_orange_light,
+            android.R.color.holo_red_light);
 
         backBtn.setOnClickListener { finish() }
     }

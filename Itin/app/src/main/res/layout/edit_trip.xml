@@ -91,21 +91,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-<!--        <EditText-->
-<!--            android:id="@+id/etLocation"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginLeft="10dp"-->
-<!--            android:layout_marginRight="10dp"-->
-<!--            android:hint="Location"-->
-<!--            android:drawableLeft="@drawable/ic_location"-->
-<!--            android:background="@android:drawable/edit_text"-->
-<!--            android:focusable="false"-->
-<!--            app:layout_constraintBottom_toBottomOf="parent"-->
-<!--            app:layout_constraintEnd_toEndOf="parent"-->
-<!--            app:layout_constraintHorizontal_bias="1.0"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/tvLocation" />-->
         <fragment
             android:id="@+id/etLocation"
             android:layout_width="match_parent"
@@ -130,7 +115,7 @@
         app:layout_constraintTop_toBottomOf="@+id/clLocation">
 
         <TextView
-            android:id="@+id/tvStartDate"
+            android:id="@+id/tvCost"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -154,7 +139,7 @@
             android:textAlignment="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ivPickStartDate"
-            app:layout_constraintStart_toEndOf="@+id/tvStartDate"
+            app:layout_constraintStart_toEndOf="@+id/tvCost"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView

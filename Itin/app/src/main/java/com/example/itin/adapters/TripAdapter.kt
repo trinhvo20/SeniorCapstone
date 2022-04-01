@@ -48,7 +48,6 @@ class TripAdapter(
     inner class TripViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val ivMenu: ImageView = itemView.findViewById(R.id.ivMenu)
         private lateinit var masterTripList: DatabaseReference
-        private var location: String = ""
         private var formatter : DateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy")
         private lateinit var startDateObj : LocalDate
 
@@ -73,9 +72,11 @@ class TripAdapter(
                         val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
                         val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
 
+                        var location = curTrip.location
                         etName.setText(curTrip.name)
                         etStartDate.text = curTrip.startDate
                         etEndDate.text = curTrip.endDate
+                        startDateObj = LocalDate.parse(curTrip.startDate, formatter)
 
                         // Handle AutoComplete Places Search from GoogleAPI
                         if (!Places.isInitialized()) {
@@ -85,7 +86,7 @@ class TripAdapter(
                         val autocompleteFragment =
                             (context as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.etLocation) as AutocompleteSupportFragment
                         autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
-                        autocompleteFragment.setText(curTrip.location)
+                        autocompleteFragment.setText(location)
                         autocompleteFragment.setOnPlaceSelectedListener(object :
                             PlaceSelectionListener {
                             override fun onPlaceSelected(place: Place) {
@@ -136,20 +137,20 @@ class TripAdapter(
                                 val startDate = etStartDate.text.toString()
                                 val endDate = etEndDate.text.toString()
 
-                                if (name.isBlank()) {
-                                    if (location.isNotBlank()) {
+                                if (name == curTrip.name) {
+                                    if (location != curTrip.location) {
                                         curTrip.name = "Trip to $location"
                                     }
                                 } else {
                                     curTrip.name = name
                                 }
-                                if (location.isNotBlank()) {
+                                if (location != curTrip.location) {
                                     curTrip.location = location
                                 }
-                                if (startDate.isNotBlank()) {
+                                if (startDate != curTrip.startDate) {
                                     curTrip.startDate = startDate
                                 }
-                                if (endDate.isNotBlank()) {
+                                if (endDate != curTrip.endDate) {
                                     curTrip.endDate = endDate
                                     // check for dayInterval to set the trip 'active' status
                                     var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
@@ -379,7 +380,7 @@ class TripAdapter(
         holder.itemView.apply {
             // get the data from our trips list and put them in the corresponding TextView in trip_item.xml
             tvName.text = curTrip.name
-            tvStartDate.text = curTrip.startDate
+            tvCost.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
 
             if (curTrip.viewers.size > 0) {

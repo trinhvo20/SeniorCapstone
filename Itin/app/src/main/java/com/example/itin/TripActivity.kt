@@ -32,7 +32,6 @@ import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_trip.*
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -52,7 +51,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     private lateinit var curTrips: DatabaseReference
     private lateinit var masterTripList: DatabaseReference
     private lateinit var name: String
-    private lateinit var location: String
     private lateinit var startdate : LocalDate
     private lateinit var formatter : DateTimeFormatter
     private lateinit var startDateObj : LocalDate
@@ -107,14 +105,14 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         // This following codes handle Pull-to-Refresh the Days RecyclerView
         // It will clear the days list and load all days from the DB again
-        tripsSwipeContainer.setOnRefreshListener {
+        prevTripsSwipeContainer.setOnRefreshListener {
             tripAdapter.clear()
             createTestTrip()
             readData(tripCount)
-            tripsSwipeContainer.isRefreshing = false
+            prevTripsSwipeContainer.isRefreshing = false
         }
         // Configure the refreshing colors
-        tripsSwipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+        prevTripsSwipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
             android.R.color.holo_green_light,
             android.R.color.holo_orange_light,
             android.R.color.holo_red_light);
@@ -145,6 +143,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     private fun addTrip() {
         val view = LayoutInflater.from(this).inflate(R.layout.create_trip, null)
 
+        var location = ""
         val etName = view.findViewById<EditText>(R.id.etName)
         val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
         val etEndDate = view.findViewById<TextView>(R.id.etEndDate)

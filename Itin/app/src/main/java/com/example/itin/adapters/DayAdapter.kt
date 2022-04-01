@@ -81,7 +81,7 @@ class DayAdapter(
             autocompleteFragment.setOnPlaceSelectedListener(object :
                 PlaceSelectionListener {
                 override fun onPlaceSelected(place: Place) {
-                    location = place.name
+                    location = "${place.name}\n${place.address}"
                     Log.i("Places", "Place: ${place.address}, ${place.id}")
                 }
 
@@ -110,8 +110,6 @@ class DayAdapter(
 
                 tpd.show()
             }
-
-
             val newDialog = AlertDialog.Builder(context)
             newDialog.setView(view)
 
@@ -120,10 +118,8 @@ class DayAdapter(
                 val notes = etNotes.text.toString()
                 val time = tvTime.text.toString()
 
-                val name = if (etName.text.toString().isEmpty()) {
-                    location
-                } else {
-                    etName.text.toString()
+                val name = etName.text.toString().ifBlank {
+                    location.substringBefore("\n")
                 }
 
                 val activity = Activity(name, time, location, cost, notes,curDay.tripID,"")

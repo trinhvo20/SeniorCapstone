@@ -4,16 +4,24 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
 import com.example.itin.classes.Trip
+import com.google.android.gms.common.api.Status
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -29,6 +37,8 @@ class PreviousTripAdapter(
     @RequiresApi(Build.VERSION_CODES.O)
     inner class PreviousTripViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val ivMenu: ImageView = itemView.findViewById(R.id.ivMenu)
+        private var formatter : DateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy")
+        private lateinit var startDateObj : LocalDate
 
         init {
             ivMenu.setOnClickListener { popupMenu(it) }
@@ -45,13 +55,38 @@ class PreviousTripAdapter(
                 when(it.itemId) {
                     // for Edit button
                     R.id.edit -> {
-                        val view = LayoutInflater.from(context).inflate(R.layout.create_trip, null)
+                        val view = LayoutInflater.from(context).inflate(R.layout.edit_trip, null)
 
                         val etName = view.findViewById<EditText>(R.id.etName)
-                        val etLocation = view.findViewById<EditText>(R.id.etLocation)
                         val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
                         val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
-                        
+
+                        var location = curTrip.location
+                        etName.setText(curTrip.name)
+                        etStartDate.text = curTrip.startDate
+                        etEndDate.text = curTrip.endDate
+                        startDateObj = LocalDate.parse(curTrip.startDate, formatter)
+
+                        // Handle AutoComplete Places Search from GoogleAPI
+                        if (!Places.isInitialized()) {
+                            Places.initialize(context, context.getString(R.string.API_KEY))
+                        }
+                        val placesClient = Places.createClient(context)
+                        val autocompleteFragment =
+                            (context as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.etLocation) as AutocompleteSupportFragment
+                        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
+                        autocompleteFragment.setText(location)
+                        autocompleteFragment.setOnPlaceSelectedListener(object :
+                            PlaceSelectionListener {
+                            override fun onPlaceSelected(place: Place) {
+                                location = place.name
+                                Log.i("Places", "Place: ${place.address}, ${place.id}")
+                            }
+                            override fun onError(status: Status) {
+                                Log.i("Places", "An error occurred: $status")
+                            }
+                        })
+
                         val c = Calendar.getInstance()
                         val year = c.get(Calendar.YEAR)
                         val month = c.get(Calendar.MONTH)
@@ -61,16 +96,25 @@ class PreviousTripAdapter(
                         val ivPickEndDate = view.findViewById<ImageView>(R.id.ivPickEndDate)
 
                         ivPickStartDate.setOnClickListener {
-                            val datePickerDialog = DatePickerDialog(context, DatePickerDialog.OnDateSetListener{ _, mYear, mMonth, mDay ->
-                                etStartDate.text = ""+(mMonth+1)+"/"+mDay+"/"+mYear
-                            }, year, month, day)
+                            val datePickerDialog = DatePickerDialog(
+                                context,
+                                { _, mYear, mMonth, mDay ->
+                                    etStartDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
+                                    startDateObj = LocalDate.parse(etStartDate.text.toString(), formatter)
+                                }, year, month, day
+                            )
+                            datePickerDialog.datePicker.minDate = c.timeInMillis
                             datePickerDialog.show()
                         }
 
                         ivPickEndDate.setOnClickListener {
-                            val datePickerDialog = DatePickerDialog(context, DatePickerDialog.OnDateSetListener{ _, mYear, mMonth, mDay ->
-                                etEndDate.text = ""+(mMonth+1)+"/"+mDay+"/"+mYear
-                            }, year, month, day)
+                            val datePickerDialog = DatePickerDialog(
+                                context,
+                                { _, mYear, mMonth, mDay ->
+                                    etEndDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
+                                }, year, month, day
+                            )
+                            datePickerDialog.datePicker.minDate = startDateObj.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
                             datePickerDialog.show()
                         }
 
@@ -78,24 +122,23 @@ class PreviousTripAdapter(
                         dialog.setView(view)
                             .setPositiveButton("OK") {dialog,_ ->
                                 val name = etName.text.toString()
-                                val location = etLocation.text.toString()
                                 val startDate = etStartDate.text.toString()
                                 val endDate = etEndDate.text.toString()
 
-                                if (name.isBlank()){
-                                    if (location.isNotBlank()) {
+                                if (name == curTrip.name) {
+                                    if (location != curTrip.location) {
                                         curTrip.name = "Trip to $location"
                                     }
                                 } else {
                                     curTrip.name = name
                                 }
-                                if (location.isNotBlank()){
+                                if (location != curTrip.location) {
                                     curTrip.location = location
                                 }
-                                if (startDate.isNotBlank()){
+                                if (startDate != curTrip.startDate) {
                                     curTrip.startDate = startDate
                                 }
-                                if (endDate.isNotBlank()){
+                                if (endDate != curTrip.endDate) {
                                     curTrip.endDate = endDate
                                     // check for dayInterval to set the trip 'active' status
                                     var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
@@ -108,10 +151,12 @@ class PreviousTripAdapter(
                                 curTrip.sendToDB()
                                 if (curTrip.active) {previousTrips.removeAt(adapterPosition)}
                                 notifyDataSetChanged()
+                                context.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
                                 Toast.makeText(context, "Successfully Edited", Toast.LENGTH_SHORT).show()
                                 dialog.dismiss()
                             }
                             .setNegativeButton("Cancel") {dialog,_ ->
+                                context.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
                                 dialog.dismiss()
                             }
                             .create()
@@ -164,7 +209,7 @@ class PreviousTripAdapter(
         // access to trip_item.xml
         holder.itemView.apply {
             tvName.text = curTrip.name
-            tvStartDate.text = curTrip.startDate
+            tvCost.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
         }
 
@@ -181,5 +226,10 @@ class PreviousTripAdapter(
     // this interface will handle the RecyclerView clickable
     interface OnItemClickListener {
         fun onItemClick(position: Int)
+    }
+
+    fun clear() {
+        previousTrips.clear()
+        notifyDataSetChanged()
     }
 }
