@@ -14,12 +14,18 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
 import com.example.itin.adapters.ActivityAdapter
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
+import com.google.android.gms.common.api.Status
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -50,21 +56,40 @@ class DayAdapter(
         // function to add an activity to a day
         @RequiresApi(Build.VERSION_CODES.O)
         private fun addAnActivity(view : View) {
-            val firebaseAuth = FirebaseAuth.getInstance()
             val masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
 
             val curDay = days[adapterPosition]
             val tripInstance = masterTripList.child(curDay.tripID.toString())
             val dayInstance = tripInstance.child("Days").child((curDay.dayInt-1).toString())
 
-
             val view = LayoutInflater.from(context).inflate(R.layout.add_activity, null)
 
+            var location = ""
             val etName = view.findViewById<EditText>(R.id.etName)
             val tvTime = view.findViewById<TextView>(R.id.tvTime)
-            val etLocation = view.findViewById<EditText>(R.id.etLocation)
             val etCost = view.findViewById<EditText>(R.id.etCost)
             val etNotes = view.findViewById<EditText>(R.id.etNotes)
+
+            // Handle AutoComplete Places Search from GoogleAPI
+            if (!Places.isInitialized()) {
+                Places.initialize(context, context.getString(R.string.API_KEY))
+            }
+            val placesClient = Places.createClient(context)
+            val autocompleteFragment =
+                (context as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.etActLocation1) as AutocompleteSupportFragment
+            autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
+            autocompleteFragment.setOnPlaceSelectedListener(object :
+                PlaceSelectionListener {
+                override fun onPlaceSelected(place: Place) {
+                    location = "${place.name}\n${place.address}"
+                    Log.i("Places", "Place: ${place.address}, ${place.id}")
+                }
+
+                override fun onError(status: Status) {
+                    // TODO: Handle the error.
+                    Log.i("Places", "An error occurred: $status")
+                }
+            })
 
             val ibTimePicker = view.findViewById<View>(R.id.ibTimePick)
             ibTimePicker.setOnClickListener{
@@ -85,36 +110,39 @@ class DayAdapter(
 
                 tpd.show()
             }
-
-
             val newDialog = AlertDialog.Builder(context)
             newDialog.setView(view)
 
             newDialog.setPositiveButton("Add") { dialog, _ ->
-                val location = etLocation.text.toString()
                 val cost = etCost.text.toString()
                 val notes = etNotes.text.toString()
                 val time = tvTime.text.toString()
 
-                val name = if (etName.text.toString().isEmpty()) {
-                    "$location"
+                if (location.isBlank() || time.isBlank()){
+                    context.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
+                    Toast.makeText(context, "Location & Time are required", Toast.LENGTH_LONG).show()
                 } else {
-                    etName.text.toString()
+
+                    val name = etName.text.toString().ifBlank {
+                        location.substringBefore("\n")
+                    }
+
+                    val activity = Activity(name, time, location, cost, notes, curDay.tripID, "")
+
+                    curDay.activities.add(activity)
+                    sendActivityToDB(curDay, activity)
+
+                    activitysort(curDay)
+                    notifyDataSetChanged()
+                    context.supportFragmentManager.beginTransaction().remove(autocompleteFragment)
+                        .commit()
+                    Toast.makeText(context, "Activity Added", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
                 }
-
-                val activity = Activity(name, time, location, cost, notes,curDay.tripID,"")
-
-                curDay.activities.add(activity)
-                sendActivityToDB(curDay,activity)
-
-                activitysort(curDay)
-                notifyDataSetChanged()
-                Toast.makeText(context, "Activity Added", Toast.LENGTH_SHORT).show()
-                dialog.dismiss()
-
             }
 
             newDialog.setNegativeButton("Cancel") { dialog, _ ->
+                context.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
                 dialog.dismiss()
                 Toast.makeText(context, "Canceled", Toast.LENGTH_SHORT).show()
             }

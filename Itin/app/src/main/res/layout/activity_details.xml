@@ -40,76 +40,96 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/tvName"
             android:layout_centerHorizontal="true"
-            android:fontFamily="casual"
             android:layout_marginTop="5dp"
+            android:fontFamily="casual"
+            android:textStyle="bold"
             android:text="00:00 AM"
-            android:textSize="20dp" />
+            android:textSize="22dp" />
     </RelativeLayout>
 
-
-    <TextView
-        android:id="@+id/tvStartDate"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutLocation"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:text="$0"
-        android:textSize="20dp"
-        android:padding="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tvCostTitle"
-        app:layout_constraintTop_toBottomOf="@+id/tvLocation" />
-
-    <TextView
-        android:id="@+id/tvLocation"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Location"
-        android:textSize="20dp"
-        android:fontFamily="casual"
-        android:layout_marginTop="2dp"
-        android:textStyle="bold"
-        android:padding="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tvLocationTitle"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2" />
-
-    <TextView
-        android:id="@+id/tvLocationTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="casual"
-        android:text="Location"
-        android:textColor="@color/mint"
-        android:textSize="22dp"
-        android:padding="10dp"
-        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout2">
 
-    <TextView
-        android:id="@+id/tvCostTitle"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/tvLocationTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="casual"
+            android:paddingHorizontal="10dp"
+            android:paddingTop="10dp"
+            android:text="Location:"
+            android:textColor="@color/mint"
+            android:textSize="22dp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvLocation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="casual"
+            android:paddingHorizontal="20dp"
+            android:text="Location"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLocationTitle" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutCost"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="casual"
-        android:text="Cost"
-        android:padding="10dp"
-        android:textColor="@color/mint"
-        android:textSize="22dp"
-        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvLocationTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/layoutLocation">
+
+        <TextView
+            android:id="@+id/tvCostTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="casual"
+            android:padding="10dp"
+            android:text="Cost:"
+            android:textColor="@color/mint"
+            android:textSize="22dp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvCost"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="$0"
+            android:textSize="20dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvCostTitle"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutNote"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="#D6ECE9"
         android:layout_margin="10dp"
+        android:background="#D6ECE9"
         app:layout_constraintBottom_toTopOf="@+id/btEdit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCostTitle">
+        app:layout_constraintTop_toBottomOf="@+id/layoutCost">
 
         <TextView
             android:id="@+id/tvNoteTitle"
