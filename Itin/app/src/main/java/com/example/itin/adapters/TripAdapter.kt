@@ -85,6 +85,7 @@ class TripAdapter(
                         val placesClient = Places.createClient(context)
                         val autocompleteFragment =
                             (context as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.etLocation2) as AutocompleteSupportFragment
+                        Log.d("Places",context.supportFragmentManager.findFragmentById(R.id.etLocation2).toString())
                         autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
                         autocompleteFragment.setText(location)
                         autocompleteFragment.setOnPlaceSelectedListener(object :
@@ -173,6 +174,7 @@ class TripAdapter(
                             }
                             .setNegativeButton("Cancel") { dialog, _ ->
                                 context.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
+                                Log.d("Places",context.supportFragmentManager.findFragmentById(R.id.etLocation2).toString())
                                 dialog.dismiss()
                             }
                             .create()

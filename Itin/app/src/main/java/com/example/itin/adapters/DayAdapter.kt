@@ -118,21 +118,27 @@ class DayAdapter(
                 val notes = etNotes.text.toString()
                 val time = tvTime.text.toString()
 
-                val name = etName.text.toString().ifBlank {
-                    location.substringBefore("\n")
+                if (location.isBlank() || time.isBlank()){
+                    context.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
+                    Toast.makeText(context, "Location & Time are required", Toast.LENGTH_LONG).show()
+                } else {
+
+                    val name = etName.text.toString().ifBlank {
+                        location.substringBefore("\n")
+                    }
+
+                    val activity = Activity(name, time, location, cost, notes, curDay.tripID, "")
+
+                    curDay.activities.add(activity)
+                    sendActivityToDB(curDay, activity)
+
+                    activitysort(curDay)
+                    notifyDataSetChanged()
+                    context.supportFragmentManager.beginTransaction().remove(autocompleteFragment)
+                        .commit()
+                    Toast.makeText(context, "Activity Added", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
                 }
-
-                val activity = Activity(name, time, location, cost, notes,curDay.tripID,"")
-
-                curDay.activities.add(activity)
-                sendActivityToDB(curDay,activity)
-
-                activitysort(curDay)
-                notifyDataSetChanged()
-                context.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-                Toast.makeText(context, "Activity Added", Toast.LENGTH_SHORT).show()
-                dialog.dismiss()
-
             }
 
             newDialog.setNegativeButton("Cancel") { dialog, _ ->

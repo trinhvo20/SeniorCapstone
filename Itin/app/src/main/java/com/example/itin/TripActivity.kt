@@ -206,7 +206,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             val active: Boolean
 
             if (location.isBlank() || startDate.isBlank() || endDate.isBlank()) {
-                Toast.makeText(this, "Location & Dates are required", Toast.LENGTH_SHORT).show()
+                supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
+                Toast.makeText(this, "Location & Dates are required", Toast.LENGTH_LONG).show()
             } else {
                 name = etName.text.toString().ifBlank {
                     "Trip to $location"
