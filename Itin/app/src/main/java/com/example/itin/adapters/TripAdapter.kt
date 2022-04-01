@@ -187,6 +187,26 @@ class TripAdapter(
                         true
                     }
 
+                    R.id.leave -> {
+                        val dialog = AlertDialog.Builder(context)
+                        dialog.setTitle("Leave Trip")
+                            .setIcon(R.drawable.ic_alert)
+                            .setMessage("Are you sure leave this trip?")
+                            .setPositiveButton("Yes") { dialog, _ ->
+                                leavetrip(curTrip.tripID)
+                                trips.removeAt(adapterPosition)
+                                tripsort(trips)
+                                notifyDataSetChanged()
+                                dialog.dismiss()
+                            }
+                            .setNegativeButton("No") { dialog, _ ->
+                                dialog.dismiss()
+                            }
+                            .create()
+                            .show()
+                        true
+                    }
+
                     else -> true
                 }
             }
@@ -196,6 +216,21 @@ class TripAdapter(
             val menu = popup.get(popupMenu)
             menu.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.java)
                 .invoke(menu, true)
+        }
+
+        private fun leavetrip(tripID: Int) {
+            val firebaseAuth = FirebaseAuth.getInstance()
+            val firebaseUser = firebaseAuth.currentUser
+            var curTrips: DatabaseReference? = null
+
+            // If the user is not current logged in:
+            if (firebaseUser == null) { }
+            else {
+                val uid = firebaseUser.uid
+                val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+                curTrips = curUser.child("trips")
+                curTrips.child("Trip $tripID").removeValue()
+            }
         }
 
 
