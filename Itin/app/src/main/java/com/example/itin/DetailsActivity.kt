@@ -74,7 +74,7 @@ class DetailsActivity : AppCompatActivity() {
             Places.initialize(this,getString(R.string.API_KEY))
         }
         val placesClient = Places.createClient(this)
-        val autocompleteFragment = supportFragmentManager.findFragmentById(R.id.etLocation) as AutocompleteSupportFragment
+        val autocompleteFragment = supportFragmentManager.findFragmentById(R.id.etEditedActLocation) as AutocompleteSupportFragment
         autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
         autocompleteFragment.setText(location)
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {

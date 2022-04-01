@@ -76,7 +76,7 @@ class DayAdapter(
             }
             val placesClient = Places.createClient(context)
             val autocompleteFragment =
-                (context as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.etLocation) as AutocompleteSupportFragment
+                (context as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.etActLocation1) as AutocompleteSupportFragment
             autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
             autocompleteFragment.setOnPlaceSelectedListener(object :
                 PlaceSelectionListener {

@@ -84,7 +84,7 @@ class TripAdapter(
                         }
                         val placesClient = Places.createClient(context)
                         val autocompleteFragment =
-                            (context as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.etLocation) as AutocompleteSupportFragment
+                            (context as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.etLocation2) as AutocompleteSupportFragment
                         autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
                         autocompleteFragment.setText(location)
                         autocompleteFragment.setOnPlaceSelectedListener(object :
@@ -137,7 +137,7 @@ class TripAdapter(
                                 val startDate = etStartDate.text.toString()
                                 val endDate = etEndDate.text.toString()
 
-                                if (name == curTrip.name) {
+                                if (name.isBlank()) {
                                     if (location != curTrip.location) {
                                         curTrip.name = "Trip to $location"
                                     }

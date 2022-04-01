@@ -105,14 +105,14 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         // This following codes handle Pull-to-Refresh the Days RecyclerView
         // It will clear the days list and load all days from the DB again
-        prevTripsSwipeContainer.setOnRefreshListener {
+        tripsSwipeContainer.setOnRefreshListener {
             tripAdapter.clear()
             createTestTrip()
             readData(tripCount)
-            prevTripsSwipeContainer.isRefreshing = false
+            tripsSwipeContainer.isRefreshing = false
         }
         // Configure the refreshing colors
-        prevTripsSwipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+        tripsSwipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
             android.R.color.holo_green_light,
             android.R.color.holo_orange_light,
             android.R.color.holo_red_light);
@@ -153,7 +153,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             Places.initialize(this,getString(R.string.API_KEY))
         }
         val placesClient = Places.createClient(this)
-        val autocompleteFragment = supportFragmentManager.findFragmentById(R.id.etLocation) as AutocompleteSupportFragment
+        val autocompleteFragment = supportFragmentManager.findFragmentById(R.id.etLocation1) as AutocompleteSupportFragment
         autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
         autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
             override fun onPlaceSelected(place: Place) {
