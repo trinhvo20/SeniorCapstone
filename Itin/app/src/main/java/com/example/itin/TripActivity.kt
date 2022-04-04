@@ -3,7 +3,6 @@ package com.example.itin
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.util.Log
@@ -14,22 +13,28 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.TripAdapter
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
+import com.example.itin.classes.User
+import com.google.android.gms.common.api.Status
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.database.FirebaseDatabase
-import kotlinx.android.synthetic.main.activity_trip.*
-import java.util.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.android.synthetic.main.activity_itinerary.*
+import kotlinx.android.synthetic.main.activity_trip.*
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.*
 
 // Toggle Debugging
 const val DEBUG_TOGGLE: Boolean = true
@@ -39,13 +44,16 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     private lateinit var tripAdapter: TripAdapter
     private lateinit var trips: MutableList<Trip>
     private lateinit var firebaseAuth: FirebaseAuth
-    private var tripCount: Int = 0
+    private lateinit var user : User
+    private var tripCount : Int = 0
     private lateinit var uid : String
     private lateinit var curUser: DatabaseReference
     private lateinit var curTrips: DatabaseReference
     private lateinit var masterTripList: DatabaseReference
+    private lateinit var name: String
     private lateinit var startdate : LocalDate
     private lateinit var formatter : DateTimeFormatter
+    private lateinit var startDateObj : LocalDate
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,6 +66,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // it is here so that no redundant code happens
         // (i.e. everyone is logged in at the point of ItineraryActivity)
         checkToken()
+        formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
 
         // set trip list
         trips = mutableListOf()
@@ -134,11 +143,29 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     private fun addTrip() {
         val view = LayoutInflater.from(this).inflate(R.layout.create_trip, null)
 
+        var location = ""
         val etName = view.findViewById<EditText>(R.id.etName)
-        val etLocation = view.findViewById<EditText>(R.id.etLocation)
         val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
         val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
 
+        // Handle AutoComplete Places Search from GoogleAPI
+        if (!Places.isInitialized()) {
+            Places.initialize(this,getString(R.string.API_KEY))
+        }
+        val placesClient = Places.createClient(this)
+        val autocompleteFragment = supportFragmentManager.findFragmentById(R.id.etLocation1) as AutocompleteSupportFragment
+        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
+        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+            override fun onPlaceSelected(place: Place) {
+                location = place.name
+                Log.i("Places", "Place: ${place.name}, ${place.id}")
+            }
+            override fun onError(status: Status) {
+                Log.i("Places", "An error occurred: $status")
+            }
+        })
+
+        // Calendar Date Picker
         val c = Calendar.getInstance()
         val year = c.get(Calendar.YEAR)
         val month = c.get(Calendar.MONTH)
@@ -150,26 +177,23 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         ivPickStartDate.setOnClickListener {
             val datePickerDialog = DatePickerDialog(
                 this,
-                DatePickerDialog.OnDateSetListener { _, mYear, mMonth, mDay ->
+                { _, mYear, mMonth, mDay ->
                     etStartDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
-                },
-                year,
-                month,
-                day
+                    startDateObj = LocalDate.parse(etStartDate.text.toString(), formatter)
+                }, year, month, day
             )
+            datePickerDialog.datePicker.minDate = c.timeInMillis
             datePickerDialog.show()
         }
 
         ivPickEndDate.setOnClickListener {
             val datePickerDialog = DatePickerDialog(
                 this,
-                DatePickerDialog.OnDateSetListener { _, mYear, mMonth, mDay ->
+                { _, mYear, mMonth, mDay ->
                     etEndDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
-                },
-                year,
-                month,
-                day
+                }, year, month, day
             )
+            datePickerDialog.datePicker.minDate = startDateObj.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
             datePickerDialog.show()
         }
 
@@ -177,14 +201,13 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         newDialog.setView(view)
 
         newDialog.setPositiveButton("Add") { dialog, _ ->
-            val name: String
-            val location = etLocation.text.toString()
             val startDate = etStartDate.text.toString()
             val endDate = etEndDate.text.toString()
             val active: Boolean
 
             if (location.isBlank() || startDate.isBlank() || endDate.isBlank()) {
-                Toast.makeText(this, "Location & Dates are required", Toast.LENGTH_SHORT).show()
+                supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
+                Toast.makeText(this, "Location & Dates are required", Toast.LENGTH_LONG).show()
             } else {
                 name = etName.text.toString().ifBlank {
                     "Trip to $location"
@@ -198,7 +221,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     }
                 }
                 // check for dayInterval to set the trip 'active' status
-                var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
                 val today = LocalDate.now()
                 val endDateObj = LocalDate.parse(endDate, formatter)
                 val dayInterval = ChronoUnit.DAYS.between(endDateObj, today).toInt()
@@ -226,11 +248,13 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     tripAdapter.notifyDataSetChanged()
                 }
 
+                supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
                 Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
         }
         newDialog.setNegativeButton("Cancel") { dialog, _ ->
+            supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
             dialog.dismiss()
             Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
         }
@@ -282,7 +306,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 var active = it.child("Active").value.toString()
                 var tripId = it.child("ID").value.toString().toInt()
 
-                formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
                 startdate = LocalDate.parse(stDate, formatter)
 
                 val trip = Trip(
@@ -441,10 +464,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         for (i in 0 until trips.size) {
             val key = trips[i]
-
-                if (key != null) {
-                    println(key.startDate)
-                }
 
             var j = i - 1
 

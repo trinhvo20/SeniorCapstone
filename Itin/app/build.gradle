@@ -7,6 +7,7 @@ plugins {
 
 android {
     compileSdk 31
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.example.itin"
@@ -14,6 +15,7 @@ android {
         targetSdk 31
         versionCode 1
         versionName "1.0"
+        buildConfigField("String", "FCM_KEY", FCM_KEY)
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -67,6 +69,8 @@ dependencies {
     // The following dependency is for Firebase Realtime Database
     implementation 'com.google.firebase:firebase-database:20.0.3'
     implementation 'com.google.firebase:firebase-database-ktx:20.0.3'
+    implementation 'androidx.preference:preference-ktx:1.1.1'
+    implementation 'com.google.android.libraries.places:places:2.5.0'
     implementation 'com.google.firebase:firebase-bom:29.1.0'
     implementation 'androidx.preference:preference-ktx'
     implementation 'com.google.firebase:firebase-storage-ktx:20.0.0'
