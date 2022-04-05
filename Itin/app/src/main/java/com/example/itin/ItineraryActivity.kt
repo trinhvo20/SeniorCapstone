@@ -1,11 +1,17 @@
 package com.example.itin
 
+import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +32,8 @@ import kotlinx.android.synthetic.main.activity_itinerary.tvName
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.util.*
 
 // for notifications / FCM
 const val TOPIC = "/topics/myTopic2"
@@ -104,6 +112,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
 
         btExpandMenu.setOnClickListener { onExpandButtonClicked() }
         shareBtn.setOnClickListener { onShareClicked() }
+        editBtn.setOnClickListener { editTrip(trip) }
 
         backBtn.setOnClickListener {
             finish()
@@ -254,10 +263,12 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         if (!clicked) {
             chatBoxBtn.startAnimation(fromBottom)
             shareBtn.startAnimation(fromBottom)
+            editBtn.startAnimation(fromBottom)
             btExpandMenu.startAnimation(rotateOpen)
         } else {
             chatBoxBtn.startAnimation(toBottom)
             shareBtn.startAnimation(toBottom)
+            editBtn.startAnimation(toBottom)
             btExpandMenu.startAnimation(rotateClose)
         }
     }
@@ -266,15 +277,20 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         if (!clicked) {
             chatBoxBtn.visibility = View.VISIBLE
             shareBtn.visibility = View.VISIBLE
+            editBtn.visibility = View.VISIBLE
 
             chatBoxBtn.isClickable = true
             shareBtn.isClickable = true
+            editBtn.isClickable = true
+
         } else {
             chatBoxBtn.visibility = View.INVISIBLE
             shareBtn.visibility = View.INVISIBLE
-            
+            editBtn.visibility = View.INVISIBLE
+
             chatBoxBtn.isClickable = false
             shareBtn.isClickable = false
+            editBtn.isClickable = false
         }
     }
 
@@ -284,5 +300,101 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         }
         Toast.makeText(this, trip.tripID.toString(), Toast.LENGTH_SHORT).show()
         this.startActivity(nit)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun editTrip(curTrip: Trip) {
+        val view = LayoutInflater.from(this).inflate(R.layout.create_trip, null)
+
+        val etName = view.findViewById<EditText>(R.id.etName)
+        val etLocation = view.findViewById<EditText>(R.id.etLocation)
+        val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
+        val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
+
+        val c = Calendar.getInstance()
+        val year = c.get(Calendar.YEAR)
+        val month = c.get(Calendar.MONTH)
+        val day = c.get(Calendar.DAY_OF_MONTH)
+
+        val ivPickStartDate = view.findViewById<ImageView>(R.id.ivPickStartDate)
+        val ivPickEndDate = view.findViewById<ImageView>(R.id.ivPickEndDate)
+
+        ivPickStartDate.setOnClickListener {
+            val datePickerDialog = DatePickerDialog(
+                this,
+                DatePickerDialog.OnDateSetListener { _, mYear, mMonth, mDay ->
+                    etStartDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
+                },
+                year,
+                month,
+                day
+            )
+            datePickerDialog.show()
+        }
+
+        ivPickEndDate.setOnClickListener {
+            val datePickerDialog = DatePickerDialog(
+                this,
+                DatePickerDialog.OnDateSetListener { _, mYear, mMonth, mDay ->
+                    etEndDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
+                },
+                year,
+                month,
+                day
+            )
+            datePickerDialog.show()
+        }
+
+        val dialog = AlertDialog.Builder(this)
+        dialog.setView(view)
+            .setPositiveButton("OK") { dialog, _ ->
+                val name = etName.text.toString()
+                val location = etLocation.text.toString()
+                val startDate = etStartDate.text.toString()
+                val endDate = etEndDate.text.toString()
+
+                if (name.isBlank()) {
+                    if (location.isNotBlank()) {
+                        curTrip.name = "Trip to $location"
+                    }
+                } else {
+                    curTrip.name = name
+                }
+                if (location.isNotBlank()) {
+                    curTrip.location = location
+                }
+                if (startDate.isNotBlank()) {
+                    curTrip.startDate = startDate
+                }
+                if (endDate.isNotBlank()) {
+                    curTrip.endDate = endDate
+                    // check for dayInterval to set the trip 'active' status
+                    var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
+                    val today = LocalDate.now()
+                    val endDateObj = LocalDate.parse(endDate, formatter)
+                    val dayInterval =
+                        ChronoUnit.DAYS.between(endDateObj, today).toInt()
+                    curTrip.active = dayInterval <= 0
+                }
+
+                curTrip.sendToDB()
+//                if (!curTrip.active) {
+//                    trips.removeAt(adapterPosition)
+//                }
+                //reload the activity with no transition
+                finish();
+                overridePendingTransition(0, 0);
+                startActivity(intent);
+                overridePendingTransition(0, 0);
+
+                Toast.makeText(this, "Successfully Edited", Toast.LENGTH_SHORT)
+                    .show()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
     }
 }
