@@ -420,7 +420,7 @@ class TripAdapter(
             tvCost.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
 
-            if (curTrip.viewers.size > 0) {
+            if (curTrip.viewers.size > 1) {
                 if (curTrip.viewers.size == 3) {
                     var uid1 = curTrip.viewers[0]
                     var uid2 = curTrip.viewers[1]
@@ -487,22 +487,6 @@ class TripAdapter(
                     }
                     ivViewers1.visibility = View.VISIBLE
                     ivViewers2.visibility = View.VISIBLE
-                }
-
-                if (curTrip.viewers.size == 1) {
-                    var uid = curTrip.viewers[0]
-
-                    var storageReference =
-                        FirebaseStorage.getInstance().getReference("Users/$uid.jpg")
-                    val localFileV1 =
-                        File.createTempFile("tempImage_${curTrip.tripID}_viewer1", "jpg")
-                    storageReference.getFile(localFileV1).addOnSuccessListener {
-                        val bitmap = BitmapFactory.decodeFile(localFileV1.absolutePath)
-                        ivViewers1.setImageBitmap(bitmap)
-                    }.addOnFailureListener {
-                        ivViewers1.setImageResource(R.drawable.profile)
-                    }
-                    ivViewers1.visibility = View.VISIBLE
                 }
 
                 else{

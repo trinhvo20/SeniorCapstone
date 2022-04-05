@@ -327,6 +327,18 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         }
     }
 
+    private fun readViewers(tripInstance: DatabaseReference, trip: Trip) {
+        tripInstance.child("Viewers").get().addOnSuccessListener {
+            if (it.exists()) {
+                // will cycle through the amount of days that we have
+                for (i in it.children){
+                    // will make the day classes
+                    trip.viewers.add(i.value.toString())
+                }
+            }
+        }
+    }
+
     // load days from database
     // do this in trip activity?? then just manipulate the trip directly
     @RequiresApi(Build.VERSION_CODES.O)
