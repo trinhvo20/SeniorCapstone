@@ -1,9 +1,16 @@
 package com.example.itin
 
 import android.content.Intent
+import android.database.Cursor
+import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,10 +21,15 @@ import com.example.itin.classes.Trip
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_itinerary.*
+import kotlinx.android.synthetic.main.activity_profile_screen.*
+import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+
 
 // for notifications / FCM
 const val TOPIC = "/topics/myTopic2"
@@ -32,6 +44,9 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
     private lateinit var databaseReference: DatabaseReference
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var masterTripList: DatabaseReference
+    private val PICK_IMAGE = 100
+    private lateinit var storageReference: StorageReference
+    private lateinit var imageUri: Uri
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +58,6 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
                 WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
             )
         }
-
         firebaseAuth = FirebaseAuth.getInstance()
         masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
         databaseReference = FirebaseDatabase.getInstance().reference
@@ -54,16 +68,14 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         tvName.text = trip.name
         tvTripLocation.text = trip.location
         tvDateRange.text = "From: ${trip.startDate}     To: ${trip.endDate}"
+        Log.d("Itinerary","TripID: ${trip.tripID}")
+        getTripImage()
 
         days = trip.days
 
         // initiate a new object of class DayAdapter, pass in days list as parameter
         dayAdapter = DayAdapter(this,days,this)
-
-        // assign adapter for our RecyclerView
         rvActivityList.adapter = dayAdapter
-
-        // determine how items are arrange in our list
         rvActivityList.layoutManager = LinearLayoutManager(this)
 
         // need these for proper formatting from the DB
@@ -77,18 +89,18 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         backBtn.setOnClickListener {
             finish()
             //if active go to TripActivity, if not active go to Previous trips
-            if(trip.active) {
+            if(trip.active) {// start TripActivity
                 Intent(this, TripActivity::class.java).also {
-                    // start TripActivity
                     startActivity(it)
                 }
-            }else{
+            }else{// start PreviousTripActivity
                 Intent(this, PreviousTripActivity::class.java).also {
-                    // start PreviousTripActivity
                     startActivity(it)
                 }
             }
         }
+
+        photoLibraryBtn.setOnClickListener { openGallery() }
 
         chatBoxBtn.setOnClickListener {
             Intent(this, ChatActivity::class.java).also {
@@ -188,6 +200,61 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
                 }
                 day.activities[j + 1] = key
             }
+        }
+    }
+
+    private fun openGallery() {
+        val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+        startActivityForResult(gallery, PICK_IMAGE)
+    }
+
+    // handle the profile_picture change
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE){
+            if (data != null) {
+                imageUri = data.data!!
+                Log.d("Itinerary",imageUri.toString())
+                val file = File(getRealPathFromURI(imageUri))
+                if (file.exists()) {
+                    val d = Drawable.createFromPath(file.absolutePath)
+                    tripHeader.background = d
+                }
+                uploadTripPic()
+            }
+        }
+    }
+    private fun uploadTripPic() {
+        val tripId = trip.tripID.toString()
+        storageReference = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
+        storageReference.putFile(imageUri).addOnSuccessListener {
+            Toast.makeText(this@ItineraryActivity,"Profile successfully updated", Toast.LENGTH_SHORT).show()
+            getTripImage()
+        }.addOnFailureListener {
+            Toast.makeText(this@ItineraryActivity,"Failed to upload image", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun getTripImage() {
+        Log.d("ItineraryImage","Getting Trip Image from DB")
+        val tripId = trip.tripID.toString()
+        storageReference = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
+        val localFile = File.createTempFile("tempImage","jpg")
+        storageReference.getFile(localFile).addOnSuccessListener {
+            val d = Drawable.createFromPath(localFile.absolutePath)
+            tripHeader.background = d
+        }.addOnFailureListener {
+            Log.d("ItineraryImage","Failed to retrieve image")
+        }
+    }
+    private fun getRealPathFromURI(contentURI: Uri): String? {
+        val cursor: Cursor? = contentResolver.query(contentURI, null, null, null, null)
+        return if (cursor == null) { // Source is Dropbox or other similar local file path
+            contentURI.path
+        } else {
+            cursor.moveToFirst()
+            val idx: Int = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+            cursor.getString(idx)
         }
     }
 }

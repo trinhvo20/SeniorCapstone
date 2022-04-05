@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
@@ -28,6 +29,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.android.synthetic.main.activity_itinerary.*
+import kotlinx.android.synthetic.main.activity_profile_screen.*
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.io.File
 import java.time.LocalDate
@@ -420,6 +423,18 @@ class TripAdapter(
             tvCost.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
 
+            // display trips images
+            val tripId = curTrip.tripID.toString()
+            var storageReferenceTrip = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
+            val localFile = File.createTempFile("tempImage","jpg")
+            storageReferenceTrip.getFile(localFile).addOnSuccessListener {
+                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                tripImage.setImageBitmap(bitmap)
+            }.addOnFailureListener {
+                Log.d("ItineraryImage","Failed to retrieve image")
+            }
+
+            // display viewers images
             if (curTrip.viewers.size > 0) {
                 if (curTrip.viewers.size == 3) {
                     var uid1 = curTrip.viewers[0]
