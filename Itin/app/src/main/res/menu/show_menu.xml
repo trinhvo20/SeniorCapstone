@@ -14,6 +14,10 @@
         android:title="Duplicate"
         android:icon="@drawable/ic_copy"/>
     <item
+        android:id="@+id/leave"
+        android:icon="@drawable/ic_remove"
+        android:title="Leave Trip" />
+    <item
         android:id="@+id/delete"
         android:title="Delete"
         android:icon="@drawable/ic_delete"/>

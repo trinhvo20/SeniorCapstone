@@ -89,6 +89,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         trip = intent.getSerializableExtra("EXTRA_TRIP") as Trip
 
         tvName.text = trip.name
+        tvTripLocation.text = trip.location
         tvDateRange.text = "From: ${trip.startDate}     To: ${trip.endDate}"
 
         days = trip.days

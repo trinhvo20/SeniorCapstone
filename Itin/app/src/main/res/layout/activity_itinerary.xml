@@ -37,13 +37,25 @@
             android:textSize="30dp" />
 
         <TextView
-            android:id="@+id/tvDateRange"
+            android:id="@+id/tvTripLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/tvName"
             android:layout_centerHorizontal="true"
+            android:layout_marginTop="4dp"
             android:fontFamily="casual"
-            android:layout_marginTop="5dp"
+            android:textStyle="bold"
+            android:text="Trip Location"
+            android:textSize="20dp" />
+
+        <TextView
+            android:id="@+id/tvDateRange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvTripLocation"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="2dp"
+            android:fontFamily="casual"
             android:text="Date Range"
             android:textSize="18dp" />
     </RelativeLayout>
