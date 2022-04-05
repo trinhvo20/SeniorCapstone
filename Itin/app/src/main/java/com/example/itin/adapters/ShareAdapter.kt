@@ -1,7 +1,9 @@
 package com.example.itin.adapters
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,7 +35,11 @@ class ShareAdapter(
     inner class ShareViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val ibShareFriend: ImageView = itemView.findViewById(R.id.ibShareFriend)
         init {
-            ibShareFriend.setOnClickListener { ShareByFriend(it) }
+            ibShareFriend.setOnClickListener {
+                ShareByFriend(it)
+                ibShareFriend.isClickable = false
+                ibShareFriend.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
+            }
         }
 
         private fun ShareByFriend(view: View) {

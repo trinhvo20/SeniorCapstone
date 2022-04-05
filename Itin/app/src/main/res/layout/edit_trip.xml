@@ -11,11 +11,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/mint"
-        android:fontFamily="@font/bungee"
         android:gravity="center"
-        android:includeFontPadding="false"
         android:padding="15dp"
-        android:text="Add an Activity"
+        android:text="Edit Trip"
+        android:fontFamily="@font/bungee"
+        android:includeFontPadding="false"
         android:textSize="25dp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,7 +28,7 @@
         android:id="@+id/clName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/shape_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -40,9 +40,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:fontFamily="casual"
-            android:text="Activity Name"
+            android:text="Trip Name"
             android:textColor="@color/mint"
+            android:fontFamily="casual"
             android:textSize="20dp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -54,71 +54,23 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            android:padding="10dp"
+            android:hint="Name your trip"
             android:fontFamily="casual"
-            android:hint="Name of Activity"
+            android:textSize="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tvName"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/clTime"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:background="@drawable/shape_background"
-        app:layout_constraintEnd_toStartOf="@+id/clCost"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/clLocation">
 
-        <TextView
-            android:id="@+id/tvTimeText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:fontFamily="casual"
-            android:text="Time"
-            android:textColor="@color/mint"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <ImageButton
-            android:id="@+id/ibTimePick"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.571"
-            app:srcCompat="@android:drawable/ic_menu_recent_history" />
-
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:fontFamily="casual"
-            android:text="00:00"
-            android:textAlignment="center"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/ibTimePick"
-            app:layout_constraintStart_toEndOf="@+id/tvTimeText"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:id="@+id/clLocation"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/shape_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -129,107 +81,128 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:layout_marginTop="8dp"
-            android:fontFamily="casual"
-            android:text="Location of the Activity"
+            android:text="Where you going to?"
             android:textColor="@color/mint"
             android:textSize="20dp"
+            android:fontFamily="casual"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <fragment
-            android:id="@+id/etActLocation1"
+            android:id="@+id/etLocation2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginBottom="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvLocation"
             android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </LinearLayout>
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clCost"
-        android:layout_width="110dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/shape_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/clTime"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/clLocation">
 
         <TextView
             android:id="@+id/tvCost"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:fontFamily="casual"
-            android:text="Cost"
+            android:text="Start Date"
             android:textColor="@color/mint"
             android:textSize="20dp"
+            android:fontFamily="casual"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/etCost"
+        <TextView
+            android:id="@+id/etStartDate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
+            android:layout_margin="5dp"
+            android:hint="MM/DD/YYYY"
+            android:textSize="20dp"
             android:fontFamily="casual"
-            android:hint="$0"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ivPickStartDate"
             app:layout_constraintStart_toEndOf="@+id/tvCost"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <ImageView
+            android:id="@+id/ivPickStartDate"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_calendar"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/shadow_rect"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clNotes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/shape_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/clTime">
+        app:layout_constraintTop_toBottomOf="@+id/clCost">
 
         <TextView
             android:id="@+id/tvEndDate"
-            android:layout_width="0dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:fontFamily="casual"
-            android:text="Notes"
-            android:textColor="@color/mint"
+            android:text="End Date"
             android:textSize="20dp"
+            android:textColor="@color/mint"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:fontFamily="casual"
+            android:layout_margin="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/etNotes"
+        <TextView
+            android:id="@+id/etEndDate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            android:hint="MM/DD/YYYY"
+            android:textSize="20dp"
             android:fontFamily="casual"
-            android:hint="Notes"
-            android:singleLine="false"
-            android:textAlignment="viewStart"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ivPickEndDate"
+            app:layout_constraintStart_toEndOf="@+id/tvEndDate"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/ivPickEndDate"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_calendar"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/shadow_rect"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvEndDate" />
-
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
