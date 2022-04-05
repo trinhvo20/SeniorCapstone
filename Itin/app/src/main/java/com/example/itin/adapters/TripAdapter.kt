@@ -256,15 +256,19 @@ class TripAdapter(
         private fun leavetrip(tripID: Int) {
             val firebaseAuth = FirebaseAuth.getInstance()
             val firebaseUser = firebaseAuth.currentUser
-            var curTrips: DatabaseReference? = null
+            var curUserTrips: DatabaseReference? = null
 
             // If the user is not current logged in:
             if (firebaseUser == null) { }
             else {
                 val uid = firebaseUser.uid
                 val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
-                curTrips = curUser.child("trips")
-                curTrips.child("Trip $tripID").removeValue()
+                val curTrip = FirebaseDatabase.getInstance().getReference("masterTripList").child(tripID.toString())
+
+                curUserTrips = curUser.child("trips")
+                curUserTrips.child("Trip $tripID").removeValue()
+
+                curTrip.child("Viewers").child(uid).removeValue()
             }
         }
 
