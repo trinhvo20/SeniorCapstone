@@ -7,58 +7,92 @@
     tools:context=".ItineraryActivity"
     android:orientation="vertical">
 
-    <RelativeLayout
-    android:paddingHorizontal="10dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/tripHeader"
+        android:paddingHorizontal="10dp"
         android:paddingVertical="5dp"
-    android:background="@color/mint"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+        android:background="@drawable/beach"
+        android:layout_width="match_parent"
+        android:layout_height="200dp">
 
         <ImageView
-            android:layout_marginTop="5dp"
             android:id="@+id/backBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_back" />
-
-        <TextView
-            android:id="@+id/tvName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_marginTop="60dp"
             android:layout_marginLeft="5dp"
-            android:layout_marginTop="5dp"
-            android:layout_toRightOf="@id/backBtn"
-            android:fontFamily="@font/bungee"
-            android:includeFontPadding="false"
-            android:paddingLeft="-20dp"
-            android:text="Trip Name"
-            android:textAlignment="center"
-            android:textSize="30dp" />
+            android:src="@drawable/ic_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tvTripLocation"
+        <ImageView
+            android:id="@+id/photoLibraryBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvName"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="4dp"
-            android:fontFamily="casual"
-            android:textStyle="bold"
-            android:text="Trip Location"
-            android:textSize="20dp" />
+            android:layout_marginTop="60dp"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/ic_photo_library"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tvDateRange"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tvTripLocation"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="2dp"
-            android:fontFamily="casual"
-            android:text="Date Range"
-            android:textSize="18dp" />
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardElevation="20dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="-65dp"
+        android:layout_marginBottom="10dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:fontFamily="@font/bungee"
+                android:includeFontPadding="false"
+                android:text="Trip Name"
+                android:textAlignment="center"
+                android:textSize="28dp"
+                android:textColor="@color/mint"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvTripLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="casual"
+                android:text="Trip Location"
+                android:textSize="22dp"
+                android:textStyle="bold"
+                android:layout_marginTop="3dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvName" />
+
+            <TextView
+                android:id="@+id/tvDateRange"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:fontFamily="casual"
+                android:text="Date Range"
+                android:textSize="18dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTripLocation" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

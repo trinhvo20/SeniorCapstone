@@ -105,7 +105,7 @@
             android:layout_margin="5dp"
             android:fontFamily="casual"
             android:textAlignment="center"
-            android:text="00:00"
+            android:text="00:00 AM"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ibTimePick"
