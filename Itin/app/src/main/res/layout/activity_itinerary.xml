@@ -123,9 +123,57 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_chat"
             app:layout_constraintBottom_toBottomOf="@+id/swipeContainer"
-            android:layout_marginBottom="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginRight="20dp"
+            android:backgroundTint="@color/DarkGray"
+            android:clickable="false"
+            android:tint="@android:color/white"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/btExpandMenu"
             app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/shareBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_share"
+            app:layout_constraintBottom_toBottomOf="@+id/swipeContainer"
+            android:layout_marginBottom="2dp"
+            android:layout_marginRight="20dp"
+            android:backgroundTint="@color/DarkGray"
+            android:clickable="false"
+            android:tint="@android:color/white"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/chatBoxBtn"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/editBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_edit"
+            app:layout_constraintBottom_toBottomOf="@+id/swipeContainer"
+            android:layout_marginBottom="2dp"
+            android:layout_marginRight="20dp"
+            android:backgroundTint="@color/DarkGray"
+            android:clickable="false"
+            android:tint="@android:color/white"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/shareBtn"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btExpandMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:tint="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_add" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

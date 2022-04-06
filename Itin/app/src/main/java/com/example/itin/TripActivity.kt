@@ -316,11 +316,24 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     stringToBoolean(deleted),
                     stringToBoolean(active),
                     tripId,
-                    days = mutableListOf()
+                    days = mutableListOf(),
                 )
                 if (trip.deleted == stringToBoolean("false") && trip.active == stringToBoolean("true")) {
                     trips.add(trip)
                     readDays(tripInstance, trip)
+                    readViewers(tripInstance,trip)
+                }
+            }
+        }
+    }
+
+    private fun readViewers(tripInstance: DatabaseReference, trip: Trip) {
+        tripInstance.child("Viewers").get().addOnSuccessListener {
+            if (it.exists()) {
+                // will cycle through the amount of days that we have
+                for (i in it.children){
+                    // will make the day classes
+                    trip.viewers.add(i.value.toString())
                 }
             }
         }
@@ -400,6 +413,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         for (i in 0 until dayNum+1) {
             makeDayInstance(itineraryInstance,i.toInt(), trip)
         }
+
+        //create Viewers folder
+        tripInstance.child("Viewers").child(uid).setValue(uid)
 
         // Record trips in the individual user
         curTrips.child("Trip $id").setValue(id)

@@ -37,8 +37,9 @@ class FriendActivity : AppCompatActivity() {
     // Some global variables that are accessed throughout the activity
     private var userCount: Int = 0
     private var friendsList: MutableList<Int> = mutableListOf()
-    private var friend:Boolean = false
+    private var friend: Boolean = false
     private var sent: Boolean = false
+    private var typed: Boolean = false
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var masterUserList: DatabaseReference
     private lateinit var curUser: DatabaseReference
@@ -86,22 +87,21 @@ class FriendActivity : AppCompatActivity() {
                 btCancelReq.visibility = View.VISIBLE
             }
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                sent == false
-                
-                if (sent == false) {
-                    if (btCancelReq.isClickable == true) {
-                        btCancelReq.isClickable = false
-                        btCancelReq.visibility = View.INVISIBLE
-                        btCancelReq.startAnimation(hide)
+                if (typed == false) {
+                    btCancelReq.isClickable = false
+                    btCancelReq.visibility = View.INVISIBLE
+                    btCancelReq.startAnimation(hide)
 
-                        btSendReq.isClickable = true
-                        btSendReq.visibility = View.VISIBLE
-                        btSendReq.startAnimation(appear)
-                    }
+                    btSendReq.isClickable = true
+                    btSendReq.visibility = View.VISIBLE
+                    btSendReq.startAnimation(appear)
+
+                    typed = true
                 }
-                else{
+                else if (sent == true){
                     btSendReq.isClickable = false
                     btSendReq.visibility = View.INVISIBLE
+                    btSendReq.startAnimation(hide)
                 }
             }
             override fun afterTextChanged(s: Editable?) { }
@@ -342,10 +342,10 @@ class FriendActivity : AppCompatActivity() {
         friendsUsername.visibility = View.VISIBLE
         clicked = !clicked
         sent = false
+        typed = false
     }
 
     private fun onSendButtonClicked() {
-
         btSendReq.visibility = View.INVISIBLE
         btSendReq.isClickable = false
         btSendReq.startAnimation(hide)
@@ -406,4 +406,3 @@ class FriendActivity : AppCompatActivity() {
         sent = true
     }
 }
-
