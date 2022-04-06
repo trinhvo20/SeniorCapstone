@@ -29,8 +29,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.android.synthetic.main.activity_itinerary.*
-import kotlinx.android.synthetic.main.activity_profile_screen.*
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.io.File
 import java.time.LocalDate
