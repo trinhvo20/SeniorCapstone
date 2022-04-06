@@ -70,7 +70,7 @@ class TripAdapter(
                         val dialog = AlertDialog.Builder(context)
                         dialog.setTitle("Delete")
                             .setIcon(R.drawable.ic_warning)
-                            .setMessage("Are you sure delete this trip?")
+                            .setMessage("Are you sure you want to delete this trip?")
                             .setPositiveButton("Yes") { dialog, _ ->
                                 curTrip.delByName(curTrip.name)
                                 curTrip.sendToDB()
@@ -78,7 +78,7 @@ class TripAdapter(
                                 tripsort(trips)
                                 notifyDataSetChanged()
 
-                                Toast.makeText(context, "Successfully Deleted", Toast.LENGTH_SHORT)
+                                Toast.makeText(context, "Trip Successfully Deleted", Toast.LENGTH_SHORT)
                                     .show()
                                 dialog.dismiss()
                             }
@@ -97,16 +97,42 @@ class TripAdapter(
                     }
 
                     R.id.leave -> {
-                        val dialog = AlertDialog.Builder(context)
-                        dialog.setTitle("Leave Trip")
+                        val dialog1 = AlertDialog.Builder(context)
+                        val dialog2 = AlertDialog.Builder(context)
+                        dialog1.setTitle("Leave Trip")
                             .setIcon(R.drawable.ic_alert)
-                            .setMessage("Are you sure leave this trip?")
+                            .setMessage("Are you sure you want to leave this trip?")
                             .setPositiveButton("Yes") { dialog, _ ->
-                                leavetrip(curTrip.tripID)
-                                trips.removeAt(adapterPosition)
-                                tripsort(trips)
-                                notifyDataSetChanged()
-                                dialog.dismiss()
+                                if (curTrip.viewers.size > 1) {
+                                    leavetrip(curTrip.tripID)
+                                    trips.removeAt(adapterPosition)
+                                    tripsort(trips)
+                                    notifyDataSetChanged()
+                                    Toast.makeText(context, "Trip Successfully Left", Toast.LENGTH_SHORT)
+                                        .show()
+                                    dialog.dismiss()
+                                }
+                                else{
+                                    dialog2.setTitle("You are the only person in this trip!")
+                                        .setIcon(R.drawable.ic_warning)
+                                        .setMessage("By leaving this trip the trip will be deleted.\nAre you sure you want to delete this trip?")
+                                        .setPositiveButton("Yes") { dialog, _ ->
+                                            curTrip.delByName(curTrip.name)
+                                            curTrip.sendToDB()
+                                            trips.removeAt(adapterPosition)
+                                            tripsort(trips)
+                                            notifyDataSetChanged()
+
+                                            Toast.makeText(context, "Trip Successfully Deleted", Toast.LENGTH_SHORT)
+                                                .show()
+                                            dialog.dismiss()
+                                        }
+                                        .setNegativeButton("No") { dialog, _ ->
+                                            dialog.dismiss()
+                                        }
+                                        .create()
+                                        .show()
+                                }
                             }
                             .setNegativeButton("No") { dialog, _ ->
                                 dialog.dismiss()
