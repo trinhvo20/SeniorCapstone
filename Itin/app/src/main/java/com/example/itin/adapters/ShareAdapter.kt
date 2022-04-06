@@ -81,7 +81,8 @@ class ShareAdapter(
         }
 
         private fun addtoviewers(masterTripList: DatabaseReference, friendsUID: String) {
-            masterTripList.child(tripID.toString()).child("Viewers").child(friendsUID).setValue(friendsUID)
+            masterTripList.child(tripID.toString()).child("Viewers").child(friendsUID).child("uid").setValue(friendsUID)
+            masterTripList.child(tripID.toString()).child("Viewers").child(friendsUID).child("Perm").setValue(2)
         }
     }
 

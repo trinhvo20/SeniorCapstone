@@ -332,8 +332,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             if (it.exists()) {
                 // will cycle through the amount of days that we have
                 for (i in it.children){
+                    if (i.child("uid").value != null && i.child("Perm").value != null){
                     // will make the day classes
-                    trip.viewers.add(i.value.toString())
+                    trip.viewers[i.child("uid").value.toString()] = i.child("Perm").value.toString().toInt()
+                    }
                 }
             }
         }
@@ -415,7 +417,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         }
 
         //create Viewers folder
-        tripInstance.child("Viewers").child(uid).setValue(uid)
+        tripInstance.child("Viewers").child(uid).child("uid").setValue(uid)
+        tripInstance.child("Viewers").child(uid).child("Perm").setValue(1)
 
         // Record trips in the individual user
         curTrips.child("Trip $id").setValue(id)
@@ -523,7 +526,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 active = true,
                 tripID = -1,
                 days = daylist,
-                viewers = mutableListOf("CNIyURFyEhRrb1sZNLJo47yMF4o2","LW4U6jdzqqcdLvqMMdw7tt1M9b73","dwJLMqs0Y5M65fmvS4lIJS5xFgf1","eZuf0wlulMe64K6ZXgFPBXTlFJs1","JFn2cxxk1xWl83eXDWsXf5fSwvu1","uSWyidP8E2axSFnBf1WZgGlcUgF3")
+                viewers = mutableMapOf("CNIyURFyEhRrb1sZNLJo47yMF4o2" to 1,"LW4U6jdzqqcdLvqMMdw7tt1M9b73" to 2,"dwJLMqs0Y5M65fmvS4lIJS5xFgf1" to 2,"eZuf0wlulMe64K6ZXgFPBXTlFJs1" to 2,"JFn2cxxk1xWl83eXDWsXf5fSwvu1" to 2,"uSWyidP8E2axSFnBf1WZgGlcUgF3" to 2)
             )
             trips.add(trip)
             tripAdapter.notifyDataSetChanged()

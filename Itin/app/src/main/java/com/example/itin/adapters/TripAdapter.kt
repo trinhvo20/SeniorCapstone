@@ -325,9 +325,10 @@ class TripAdapter(
 
             if (curTrip.viewers.size > 1) {
                 if (curTrip.viewers.size == 3) {
-                    var uid1 = curTrip.viewers[0]
-                    var uid2 = curTrip.viewers[1]
-                    var uid3 = curTrip.viewers[2]
+                    var viewerlist = curTrip.viewers.keys.toList()
+                    var uid1 = viewerlist[0]
+                    var uid2 = viewerlist[1]
+                    var uid3 = viewerlist[2]
 
                     var storageReference =
                         FirebaseStorage.getInstance().getReference("Users/$uid3.jpg")
@@ -365,8 +366,9 @@ class TripAdapter(
                 }
 
                 if (curTrip.viewers.size == 2) {
-                    var uid1 = curTrip.viewers[0]
-                    var uid2 = curTrip.viewers[1]
+                    var viewerlist = curTrip.viewers.keys.toList()
+                    var uid1 = viewerlist[0]
+                    var uid2 = viewerlist[1]
 
                     var storageReference =
                         FirebaseStorage.getInstance().getReference("Users/$uid2.jpg")
@@ -393,9 +395,10 @@ class TripAdapter(
                 }
 
                 else{
-                    var uid1 = curTrip.viewers[0]
-                    var uid2 = curTrip.viewers[1]
-                    var uid3 = curTrip.viewers[2]
+                    var viewerlist = curTrip.viewers.keys.toList()
+                    var uid1 = viewerlist[0]
+                    var uid2 = viewerlist[1]
+                    var uid3 = viewerlist[2]
 
 
                     var storageReference =
