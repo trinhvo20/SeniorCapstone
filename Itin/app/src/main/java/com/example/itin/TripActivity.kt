@@ -120,13 +120,20 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // make the bottom navigation bar
         bottomNavBarSetup()
     }
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onRestart() {
+        super.onRestart()
+        tripAdapter.clear()
+        createTestTrip()
+        readData(tripCount)
+    }
 
     // This function handles RecyclerView that lead you to TripDetails page
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onItemClick(position: Int) {
         // destroy this current iteration of Trip Activity
         // this will let the DB reload from whatever is added on a trip
-        finish()
+        //finish()
         // jump to ItineraryActivity
         Intent(this, ItineraryActivity::class.java).also {
             // pass the current trip object between activities
@@ -134,7 +141,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             // start ItineraryActivity
             startActivity(it)
         }
-
     }
 
     // This function will be called when you click the AddTrip button,

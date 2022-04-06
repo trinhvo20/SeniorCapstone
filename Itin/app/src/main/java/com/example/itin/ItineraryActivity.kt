@@ -4,17 +4,15 @@ import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.database.Cursor
-import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.view.WindowManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.EditText
@@ -33,20 +31,13 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_itinerary.*
-import kotlinx.android.synthetic.main.activity_profile_screen.*
 import java.io.File
-import kotlinx.android.synthetic.main.activity_friend.*
-import kotlinx.android.synthetic.main.activity_itinerary.*
-import kotlinx.android.synthetic.main.activity_itinerary.backBtn
-import kotlinx.android.synthetic.main.activity_itinerary.btExpandMenu
-import kotlinx.android.synthetic.main.activity_itinerary.tvName
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -316,6 +307,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             Log.d("ItineraryImage","Failed to retrieve image")
         }
     }
+
     private fun getRealPathFromURI(contentURI: Uri): String? {
         val cursor: Cursor? = contentResolver.query(contentURI, null, null, null, null)
         return if (cursor == null) { // Source is Dropbox or other similar local file path
@@ -325,22 +317,13 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             val idx: Int = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
             cursor.getString(idx)
         }
+    }
+
     private fun onExpandButtonClicked() {
         setUsability(clicked)
         setAnimation(clicked)
         clicked = !clicked
     }
-
-//    private fun visibilityToggle(button: FloatingActionButton, visibility: Boolean) {
-//        if (visible == true) {
-//            button.startAnimation(fromBottom)
-//            btExpandMenu.startAnimation(rotateOpen)
-//        }
-//        else {
-//            button.startAnimation(toBottom)
-//            btExpandMenu.startAnimation(rotateClose)
-//        }
-//    }
 
     private fun setAnimation(clicked: Boolean) {
         if (!clicked) {
