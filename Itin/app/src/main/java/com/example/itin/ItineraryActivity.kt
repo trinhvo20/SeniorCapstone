@@ -37,6 +37,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_itinerary.*
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
@@ -101,6 +102,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
                 WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
             )
         }
+
         firebaseAuth = FirebaseAuth.getInstance()
         masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
         databaseReference = FirebaseDatabase.getInstance().reference
@@ -172,6 +174,12 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             android.R.color.holo_orange_light,
             android.R.color.holo_red_light
         );
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onRestart() {
+        super.onRestart()
+        dayAdapter.clear()
+        loadDaysFromDB()
     }
 
     override fun onItemClick(position: Int, daypos: Int) {
