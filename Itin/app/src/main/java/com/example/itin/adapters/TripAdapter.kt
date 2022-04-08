@@ -3,6 +3,7 @@ package com.example.itin.adapters
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
@@ -337,6 +338,18 @@ class TripAdapter(
             tvCost.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
 
+            // display trips images
+            val tripId = curTrip.tripID.toString()
+            var storageReferenceTrip = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
+            val localFile = File.createTempFile("tempImage","jpg")
+            storageReferenceTrip.getFile(localFile).addOnSuccessListener {
+                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                tripImage.setImageBitmap(bitmap)
+            }.addOnFailureListener {
+                Log.d("ItineraryImage","Failed to retrieve image")
+            }
+
+            // display viewers images
             if (curTrip.viewers.size > 1) {
                 if (curTrip.viewers.size == 3) {
                     var viewerlist = curTrip.viewers.keys.toList()

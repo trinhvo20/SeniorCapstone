@@ -3,6 +3,7 @@ package com.example.itin.adapters
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,7 +20,9 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.trip_item.view.*
+import java.io.File
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -101,6 +104,17 @@ class PreviousTripAdapter(
             tvName.text = curTrip.name
             tvCost.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
+
+            // display trips images
+            val tripId = curTrip.tripID.toString()
+            var storageReferenceTrip = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
+            val localFile = File.createTempFile("tempImage","jpg")
+            storageReferenceTrip.getFile(localFile).addOnSuccessListener {
+                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                tripImage.setImageBitmap(bitmap)
+            }.addOnFailureListener {
+                Log.d("ItineraryImage","Failed to retrieve image")
+            }
         }
 
         // handle RecyclerView clickable

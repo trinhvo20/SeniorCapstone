@@ -3,11 +3,16 @@ package com.example.itin
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.database.Cursor
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.EditText
@@ -26,21 +31,21 @@ import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.android.synthetic.main.activity_friend.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_itinerary.*
-import kotlinx.android.synthetic.main.activity_itinerary.backBtn
-import kotlinx.android.synthetic.main.activity_itinerary.btExpandMenu
-import kotlinx.android.synthetic.main.activity_itinerary.tvName
+import kotlinx.android.synthetic.main.activity_main.*
+import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
+
 
 // for notifications / FCM
 const val TOPIC = "/topics/myTopic2"
@@ -55,6 +60,9 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
     private lateinit var databaseReference: DatabaseReference
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var masterTripList: DatabaseReference
+    private val PICK_IMAGE = 100
+    private lateinit var storageReference: StorageReference
+    private lateinit var imageUri: Uri
     private lateinit var startDateObj : LocalDate
 
     // Variables for floating button animations
@@ -88,6 +96,12 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_itinerary)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+            )
+        }
 
         firebaseAuth = FirebaseAuth.getInstance()
         masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
@@ -99,6 +113,8 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         tvName.text = trip.name
         tvTripLocation.text = trip.location
         tvDateRange.text = "From: ${trip.startDate}     To: ${trip.endDate}"
+        Log.d("Itinerary","TripID: ${trip.tripID}")
+        getTripImage()
 
         days = trip.days
 
@@ -107,8 +123,6 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
 
         // assign adapter for our RecyclerView
         rvActivityList.adapter = dayAdapter
-
-        // determine how items are arrange in our list
         rvActivityList.layoutManager = LinearLayoutManager(this)
 
         // need these for proper formatting from the DB
@@ -126,18 +140,18 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         backBtn.setOnClickListener {
             finish()
             //if active go to TripActivity, if not active go to Previous trips
-            if (trip.active) {
+            if(trip.active) {// start TripActivity
                 Intent(this, TripActivity::class.java).also {
-                    // start TripActivity
                     startActivity(it)
                 }
-            } else {
+            }else{// start PreviousTripActivity
                 Intent(this, PreviousTripActivity::class.java).also {
-                    // start PreviousTripActivity
                     startActivity(it)
                 }
             }
         }
+
+        photoLibraryBtn.setOnClickListener { openGallery() }
 
         chatBoxBtn.setOnClickListener {
             Intent(this, ChatActivity::class.java).also {
@@ -160,6 +174,12 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             android.R.color.holo_orange_light,
             android.R.color.holo_red_light
         );
+    }
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onRestart() {
+        super.onRestart()
+        dayAdapter.clear()
+        loadDaysFromDB()
     }
 
     override fun onItemClick(position: Int, daypos: Int) {
@@ -251,22 +271,67 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         }
     }
 
+    private fun openGallery() {
+        val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+        startActivityForResult(gallery, PICK_IMAGE)
+    }
+
+    // handle the profile_picture change
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE){
+            if (data != null) {
+                imageUri = data.data!!
+                Log.d("Itinerary",imageUri.toString())
+                val file = File(getRealPathFromURI(imageUri))
+                if (file.exists()) {
+                    val d = Drawable.createFromPath(file.absolutePath)
+                    tripHeader.background = d
+                }
+                uploadTripPic()
+            }
+        }
+    }
+    private fun uploadTripPic() {
+        val tripId = trip.tripID.toString()
+        storageReference = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
+        storageReference.putFile(imageUri).addOnSuccessListener {
+            Toast.makeText(this@ItineraryActivity,"Profile successfully updated", Toast.LENGTH_SHORT).show()
+            getTripImage()
+        }.addOnFailureListener {
+            Toast.makeText(this@ItineraryActivity,"Failed to upload image", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun getTripImage() {
+        Log.d("ItineraryImage","Getting Trip Image from DB")
+        val tripId = trip.tripID.toString()
+        storageReference = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
+        val localFile = File.createTempFile("tempImage","jpg")
+        storageReference.getFile(localFile).addOnSuccessListener {
+            val d = Drawable.createFromPath(localFile.absolutePath)
+            tripHeader.background = d
+        }.addOnFailureListener {
+            Log.d("ItineraryImage","Failed to retrieve image")
+        }
+    }
+
+    private fun getRealPathFromURI(contentURI: Uri): String? {
+        val cursor: Cursor? = contentResolver.query(contentURI, null, null, null, null)
+        return if (cursor == null) { // Source is Dropbox or other similar local file path
+            contentURI.path
+        } else {
+            cursor.moveToFirst()
+            val idx: Int = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+            cursor.getString(idx)
+        }
+    }
+
     private fun onExpandButtonClicked() {
         setUsability(clicked)
         setAnimation(clicked)
         clicked = !clicked
     }
-
-//    private fun visibilityToggle(button: FloatingActionButton, visibility: Boolean) {
-//        if (visible == true) {
-//            button.startAnimation(fromBottom)
-//            btExpandMenu.startAnimation(rotateOpen)
-//        }
-//        else {
-//            button.startAnimation(toBottom)
-//            btExpandMenu.startAnimation(rotateClose)
-//        }
-//    }
 
     private fun setAnimation(clicked: Boolean) {
         if (!clicked) {

@@ -2,14 +2,16 @@
 package com.example.itin
 
 import android.content.Intent
-import android.content.Context
-import android.content.DialogInterface
-import android.hardware.biometrics.BiometricPrompt
+import android.graphics.Color
+import android.graphics.LinearGradient
+import android.graphics.Shader
 import android.os.Build
 import android.os.Bundle
-import android.os.CancellationSignal
 import android.preference.PreferenceManager
 import android.util.Log
+import android.view.WindowManager
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -22,11 +24,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import java.lang.Exception
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.android.synthetic.main.activity_profile_screen.*
 
 class GoogleLogin : AppCompatActivity() {
 
@@ -51,12 +50,48 @@ class GoogleLogin : AppCompatActivity() {
     // for realtime database
     private lateinit var rootNode: FirebaseDatabase
     private lateinit var databaseReference: DatabaseReference
+    private lateinit var topAnim: Animation
+    lateinit var bottomAnim: Animation
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = GoogleLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+            )
+        }
+        // Load animation for main page
+        topAnim = AnimationUtils.loadAnimation(this, R.anim.top_animation)
+        bottomAnim = AnimationUtils.loadAnimation(this, R.anim.bottom_animation)
+        // assign animation
+        binding.welcomeTV.animation = topAnim
+        binding.LogoIV.animation = topAnim
+        binding.welcome2TV.animation = bottomAnim
+        binding.GoogleIcon.animation = bottomAnim
+
+//        // gradiant for welcome page
+//        val paint = binding.welcomeTV.paint
+//        val width = paint.measureText(binding.welcomeTV.text.toString())
+//        val textShader: Shader = LinearGradient(0f, 0f, width, binding.welcomeTV.textSize, intArrayOf(
+//            Color.parseColor("#F97C3C"),
+//            Color.parseColor("#FDB54E"),
+//            Color.parseColor("#8446CC")
+//        ), null, Shader.TileMode.REPEAT)
+//        binding.welcomeTV.paint.shader = textShader
+//
+//        // gradiant for welcome page
+//        val paint2 = binding.welcome2TV.paint
+//        val width2 = paint2.measureText(binding.welcome2TV.text.toString())
+//        val textShader2: Shader = LinearGradient(0f, 0f, width2, binding.welcome2TV.textSize, intArrayOf(
+//            Color.parseColor("#D16BA5"),
+//            Color.parseColor("#86A8E7"),
+//            Color.parseColor("#5FFBF1")
+//        ), null, Shader.TileMode.REPEAT)
+//        binding.welcome2TV.paint.shader = textShader2
 
         // for biometric authentication
         val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
@@ -95,11 +130,13 @@ class GoogleLogin : AppCompatActivity() {
         checkUser()
 
         // Links button to Google Sign In
-        binding.googleSignInBtn.setOnClickListener {
+        binding.GoogleIcon.setOnClickListener {
             Log.d(TAG, "onCreate: begin Google Sign In")
             val intent = googleSignInClient.signInIntent
             startActivityForResult(intent, RC_SIGN_IN)
         }
+
+
     }
 
     @RequiresApi(Build.VERSION_CODES.P)

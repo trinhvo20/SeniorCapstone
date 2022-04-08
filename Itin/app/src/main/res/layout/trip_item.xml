@@ -8,6 +8,18 @@
     android:layout_marginTop="5dp"
     android:background="@drawable/shape_background">
 
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/tripImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        android:src="@drawable/beach"
+        app:shapeAppearanceOverlay="@style/RoundCorner"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/tvName"
         android:layout_width="0dp"
@@ -15,19 +27,23 @@
         android:fontFamily="@font/candal"
         android:text="Name"
         android:textColor="@color/mint"
-        android:textSize="30dp"
+        android:textSize="27dp"
+        android:includeFontPadding="false"
+        android:layout_marginLeft="10dp"
+        android:paddingBottom="2dp"
         app:layout_constraintEnd_toStartOf="@+id/ivMenu"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tripImage"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvCost"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Start Date"
-        android:textSize="20dp"
         android:fontFamily="casual"
-        app:layout_constraintStart_toStartOf="parent"
+        android:text="Start Date"
+        android:textSize="18dp"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintStart_toEndOf="@+id/tripImage"
         app:layout_constraintTop_toBottomOf="@+id/tvName" />
 
     <TextView
@@ -36,7 +52,7 @@
         android:layout_height="wrap_content"
         android:text="End Date"
         android:fontFamily="casual"
-        android:textSize="20dp"
+        android:textSize="18dp"
         app:layout_constraintStart_toEndOf="@+id/tvHyphen"
         app:layout_constraintTop_toBottomOf="@+id/tvName" />
 
@@ -46,7 +62,7 @@
         android:layout_height="wrap_content"
         android:text=" ~ "
         android:fontFamily="casual"
-        android:textSize="20dp"
+        android:textSize="18dp"
         app:layout_constraintBottom_toTopOf="@+id/tvCountdown"
         app:layout_constraintStart_toEndOf="@+id/tvCost"
         app:layout_constraintTop_toBottomOf="@+id/tvName" />
@@ -56,8 +72,9 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:text=""
-        android:textSize="18dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="15dp"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintStart_toEndOf="@+id/tripImage"
         app:layout_constraintTop_toBottomOf="@+id/tvCost" />
 
     <ImageView
@@ -70,38 +87,35 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivViewers1"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginEnd="4dp"
         android:visibility="invisible"
         app:civ_border_color="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/tvViewersE"
-        app:layout_constraintTop_toBottomOf="@+id/tvEndDate"
         app:srcCompat="@drawable/profile" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivViewers2"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginEnd="-16dp"
         android:visibility="invisible"
         app:civ_circle_background_color="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/ivViewers1"
-        app:layout_constraintTop_toBottomOf="@+id/tvEndDate"
         app:srcCompat="@drawable/profile" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/ivViewers3"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:layout_marginEnd="-16dp"
         android:visibility="invisible"
         app:civ_circle_background_color="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/ivViewers2"
-        app:layout_constraintTop_toBottomOf="@+id/tvEndDate"
         app:srcCompat="@drawable/profile" />
 
     <TextView
@@ -111,10 +125,9 @@
         android:fontFamily="@font/candal"
         android:text="+0"
         android:textColor="@color/mint"
-        android:textSize="25dp"
+        android:textSize="15dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvEndDate" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
