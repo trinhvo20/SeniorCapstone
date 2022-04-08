@@ -14,6 +14,15 @@
     <string name="friend_request_key">friend_request_key</string>
     <string name="friend_request_title">Friend Requests</string>
     <string name="friend_request_summary">Receive a notification when someone requests to be your friend.</string>
+
+    <string name="trip_invite_key">trip_invite_key</string>
+    <string name="trip_invite_title">Trip Invitations</string>
+    <string name="trip_invite_summary">Receive a notification when someone invites you on a trip.</string>
+
+    <string name="group_message_key">group_message_key</string>
+    <string name="group_message_title">Group Messages</string>
+    <string name="group_message_summary">Receive a notification when someone on a trip send a group message.</string>
+
     <string name="trip_remind_key">trip_remind_key</string>
     <string name="trip_remind_title">Trip Reminders</string>
     <string name="trip_remind_summary">Receive a reminder notification the day before your trip.</string>

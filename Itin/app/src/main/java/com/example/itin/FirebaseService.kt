@@ -25,6 +25,11 @@ private const val CHANNEL_ID = "my_channel"
 
 class FirebaseService : FirebaseMessagingService() {
 
+    var friendReq = true
+    var tripInvite = true
+    var groupMessage = true
+    var sendMessage = true
+
     companion object {
         var sharedPref: SharedPreferences? = null
 
@@ -43,11 +48,22 @@ class FirebaseService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-        val receiveRequests = loadSettings()
-        // if the user has the settings to receive requests, then perform the following code
-        if(receiveRequests) {
-            super.onMessageReceived(message)
+        loadSettings()
+        super.onMessageReceived(message)
 
+        // get the title of the message
+        val title = message.data["title"]
+        if(title == "Friend Request"){
+            sendMessage = friendReq
+        }
+        else if(title == "Trip Request"){
+            sendMessage = tripInvite
+        }
+        else if(title == "Group Message"){
+            sendMessage = groupMessage
+        }
+
+        if(sendMessage) {
             val intent = Intent(this, FriendActivity::class.java)
             val notificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -69,9 +85,6 @@ class FirebaseService : FirebaseMessagingService() {
 
             notificationManager.notify(notificationID, notification)
         }
-        else{
-            Log.d("OnMessageReceived:", "Notification preferences set to false")
-        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -86,10 +99,12 @@ class FirebaseService : FirebaseMessagingService() {
     }
 
     // function to take the settings from root preferences and put them into action
-    private fun loadSettings(): Boolean{
+    private fun loadSettings(){
         val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         // return the value of friend_request_key from the system preferences
-        return sp.getBoolean("friend_request_key",true)
+        friendReq = sp.getBoolean("friend_request_key",true)
+        tripInvite = sp.getBoolean("trip_invite_key",true)
+        groupMessage = sp.getBoolean("group_message_key",true)
     }
 
 }
