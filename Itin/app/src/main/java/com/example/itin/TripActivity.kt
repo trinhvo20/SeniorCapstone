@@ -516,10 +516,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val calendar = Calendar.getInstance()
-        Log.d("CUR TIME:", "${calendar.timeInMillis}")
-        //calendar.set(year, month, day, 18, 55)
-        Log.d("ALARM TIME:", "${calendar.timeInMillis}")
-        val remindTime = calendar.timeInMillis + 500
+        calendar.set(year, month, day, 0, 0)
+        val remindTime = calendar.timeInMillis
         alarmManager.setExactAndAllowWhileIdle(
             AlarmManager.RTC_WAKEUP,
             remindTime,
