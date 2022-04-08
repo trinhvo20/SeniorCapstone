@@ -69,29 +69,6 @@ class FirebaseService : FirebaseMessagingService() {
                 populateMessage(message,null,null,TripActivity::class.java)
             }
         }
-
-        if(sendMessage) {
-            val intent = Intent(this, TripActivity::class.java)
-            val notificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val notificationID = Random.nextInt()
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                createNotificationChannel(notificationManager)
-            }
-
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            val pendingIntent = PendingIntent.getActivity(this, 0, intent, FLAG_IMMUTABLE)
-            val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle(message.data["title"])
-                .setContentText(message.data["message"])
-                .setSmallIcon(R.drawable.ic_logo_itin_redo)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .build()
-
-            notificationManager.notify(notificationID, notification)
-        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -123,7 +100,7 @@ class FirebaseService : FirebaseMessagingService() {
         else if(groupM == null && tripI == null){
             intent = Intent(this, friendR)
         }
-        else {
+        else if(groupM == null && friendR == null){
             intent = Intent(this, tripI)
         }
         val notificationManager =
@@ -134,7 +111,9 @@ class FirebaseService : FirebaseMessagingService() {
             createNotificationChannel(notificationManager)
         }
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        if (intent != null) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, FLAG_IMMUTABLE)
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(message.data["title"])
