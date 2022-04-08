@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
@@ -64,130 +65,12 @@ class TripAdapter(
             popupMenu.inflate(R.menu.show_menu)
             popupMenu.setOnMenuItemClickListener {
                 when (it.itemId) {
-                    // for Edit button
-                    R.id.edit -> {
-                        val view = LayoutInflater.from(context).inflate(R.layout.edit_trip, null)
-
-                        val etName = view.findViewById<EditText>(R.id.etName)
-                        val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
-                        val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
-
-                        var location = curTrip.location
-                        etName.setText(curTrip.name)
-                        etStartDate.text = curTrip.startDate
-                        etEndDate.text = curTrip.endDate
-                        startDateObj = LocalDate.parse(curTrip.startDate, formatter)
-
-                        // Handle AutoComplete Places Search from GoogleAPI
-                        if (!Places.isInitialized()) {
-                            Places.initialize(context, context.getString(R.string.API_KEY))
-                        }
-                        val placesClient = Places.createClient(context)
-                        val autocompleteFragment =
-                            (context as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.etLocation2) as AutocompleteSupportFragment
-                        Log.d("Places",context.supportFragmentManager.findFragmentById(R.id.etLocation2).toString())
-                        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
-                        autocompleteFragment.setText(location)
-                        autocompleteFragment.setOnPlaceSelectedListener(object :
-                            PlaceSelectionListener {
-                            override fun onPlaceSelected(place: Place) {
-                                location = place.name
-                                Log.i("Places", "Place: ${place.address}, ${place.id}")
-                            }
-                            override fun onError(status: Status) {
-                                Log.i("Places", "An error occurred: $status")
-                            }
-                        })
-
-                        // Calendar Picker
-                        val c = Calendar.getInstance()
-                        val year = c.get(Calendar.YEAR)
-                        val month = c.get(Calendar.MONTH)
-                        val day = c.get(Calendar.DAY_OF_MONTH)
-
-                        val ivPickStartDate = view.findViewById<ImageView>(R.id.ivPickStartDate)
-                        val ivPickEndDate = view.findViewById<ImageView>(R.id.ivPickEndDate)
-
-                        ivPickStartDate.setOnClickListener {
-                            val datePickerDialog = DatePickerDialog(
-                                context,
-                                { _, mYear, mMonth, mDay ->
-                                    etStartDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
-                                    startDateObj = LocalDate.parse(etStartDate.text.toString(), formatter)
-                                }, year, month, day
-                            )
-                            datePickerDialog.datePicker.minDate = c.timeInMillis
-                            datePickerDialog.show()
-                        }
-
-                        ivPickEndDate.setOnClickListener {
-                            val datePickerDialog = DatePickerDialog(
-                                context,
-                                { _, mYear, mMonth, mDay ->
-                                    etEndDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
-                                }, year, month, day
-                            )
-                            datePickerDialog.datePicker.minDate = startDateObj.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-                            datePickerDialog.show()
-                        }
-
-                        val dialog = AlertDialog.Builder(context)
-                        dialog.setView(view)
-                            .setPositiveButton("OK") { dialog, _ ->
-                                val name = etName.text.toString()
-                                val startDate = etStartDate.text.toString()
-                                val endDate = etEndDate.text.toString()
-
-                                if (name.isBlank()) {
-                                    if (location != curTrip.location) {
-                                        curTrip.name = "Trip to $location"
-                                    }
-                                } else {
-                                    curTrip.name = name
-                                }
-                                if (location != curTrip.location) {
-                                    curTrip.location = location
-                                }
-                                if (startDate != curTrip.startDate) {
-                                    curTrip.startDate = startDate
-                                }
-                                if (endDate != curTrip.endDate) {
-                                    curTrip.endDate = endDate
-                                    // check for dayInterval to set the trip 'active' status
-                                    var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
-                                    val today = LocalDate.now()
-                                    val endDateObj = LocalDate.parse(endDate, formatter)
-                                    val dayInterval =
-                                        ChronoUnit.DAYS.between(endDateObj, today).toInt()
-                                    curTrip.active = dayInterval <= 0
-                                }
-
-                                curTrip.sendToDB()
-                                if (!curTrip.active) {
-                                    trips.removeAt(adapterPosition)
-                                }
-                                notifyDataSetChanged()
-                                context.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-                                Toast.makeText(context, "Successfully Edited", Toast.LENGTH_SHORT)
-                                    .show()
-                                dialog.dismiss()
-                            }
-                            .setNegativeButton("Cancel") { dialog, _ ->
-                                context.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-                                Log.d("Places",context.supportFragmentManager.findFragmentById(R.id.etLocation2).toString())
-                                dialog.dismiss()
-                            }
-                            .create()
-                            .show()
-                        true
-                    }
-
                     // for Delete button
                     R.id.delete -> {
                         val dialog = AlertDialog.Builder(context)
                         dialog.setTitle("Delete")
                             .setIcon(R.drawable.ic_warning)
-                            .setMessage("Are you sure delete this trip?")
+                            .setMessage("Are you sure you want to delete this trip?")
                             .setPositiveButton("Yes") { dialog, _ ->
                                 curTrip.delByName(curTrip.name)
                                 curTrip.sendToDB()
@@ -195,7 +78,7 @@ class TripAdapter(
                                 tripsort(trips)
                                 notifyDataSetChanged()
 
-                                Toast.makeText(context, "Successfully Deleted", Toast.LENGTH_SHORT)
+                                Toast.makeText(context, "Trip Successfully Deleted", Toast.LENGTH_SHORT)
                                     .show()
                                 dialog.dismiss()
                             }
@@ -213,26 +96,43 @@ class TripAdapter(
                         true
                     }
 
-                    R.id.share -> {
-                        val nit = Intent(context, ShareTripActivity::class.java).apply {
-                            putExtra("TRIP_ID", curTrip.tripID.toString())
-                        }
-                        Toast.makeText(context, curTrip.tripID.toString(), Toast.LENGTH_SHORT).show()
-                        context.startActivity(nit)
-                        true
-                    }
-
                     R.id.leave -> {
-                        val dialog = AlertDialog.Builder(context)
-                        dialog.setTitle("Leave Trip")
+                        val dialog1 = AlertDialog.Builder(context)
+                        val dialog2 = AlertDialog.Builder(context)
+                        dialog1.setTitle("Leave Trip")
                             .setIcon(R.drawable.ic_alert)
-                            .setMessage("Are you sure leave this trip?")
+                            .setMessage("Are you sure you want to leave this trip?")
                             .setPositiveButton("Yes") { dialog, _ ->
-                                leavetrip(curTrip.tripID)
-                                trips.removeAt(adapterPosition)
-                                tripsort(trips)
-                                notifyDataSetChanged()
-                                dialog.dismiss()
+                                if (curTrip.viewers.size > 1) {
+                                    leavetrip(curTrip.tripID)
+                                    trips.removeAt(adapterPosition)
+                                    tripsort(trips)
+                                    notifyDataSetChanged()
+                                    Toast.makeText(context, "Trip Successfully Left", Toast.LENGTH_SHORT)
+                                        .show()
+                                    dialog.dismiss()
+                                }
+                                else{
+                                    dialog2.setTitle("You are the only person in this trip!")
+                                        .setIcon(R.drawable.ic_warning)
+                                        .setMessage("By leaving this trip the trip will be deleted.\nAre you sure you want to delete this trip?")
+                                        .setPositiveButton("Yes") { dialog, _ ->
+                                            curTrip.delByName(curTrip.name)
+                                            curTrip.sendToDB()
+                                            trips.removeAt(adapterPosition)
+                                            tripsort(trips)
+                                            notifyDataSetChanged()
+
+                                            Toast.makeText(context, "Trip Successfully Deleted", Toast.LENGTH_SHORT)
+                                                .show()
+                                            dialog.dismiss()
+                                        }
+                                        .setNegativeButton("No") { dialog, _ ->
+                                            dialog.dismiss()
+                                        }
+                                        .create()
+                                        .show()
+                                }
                             }
                             .setNegativeButton("No") { dialog, _ ->
                                 dialog.dismiss()
@@ -256,15 +156,19 @@ class TripAdapter(
         private fun leavetrip(tripID: Int) {
             val firebaseAuth = FirebaseAuth.getInstance()
             val firebaseUser = firebaseAuth.currentUser
-            var curTrips: DatabaseReference? = null
+            var curUserTrips: DatabaseReference? = null
 
             // If the user is not current logged in:
             if (firebaseUser == null) { }
             else {
                 val uid = firebaseUser.uid
                 val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
-                curTrips = curUser.child("trips")
-                curTrips.child("Trip $tripID").removeValue()
+                val curTrip = FirebaseDatabase.getInstance().getReference("masterTripList").child(tripID.toString())
+
+                curUserTrips = curUser.child("trips")
+                curUserTrips.child("Trip $tripID").removeValue()
+
+                curTrip.child("Viewers").child(uid).removeValue()
             }
         }
 
@@ -420,7 +324,19 @@ class TripAdapter(
             tvCost.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
 
-            if (curTrip.viewers.size > 0) {
+            // display trips images
+            val tripId = curTrip.tripID.toString()
+            var storageReferenceTrip = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
+            val localFile = File.createTempFile("tempImage","jpg")
+            storageReferenceTrip.getFile(localFile).addOnSuccessListener {
+                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                tripImage.setImageBitmap(bitmap)
+            }.addOnFailureListener {
+                Log.d("ItineraryImage","Failed to retrieve image")
+            }
+
+            // display viewers images
+            if (curTrip.viewers.size > 1) {
                 if (curTrip.viewers.size == 3) {
                     var uid1 = curTrip.viewers[0]
                     var uid2 = curTrip.viewers[1]
@@ -487,22 +403,6 @@ class TripAdapter(
                     }
                     ivViewers1.visibility = View.VISIBLE
                     ivViewers2.visibility = View.VISIBLE
-                }
-
-                if (curTrip.viewers.size == 1) {
-                    var uid = curTrip.viewers[0]
-
-                    var storageReference =
-                        FirebaseStorage.getInstance().getReference("Users/$uid.jpg")
-                    val localFileV1 =
-                        File.createTempFile("tempImage_${curTrip.tripID}_viewer1", "jpg")
-                    storageReference.getFile(localFileV1).addOnSuccessListener {
-                        val bitmap = BitmapFactory.decodeFile(localFileV1.absolutePath)
-                        ivViewers1.setImageBitmap(bitmap)
-                    }.addOnFailureListener {
-                        ivViewers1.setImageResource(R.drawable.profile)
-                    }
-                    ivViewers1.visibility = View.VISIBLE
                 }
 
                 else{

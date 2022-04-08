@@ -124,13 +124,20 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // make the bottom navigation bar
         bottomNavBarSetup()
     }
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onRestart() {
+        super.onRestart()
+        tripAdapter.clear()
+        createTestTrip()
+        readData(tripCount)
+    }
 
     // This function handles RecyclerView that lead you to TripDetails page
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onItemClick(position: Int) {
         // destroy this current iteration of Trip Activity
         // this will let the DB reload from whatever is added on a trip
-        finish()
+        //finish()
         // jump to ItineraryActivity
         Intent(this, ItineraryActivity::class.java).also {
             // pass the current trip object between activities
@@ -138,7 +145,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             // start ItineraryActivity
             startActivity(it)
         }
-
     }
 
     // This function will be called when you click the AddTrip button,
@@ -322,11 +328,24 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     stringToBoolean(deleted),
                     stringToBoolean(active),
                     tripId,
-                    days = mutableListOf()
+                    days = mutableListOf(),
                 )
                 if (trip.deleted == stringToBoolean("false") && trip.active == stringToBoolean("true")) {
                     trips.add(trip)
                     readDays(tripInstance, trip)
+                    readViewers(tripInstance,trip)
+                }
+            }
+        }
+    }
+
+    private fun readViewers(tripInstance: DatabaseReference, trip: Trip) {
+        tripInstance.child("Viewers").get().addOnSuccessListener {
+            if (it.exists()) {
+                // will cycle through the amount of days that we have
+                for (i in it.children){
+                    // will make the day classes
+                    trip.viewers.add(i.value.toString())
                 }
             }
         }
@@ -406,6 +425,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         for (i in 0 until dayNum+1) {
             makeDayInstance(itineraryInstance,i.toInt(), trip)
         }
+
+        //create Viewers folder
+        tripInstance.child("Viewers").child(uid).setValue(uid)
 
         // Record trips in the individual user
         curTrips.child("Trip $id").setValue(id)

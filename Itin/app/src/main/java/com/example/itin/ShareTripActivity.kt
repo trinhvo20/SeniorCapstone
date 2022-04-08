@@ -76,6 +76,8 @@ class ShareTripActivity : AppCompatActivity() {
 
         // Navigates to the directories within the database that we will be manipulating
         val masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
+        val Users = FirebaseDatabase.getInstance().getReference("users")
+        val masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
         curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
         // Takes the given username and finds the associated UID
         val friendsID = masterUserList.child(Username)
@@ -91,9 +93,7 @@ class ShareTripActivity : AppCompatActivity() {
                             if (it.exists()) {
                                 val friendsUID =
                                     it.child(friendsIDStr).child("UID").value.toString()
-                                FirebaseDatabase.getInstance().getReference("users")
-                                    .child(friendsUID).child("trips").child("Trip $tripID")
-                                    .setValue(tripID)
+                                Users.child(friendsUID).child("trips").child("Trip $tripID").setValue(tripID).addOnCompleteListener { addtoviewers(masterTripList,tripID,friendsUID) }
                                 Toast.makeText(this, "Trip Shared", Toast.LENGTH_SHORT).show()
                             }
                         }
@@ -103,6 +103,10 @@ class ShareTripActivity : AppCompatActivity() {
                 Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun addtoviewers(masterTripList: DatabaseReference, tripID: Int?, friendsUID: String) {
+        masterTripList.child(tripID.toString()).child("Viewers").child(friendsUID).setValue(friendsUID)
     }
 
     private fun readData(userCount: Int) {

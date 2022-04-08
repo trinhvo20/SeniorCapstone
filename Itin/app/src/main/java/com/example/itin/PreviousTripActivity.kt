@@ -58,6 +58,12 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
 
         backBtn.setOnClickListener { finish() }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onRestart() {
+        super.onRestart()
+        previousTripAdapter.clear()
+        readData(tripCount)
+    }
 
     override fun onItemClick(position: Int) {
         finish()
