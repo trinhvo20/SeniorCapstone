@@ -25,6 +25,7 @@
         android:layout_marginTop="50dp"
         android:fontFamily="@font/bangers"
         android:text="ITIN"
+        android:textColor="@color/mint"
         android:textAlignment="center"
         android:textSize="70dp"
         app:layout_constraintEnd_toEndOf="parent"
