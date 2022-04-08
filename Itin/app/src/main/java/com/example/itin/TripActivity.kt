@@ -1,6 +1,6 @@
 package com.example.itin
 
-import android.app.DatePickerDialog
+import android.app.*
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -35,6 +35,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
+import android.content.Context
 
 // Toggle Debugging
 const val DEBUG_TOGGLE: Boolean = true
@@ -61,6 +62,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         setContentView(R.layout.activity_trip)
 
         firebaseAuth = FirebaseAuth.getInstance()
+
+        //create a reminder notification channel
+        createNotificationChannel()
 
         // functions to retrieve FCM token (for notifications)
         // it is here so that no redundant code happens
@@ -249,6 +253,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 }
 
                 supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
+                scheduleNotification(year,month,day,"Itin Trip Reminder", "$name")
                 Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
@@ -258,6 +263,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             dialog.dismiss()
             Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
         }
+
         newDialog.create()
         newDialog.show()
     }
@@ -490,6 +496,47 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             curUser.child("userInfo").child("token").setValue(it)
         }
         FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
+    }
+
+    // function for creating the reminder notification
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun scheduleNotification(year:Int, month:Int, day:Int, title:String, tripName:String)
+    {
+        val message = "$tripName is happening today!"
+        val intent = Intent(applicationContext, ReminderNotification::class.java)
+        intent.putExtra(titleExtra, title)
+        intent.putExtra(messageExtra, message)
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            applicationContext,
+            notificationID,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val calendar = Calendar.getInstance()
+        Log.d("CUR TIME:", "${calendar.timeInMillis}")
+        //calendar.set(year, month, day, 18, 55)
+        Log.d("ALARM TIME:", "${calendar.timeInMillis}")
+        val remindTime = calendar.timeInMillis + 500
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            remindTime,
+            pendingIntent
+        )
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel()
+    {
+        val name = "Notif Channel"
+        val desc = "A Description of the Channel"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(channelID, name, importance)
+        channel.description = desc
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
     //Creating Testing Trip ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

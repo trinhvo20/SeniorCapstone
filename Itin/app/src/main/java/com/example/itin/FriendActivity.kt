@@ -9,13 +9,15 @@ import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.FriendAdapter
 import com.example.itin.classes.User
+import com.example.itin.notifications.NotificationData
+import com.example.itin.notifications.PushNotification
+import com.example.itin.notifications.RetrofitInstance
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -269,6 +271,7 @@ class FriendActivity : AppCompatActivity() {
             }
         }
     }
+
     // function to make get the token of who we are sending the notification to
     // then fills out notification
     private fun createNotification(friendUID: String){
