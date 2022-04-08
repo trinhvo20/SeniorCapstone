@@ -36,7 +36,7 @@ class FriendActivity : AppCompatActivity() {
     private lateinit var friendAdapter: FriendAdapter
 
     // Variable for error messages
-    val TAG = "FriendActivity"
+    private val TAG = "FriendActivity"
 
     // Some global variables that are accessed throughout the activity
     private var userCount: Int = 0

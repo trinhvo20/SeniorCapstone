@@ -29,6 +29,7 @@ class FirebaseService : FirebaseMessagingService() {
     var tripInvite = true
     var groupMessage = true
     var sendMessage = true
+    var activity = ""
 
     companion object {
         var sharedPref: SharedPreferences? = null
@@ -55,16 +56,19 @@ class FirebaseService : FirebaseMessagingService() {
         val title = message.data["title"]
         if(title == "Friend Request"){
             sendMessage = friendReq
+            activity = "FriendActivity"
         }
-        else if(title == "Trip Request"){
+        else if(title == "Trip Invitation"){
             sendMessage = tripInvite
+            activity = "TripActivity"
         }
         else if(title == "Group Message"){
             sendMessage = groupMessage
+            activity = "TripActivity"
         }
 
         if(sendMessage) {
-            val intent = Intent(this, FriendActivity::class.java)
+            val intent = Intent(this, activity::class.java)
             val notificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val notificationID = Random.nextInt()

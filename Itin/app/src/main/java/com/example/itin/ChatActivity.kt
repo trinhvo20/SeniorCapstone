@@ -5,22 +5,34 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.MessageAdapter
 import com.example.itin.classes.Message
 import com.example.itin.classes.Trip
+import com.example.itin.notifications.NotificationData
+import com.example.itin.notifications.PushNotification
+import com.example.itin.notifications.RetrofitInstance
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_chat.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
 class ChatActivity : AppCompatActivity() {
 
+    // Variable for error messages
+    private val TAG = "ChatActivity"
+
     private lateinit var senderUid: String
     private lateinit var messageAdapter: MessageAdapter
     private lateinit var messageList: MutableList<Message>
     private lateinit var databaseReference: DatabaseReference
+    private lateinit var tripName: String
+    private lateinit var tripViewers: MutableList<String>
 
     private var receiverRoom: String? = null
     private var senderRoom: String? = null
@@ -35,7 +47,11 @@ class ChatActivity : AppCompatActivity() {
 
         // set the name of the chat box (= tripName)
         val trip = intent.getSerializableExtra("trip") as Trip
-        groupChatName.text = trip.name
+        tripName = trip.name
+        tripViewers = trip.viewers
+
+        //set the groupchat name
+        groupChatName.text = tripName
 
         groupName = "Group Chat Trip ${trip.tripID}"
         senderRoom = "Sender Room"
@@ -61,7 +77,15 @@ class ChatActivity : AppCompatActivity() {
                 sendMessageBtn.isEnabled = s.toString() != ""
             }
             override fun afterTextChanged(s: Editable?) {
-                sendMessageBtn.setOnClickListener { sendMessagesToDB(s.toString()) }
+                sendMessageBtn.setOnClickListener {
+                    sendMessagesToDB(s.toString())
+                    // send a notification to everyone on the trip
+                    for(viewer in tripViewers){
+                        if(viewer != senderUid){
+                            createNotification(viewer)
+                        }
+                    }
+                }
             }
         })
 
@@ -107,6 +131,36 @@ class ChatActivity : AppCompatActivity() {
         }
         else {
             senderUid = firebaseUser.uid
+        }
+    }
+
+    // function to make get the token of who we are sending the notification to
+    // then fills out notification
+    private fun createNotification(friendUID: String){
+        FirebaseDatabase.getInstance().getReference("users").get().addOnSuccessListener {
+            val friendToken = it.child(friendUID).child("userInfo").child("token").value.toString()
+            val fullName = it.child(senderUid).child("userInfo").child("fullName").value.toString()
+            val title = "Group Message"
+            val message = "$fullName sent a message to ${tripName}'s group chat!"
+            PushNotification(
+                NotificationData(title,message),
+                friendToken
+            ).also{
+                sendNotification(it)
+            }
+        }
+    }
+
+    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitInstance.api.postNotification(notification)
+            if(response.isSuccessful) {
+                Log.d(TAG, "Response: Success!")
+            } else {
+                Log.e(TAG, response.errorBody().toString())
+            }
+        } catch(e: Exception) {
+            Log.e(TAG, e.toString())
         }
     }
 }

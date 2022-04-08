@@ -7,10 +7,16 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.ShareAdapter
 import com.example.itin.classes.User
+import com.example.itin.notifications.NotificationData
+import com.example.itin.notifications.PushNotification
+import com.example.itin.notifications.RetrofitInstance
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_share_trip.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ShareTripActivity : AppCompatActivity() {
 
@@ -22,6 +28,8 @@ class ShareTripActivity : AppCompatActivity() {
     private var userCount: Int = 0
     private var friends: MutableList<User> = mutableListOf()
     private lateinit var shareAdapter: ShareAdapter
+    // Variable for error messages
+    private val TAG = "ShareTripActivity"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,6 +102,8 @@ class ShareTripActivity : AppCompatActivity() {
                                 val friendsUID =
                                     it.child(friendsIDStr).child("UID").value.toString()
                                 Users.child(friendsUID).child("trips").child("Trip $tripID").setValue(tripID).addOnCompleteListener { addtoviewers(masterTripList,tripID,friendsUID) }
+                                // send notification to friend
+                                createNotification(friendsUID)
                                 Toast.makeText(this, "Trip Shared", Toast.LENGTH_SHORT).show()
                             }
                         }
@@ -159,6 +169,36 @@ class ShareTripActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+    }
+
+    // function to make get the token of who we are sending the notification to
+    // then fills out notification
+    private fun createNotification(friendUID: String){
+        FirebaseDatabase.getInstance().getReference("users").get().addOnSuccessListener {
+            val friendToken = it.child(friendUID).child("userInfo").child("token").value.toString()
+            val fullName = it.child(uid).child("userInfo").child("fullName").value.toString()
+            val title = "Trip Invitation"
+            val message = "$fullName has invited you to a trip!"
+            PushNotification(
+                NotificationData(title,message),
+                friendToken
+            ).also{
+                sendNotification(it)
+            }
+        }
+    }
+
+    private fun sendNotification(notification: PushNotification) = CoroutineScope(Dispatchers.IO).launch {
+        try {
+            val response = RetrofitInstance.api.postNotification(notification)
+            if(response.isSuccessful) {
+                Log.d(TAG, "Response: Success!")
+            } else {
+                Log.e(TAG, response.errorBody().toString())
+            }
+        } catch(e: Exception) {
+            Log.e(TAG, e.toString())
         }
     }
 }
