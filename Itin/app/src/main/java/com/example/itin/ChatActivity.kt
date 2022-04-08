@@ -32,7 +32,7 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var messageList: MutableList<Message>
     private lateinit var databaseReference: DatabaseReference
     private lateinit var tripName: String
-    private lateinit var tripViewers: MutableList<String>
+    private lateinit var tripViewers: MutableMap<String,Int>
 
     private var receiverRoom: String? = null
     private var senderRoom: String? = null
@@ -81,8 +81,8 @@ class ChatActivity : AppCompatActivity() {
                     sendMessagesToDB(s.toString())
                     // send a notification to everyone on the trip
                     for(viewer in tripViewers){
-                        if(viewer != senderUid){
-                            createNotification(viewer)
+                        if(viewer.key != senderUid){
+                            createNotification(viewer.key)
                         }
                     }
                 }
