@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.FriendAdapter
 import com.example.itin.classes.User
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -107,12 +108,6 @@ class FriendActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) { }
         })
 
-        // Finishes activity when back button is finished
-            backBtn.setOnClickListener {
-            finish()
-            startActivity(Intent(this, ProfileScreen::class.java))
-        }
-
         // Overwrites the initial value of 0 for numFriends if user has any friends
         masterUserList.get().addOnSuccessListener {
             if (it.exists()) {
@@ -141,6 +136,8 @@ class FriendActivity : AppCompatActivity() {
             android.R.color.holo_green_light,
             android.R.color.holo_orange_light,
             android.R.color.holo_red_light);
+
+        bottomNavBarSetup()
     }
 
     private fun addFriendReq() {
@@ -404,6 +401,37 @@ class FriendActivity : AppCompatActivity() {
         btExpandMenu.startAnimation(rotateClose)
 
         sent = true
+    }
+
+    // function to set up the bottom navigation bar
+    private fun bottomNavBarSetup(){
+        // create the bottom navigation bar
+        var bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavView_Bar)
+
+        // light up the icon you are on
+        var menu = bottomNavigationView.menu
+        var menuItem = menu.getItem(2)
+        menuItem.setChecked(true)
+
+        // actually switch between activities
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.ic_trips -> {
+                    Intent(this, TripActivity::class.java).also {
+                        startActivity(it)
+                    }
+                }
+                R.id.ic_profile -> {
+                    Intent(this, ProfileScreen::class.java).also {
+                        startActivity(it)
+                    }
+                }
+                R.id.ic_friends -> {
+
+                }
+            }
+            true
+        }
     }
 }
 

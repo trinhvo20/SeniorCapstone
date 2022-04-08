@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.preference.PreferenceManager
+import kotlinx.android.synthetic.main.activity_settings.*
 
 class Settings : AppCompatActivity(){
 
@@ -21,39 +22,13 @@ class Settings : AppCompatActivity(){
         setContentView(R.layout.activity_settings)
 
         val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-        // set up the bottom navigation bar
-        bottomNavBarSetup()
 
-    }
-
-    // function to set up the bottom navigation bar
-    private fun bottomNavBarSetup(){
-        // create the bottom navigation bar
-        var bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavView_Bar)
-
-        // light up the icon you are on
-        var menu = bottomNavigationView.menu
-        var menuItem = menu.getItem(2)
-        menuItem.setChecked(true)
-
-        // actually switch between activities
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.ic_trips -> {
-                    Intent(this, TripActivity::class.java).also {
-                        startActivity(it)
-                    }
-                }
-                R.id.ic_profile -> {
-                    Intent(this, ProfileScreen::class.java).also {
-                        startActivity(it)
-                    }
-                }
-                R.id.ic_settings -> {
-
-                }
-            }
-            true
+        // Finishes activity when back button is finished
+        backBtn.setOnClickListener {
+            finish()
+            startActivity(Intent(this, ProfileScreen::class.java))
         }
+
     }
+
 }

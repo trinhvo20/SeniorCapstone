@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="10dp"
     tools:context=".ProfileScreen">
 
     <ScrollView
@@ -142,7 +141,7 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/friendBtn"
+                    android:id="@+id/settingsBtn"
                     android:layout_width="0dp"
                     android:layout_height="90dp"
                     android:layout_margin="10dp"
@@ -156,18 +155,18 @@
                         android:padding="5dp">
 
                         <ImageView
-                            android:id="@+id/friendsIV"
+                            android:id="@+id/settingsIV"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:layout_centerHorizontal="true"
-                            android:src="@drawable/ic_friends" />
+                            android:src="@drawable/ic_settings" />
 
                         <TextView
-                            android:id="@+id/friendsTV"
+                            android:id="@+id/settingsTV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerHorizontal="true"
-                            android:text="Friends"
+                            android:text="Settings"
                             android:textColor="@color/black"
                             android:textSize="18sp"
                             android:layout_marginTop="40dp"/>

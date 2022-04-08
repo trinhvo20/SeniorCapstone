@@ -439,8 +439,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     }
                 }
                 // go to settings
-                R.id.ic_settings -> {
-                    Intent(this, Settings::class.java).also {
+                R.id.ic_friends -> {
+                    Intent(this, FriendActivity::class.java).also {
                         startActivity(it)
                     }
                 }
