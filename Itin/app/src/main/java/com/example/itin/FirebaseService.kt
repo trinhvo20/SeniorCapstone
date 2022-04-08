@@ -29,7 +29,7 @@ class FirebaseService : FirebaseMessagingService() {
     var tripInvite = true
     var groupMessage = true
     var sendMessage = true
-    var activity = ""
+    lateinit var activity: String
 
     companion object {
         var sharedPref: SharedPreferences? = null
@@ -55,20 +55,23 @@ class FirebaseService : FirebaseMessagingService() {
         // get the title of the message
         val title = message.data["title"]
         if(title == "Friend Request"){
-            sendMessage = friendReq
-            activity = "FriendActivity"
+            if(friendReq) {
+                populateMessage(message,FriendActivity::class.java,null,null)
+            }
         }
         else if(title == "Trip Invitation"){
-            sendMessage = tripInvite
-            activity = "TripActivity"
+            if(tripInvite) {
+                populateMessage(message,null, TripActivity::class.java, null)
+            }
         }
         else if(title == "Group Message"){
-            sendMessage = groupMessage
-            activity = "TripActivity"
+            if(groupMessage) {
+                populateMessage(message,null,null,TripActivity::class.java)
+            }
         }
 
         if(sendMessage) {
-            val intent = Intent(this, activity::class.java)
+            val intent = Intent(this, TripActivity::class.java)
             val notificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val notificationID = Random.nextInt()
@@ -109,6 +112,39 @@ class FirebaseService : FirebaseMessagingService() {
         friendReq = sp.getBoolean("friend_request_key",true)
         tripInvite = sp.getBoolean("trip_invite_key",true)
         groupMessage = sp.getBoolean("group_message_key",true)
+    }
+
+    private fun populateMessage(message: RemoteMessage,friendR:Class<FriendActivity>?,tripI:Class<TripActivity>?,groupM:Class<TripActivity>?){
+        var intent: Intent? = null
+
+        if(friendR == null && tripI == null){
+            intent = Intent(this, groupM)
+        }
+        else if(groupM == null && tripI == null){
+            intent = Intent(this, friendR)
+        }
+        else {
+            intent = Intent(this, tripI)
+        }
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationID = Random.nextInt()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel(notificationManager)
+        }
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, FLAG_IMMUTABLE)
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(message.data["title"])
+            .setContentText(message.data["message"])
+            .setSmallIcon(R.drawable.ic_logo_itin_redo)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        notificationManager.notify(notificationID, notification)
     }
 
 }

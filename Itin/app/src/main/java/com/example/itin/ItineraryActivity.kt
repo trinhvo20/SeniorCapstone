@@ -506,7 +506,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             }
 
         else {
-            Toast.makeText(context, "You do not have permission to preform this action", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "You do not have permission to preform this action", Toast.LENGTH_SHORT).show()
         }
     }
 }
