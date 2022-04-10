@@ -81,6 +81,7 @@ class FriendActivity : AppCompatActivity() {
         btCancelReq.setOnClickListener { onCancelClicked() }
         btSendReq.setOnClickListener { onSendButtonClicked() }
         btRmFriend.setOnClickListener { onRmButtonCLicked(userCount) }
+        btCloseRm.setOnClickListener { onCloseRmClicked(userCount) }
 
         // Sets up the text box to only allow you to send request if the textbox is not empty
         // This improves UI but also doubles as an easy way to check for null input
@@ -325,9 +326,38 @@ class FriendActivity : AppCompatActivity() {
             AppCompatDelegate.setDefaultNightMode(theme)
         }
     }
+    private fun onCloseRmClicked(userCount: Int) {
+        remove = !remove
+        clicked = !clicked
+        btExpandMenu.visibility = View.VISIBLE
+        btExpandMenu.isClickable = true
+        btExpandMenu.startAnimation(rotateClose)
+
+        btCloseRm.visibility = View.INVISIBLE
+        btCloseRm.isClickable = false
+        btCloseRm.startAnimation(hide)
+
+        readData(userCount)
+    }
 
     private fun onRmButtonCLicked(userCount: Int) {
         remove = !remove
+        btSearchFriend.visibility = View.INVISIBLE
+        btSearchFriend.isClickable = false
+        btSearchFriend.startAnimation(toBottom)
+
+        btRmFriend.visibility = View.INVISIBLE
+        btRmFriend.isClickable = false
+        btRmFriend.startAnimation(toBottom)
+
+        btExpandMenu.visibility = View.INVISIBLE
+        btExpandMenu.isClickable = false
+        btExpandMenu.startAnimation(hide)
+
+        btCloseRm.visibility = View.VISIBLE
+        btCloseRm.isClickable = true
+        btCloseRm.startAnimation(appear)
+
         readData(userCount)
 
     }
