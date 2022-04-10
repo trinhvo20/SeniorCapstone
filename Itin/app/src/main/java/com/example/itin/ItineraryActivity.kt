@@ -277,8 +277,17 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
     }
 
     private fun openGallery() {
-        val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-        startActivityForResult(gallery, PICK_IMAGE)
+        if (trip.viewers[uid] == 1) {
+            val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+            startActivityForResult(gallery, PICK_IMAGE)
+        }
+        else {
+            Toast.makeText(
+                this,
+                "You do not have permission to preform this action",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     // handle the profile_picture change
@@ -527,9 +536,5 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
                     Toast.LENGTH_SHORT
                 ).show()
             }
-
-        else {
-            Toast.makeText(this, "You do not have permission to preform this action", Toast.LENGTH_SHORT).show()
-        }
     }
 }
