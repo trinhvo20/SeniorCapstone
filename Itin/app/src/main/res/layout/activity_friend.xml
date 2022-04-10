@@ -30,25 +30,11 @@
     </RelativeLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btCloseRm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="5dp"
-        android:clickable="false"
-        android:visibility="invisible"
-        android:tint="@android:color/white"
-        android:layout_gravity="bottom|right"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_remove" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btRmFriend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="5dp"
         android:backgroundTint="@color/DarkGray"
         android:clickable="false"
         android:focusable="true"
@@ -63,7 +49,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="1dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginRight="5dp"
         android:backgroundTint="@color/DarkGray"
         android:clickable="false"
         android:focusable="true"
@@ -78,36 +64,50 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
-        android:layout_marginRight="5dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="5dp"
         android:clickable="false"
+        android:src="@drawable/ic_remove"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
-        app:layout_constraintStart_toEndOf="@+id/friendsUsername"
-        android:src="@drawable/ic_remove" />
+        app:layout_constraintEnd_toEndOf="@+id/btCloseRm" />
 
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btCloseRm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:clickable="false"
+        android:tint="@android:color/white"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_remove" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btSendReq"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="5dp"
         android:clickable="false"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
-        app:layout_constraintStart_toEndOf="@+id/friendsUsername"
+        app:layout_constraintEnd_toEndOf="@+id/btCloseRm"
         app:srcCompat="@drawable/ic_send" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btExpandMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="20dp"
-        android:layout_marginBottom="5dp"
         android:clickable="true"
         android:focusable="true"
         android:tint="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/btCancelReq"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_gravity="bottom|right"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_add" />
 
@@ -141,7 +141,7 @@
     <EditText
 
         android:id="@+id/friendsUsername"
-        android:layout_width="350dp"
+        android:layout_width="match_parent"
         android:layout_height="53dp"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="5dp"
@@ -151,8 +151,8 @@
         android:inputType="text"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btCancelReq"/>
+        app:layout_constraintEnd_toStartOf="@+id/btCloseRm"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavView_Bar"
