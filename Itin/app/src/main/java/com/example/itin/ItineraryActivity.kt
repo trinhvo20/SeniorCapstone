@@ -398,6 +398,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun editTrip(curTrip: Trip) {
+            //TODO: "Add epoch restraints for previous trip to current trip"
             if (curTrip.viewers[uid] == 1) {
                 val view = LayoutInflater.from(this).inflate(R.layout.edit_trip, null)
 
@@ -532,7 +533,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             } else {
                 Toast.makeText(
                     this,
-                    "You do not have permission to preform this action",
+                    "You do not have permission to perform this action",
                     Toast.LENGTH_SHORT
                 ).show()
             }
