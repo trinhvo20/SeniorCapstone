@@ -106,6 +106,9 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         firebaseAuth = FirebaseAuth.getInstance()
         masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
         databaseReference = FirebaseDatabase.getInstance().reference
+        firebaseAuth = FirebaseAuth.getInstance()
+        val firebaseUser = firebaseAuth.currentUser
+        uid = firebaseUser!!.uid
 
         // get the trip object from MainActivity
         trip = intent.getSerializableExtra("EXTRA_TRIP") as Trip
@@ -113,13 +116,13 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         tvName.text = trip.name
         tvTripLocation.text = trip.location
         tvDateRange.text = "From: ${trip.startDate}     To: ${trip.endDate}"
-        Log.d("Itinerary","TripID: ${trip.tripID}")
+        Log.d("Itinerary", "TripID: ${trip.tripID}")
         getTripImage()
 
         days = trip.days
 
         // initiate a new object of class DayAdapter, pass in days list as parameter
-        dayAdapter = DayAdapter(this, days, this)
+        dayAdapter = DayAdapter(this, days, this, trip.viewers)
 
         // assign adapter for our RecyclerView
         rvActivityList.adapter = dayAdapter
@@ -140,11 +143,11 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         backBtn.setOnClickListener {
             finish()
             //if active go to TripActivity, if not active go to Previous trips
-            if(trip.active) {// start TripActivity
+            if (trip.active) {// start TripActivity
                 Intent(this, TripActivity::class.java).also {
                     startActivity(it)
                 }
-            }else{// start PreviousTripActivity
+            } else {// start PreviousTripActivity
                 Intent(this, PreviousTripActivity::class.java).also {
                     startActivity(it)
                 }
@@ -175,6 +178,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             android.R.color.holo_red_light
         );
     }
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onRestart() {
         super.onRestart()
@@ -187,6 +191,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             // pass the current trip object between activities
             it.putExtra("ACTIVITY", days[daypos][position])
             it.putExtra("DAY_ID", days[daypos].dayInt)
+            it.putExtra("CUR_VIEWER", trip.viewers[uid])
             startActivity(it)
         }
     }
@@ -272,17 +277,26 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
     }
 
     private fun openGallery() {
-        val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-        startActivityForResult(gallery, PICK_IMAGE)
+        if (trip.viewers[uid] == 1) {
+            val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+            startActivityForResult(gallery, PICK_IMAGE)
+        }
+        else {
+            Toast.makeText(
+                this,
+                "You do not have permission to preform this action",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
     // handle the profile_picture change
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE){
+        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
             if (data != null) {
                 imageUri = data.data!!
-                Log.d("Itinerary",imageUri.toString())
+                Log.d("Itinerary", imageUri.toString())
                 val file = File(getRealPathFromURI(imageUri))
                 if (file.exists()) {
                     val d = Drawable.createFromPath(file.absolutePath)
@@ -292,27 +306,33 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             }
         }
     }
+
     private fun uploadTripPic() {
         val tripId = trip.tripID.toString()
         storageReference = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
         storageReference.putFile(imageUri).addOnSuccessListener {
-            Toast.makeText(this@ItineraryActivity,"Profile successfully updated", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this@ItineraryActivity,
+                "Profile successfully updated",
+                Toast.LENGTH_SHORT
+            ).show()
             getTripImage()
         }.addOnFailureListener {
-            Toast.makeText(this@ItineraryActivity,"Failed to upload image", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@ItineraryActivity, "Failed to upload image", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
     private fun getTripImage() {
-        Log.d("ItineraryImage","Getting Trip Image from DB")
+        Log.d("ItineraryImage", "Getting Trip Image from DB")
         val tripId = trip.tripID.toString()
         storageReference = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
-        val localFile = File.createTempFile("tempImage","jpg")
+        val localFile = File.createTempFile("tempImage", "jpg")
         storageReference.getFile(localFile).addOnSuccessListener {
             val d = Drawable.createFromPath(localFile.absolutePath)
             tripHeader.background = d
         }.addOnFailureListener {
-            Log.d("ItineraryImage","Failed to retrieve image")
+            Log.d("ItineraryImage", "Failed to retrieve image")
         }
     }
 
@@ -378,135 +398,143 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun editTrip(curTrip: Trip) {
-        if (curTrip.viewers[uid] == 1){
-            val view = LayoutInflater.from(this).inflate(R.layout.edit_trip, null)
+            if (curTrip.viewers[uid] == 1) {
+                val view = LayoutInflater.from(this).inflate(R.layout.edit_trip, null)
 
-            val etName = view.findViewById<EditText>(R.id.etName)
-            val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
-            val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
+                val etName = view.findViewById<EditText>(R.id.etName)
+                val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
+                val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
 
-            var location = curTrip.location
-            etName.setText(curTrip.name)
-            etStartDate.text = curTrip.startDate
-            etEndDate.text = curTrip.endDate
-            startDateObj = LocalDate.parse(curTrip.startDate, formatter)
+                var location = curTrip.location
+                etName.setText(curTrip.name)
+                etStartDate.text = curTrip.startDate
+                etEndDate.text = curTrip.endDate
+                startDateObj = LocalDate.parse(curTrip.startDate, formatter)
 
-            // Handle AutoComplete Places Search from GoogleAPI
-            if (!Places.isInitialized()) {
-                Places.initialize(this, this.getString(R.string.API_KEY))
-            }
-            val placesClient = Places.createClient(this)
-            val autocompleteFragment =
-                (this as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.etLocation2) as AutocompleteSupportFragment
-            Log.d("Places", this.supportFragmentManager.findFragmentById(R.id.etLocation2).toString())
-            autocompleteFragment.setPlaceFields(
-                listOf(
-                    Place.Field.ID,
-                    Place.Field.NAME,
-                    Place.Field.ADDRESS
-                )
-            )
-            autocompleteFragment.setText(location)
-            autocompleteFragment.setOnPlaceSelectedListener(object :
-                PlaceSelectionListener {
-                override fun onPlaceSelected(place: Place) {
-                    location = place.name
-                    Log.i("Places", "Place: ${place.address}, ${place.id}")
+                // Handle AutoComplete Places Search from GoogleAPI
+                if (!Places.isInitialized()) {
+                    Places.initialize(this, this.getString(R.string.API_KEY))
                 }
-
-                override fun onError(status: Status) {
-                    Log.i("Places", "An error occurred: $status")
-                }
-            })
-
-            // Calendar Picker
-            val c = Calendar.getInstance()
-            val year = c.get(Calendar.YEAR)
-            val month = c.get(Calendar.MONTH)
-            val day = c.get(Calendar.DAY_OF_MONTH)
-
-            val ivPickStartDate = view.findViewById<ImageView>(R.id.ivPickStartDate)
-            val ivPickEndDate = view.findViewById<ImageView>(R.id.ivPickEndDate)
-
-            ivPickStartDate.setOnClickListener {
-                val datePickerDialog = DatePickerDialog(
-                    this,
-                    { _, mYear, mMonth, mDay ->
-                        etStartDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
-                        startDateObj = LocalDate.parse(etStartDate.text.toString(), formatter)
-                    }, year, month, day
+                val placesClient = Places.createClient(this)
+                val autocompleteFragment =
+                    (this as AppCompatActivity).supportFragmentManager.findFragmentById(R.id.etLocation2) as AutocompleteSupportFragment
+                Log.d(
+                    "Places",
+                    this.supportFragmentManager.findFragmentById(R.id.etLocation2).toString()
                 )
-                datePickerDialog.datePicker.minDate = c.timeInMillis
-                datePickerDialog.show()
-            }
-
-            ivPickEndDate.setOnClickListener {
-                val datePickerDialog = DatePickerDialog(
-                    this,
-                    { _, mYear, mMonth, mDay ->
-                        etEndDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
-                    }, year, month, day
-                )
-                datePickerDialog.datePicker.minDate =
-                    startDateObj.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-                datePickerDialog.show()
-            }
-
-            val dialog = AlertDialog.Builder(this)
-            dialog.setView(view)
-                .setPositiveButton("OK") { dialog, _ ->
-                    val name = etName.text.toString()
-                    val startDate = etStartDate.text.toString()
-                    val endDate = etEndDate.text.toString()
-
-                    if (name.isBlank()) {
-                        if (location != curTrip.location) {
-                            curTrip.name = "Trip to $location"
-                        }
-                    } else {
-                        curTrip.name = name
-                    }
-                    if (location != curTrip.location) {
-                        curTrip.location = location
-                    }
-                    if (startDate != curTrip.startDate) {
-                        curTrip.startDate = startDate
-                    }
-                    if (endDate != curTrip.endDate) {
-                        curTrip.endDate = endDate
-                        // check for dayInterval to set the trip 'active' status
-                        var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
-                        val today = LocalDate.now()
-                        val endDateObj = LocalDate.parse(endDate, formatter)
-                        val dayInterval =
-                            ChronoUnit.DAYS.between(endDateObj, today).toInt()
-                        curTrip.active = dayInterval <= 0
-                    }
-                    curTrip.sendToDB()
-                    finish();
-                    overridePendingTransition(0, 0);
-                    startActivity(intent);
-                    overridePendingTransition(0, 0);
-
-                    this.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-                    Toast.makeText(this, "Successfully Edited", Toast.LENGTH_SHORT)
-                        .show()
-                    dialog.dismiss()
-                }
-                .setNegativeButton("Cancel") { dialog, _ ->
-                    this.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-                    Log.d(
-                        "Places",
-                        this.supportFragmentManager.findFragmentById(R.id.etLocation2).toString()
+                autocompleteFragment.setPlaceFields(
+                    listOf(
+                        Place.Field.ID,
+                        Place.Field.NAME,
+                        Place.Field.ADDRESS
                     )
-                    dialog.dismiss()
-                }
-                .create()
-                .show()
-            }
+                )
+                autocompleteFragment.setText(location)
+                autocompleteFragment.setOnPlaceSelectedListener(object :
+                    PlaceSelectionListener {
+                    override fun onPlaceSelected(place: Place) {
+                        location = place.name
+                        Log.i("Places", "Place: ${place.address}, ${place.id}")
+                    }
 
-        else {
-            Toast.makeText(this, "You do not have permission to preform this action", Toast.LENGTH_SHORT).show()
-        }
+                    override fun onError(status: Status) {
+                        Log.i("Places", "An error occurred: $status")
+                    }
+                })
+
+                // Calendar Picker
+                val c = Calendar.getInstance()
+                val year = c.get(Calendar.YEAR)
+                val month = c.get(Calendar.MONTH)
+                val day = c.get(Calendar.DAY_OF_MONTH)
+
+                val ivPickStartDate = view.findViewById<ImageView>(R.id.ivPickStartDate)
+                val ivPickEndDate = view.findViewById<ImageView>(R.id.ivPickEndDate)
+
+                ivPickStartDate.setOnClickListener {
+                    val datePickerDialog = DatePickerDialog(
+                        this,
+                        { _, mYear, mMonth, mDay ->
+                            etStartDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
+                            startDateObj = LocalDate.parse(etStartDate.text.toString(), formatter)
+                        }, year, month, day
+                    )
+                    datePickerDialog.datePicker.minDate = c.timeInMillis
+                    datePickerDialog.show()
+                }
+
+                ivPickEndDate.setOnClickListener {
+                    val datePickerDialog = DatePickerDialog(
+                        this,
+                        { _, mYear, mMonth, mDay ->
+                            etEndDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
+                        }, year, month, day
+                    )
+                    datePickerDialog.datePicker.minDate =
+                        startDateObj.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                    datePickerDialog.show()
+                }
+
+                val dialog = AlertDialog.Builder(this)
+                dialog.setView(view)
+                    .setPositiveButton("OK") { dialog, _ ->
+                        val name = etName.text.toString()
+                        val startDate = etStartDate.text.toString()
+                        val endDate = etEndDate.text.toString()
+
+                        if (name.isBlank()) {
+                            if (location != curTrip.location) {
+                                curTrip.name = "Trip to $location"
+                            }
+                        } else {
+                            curTrip.name = name
+                        }
+                        if (location != curTrip.location) {
+                            curTrip.location = location
+                        }
+                        if (startDate != curTrip.startDate) {
+                            curTrip.startDate = startDate
+                        }
+                        if (endDate != curTrip.endDate) {
+                            curTrip.endDate = endDate
+                            // check for dayInterval to set the trip 'active' status
+                            var formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
+                            val today = LocalDate.now()
+                            val endDateObj = LocalDate.parse(endDate, formatter)
+                            val dayInterval =
+                                ChronoUnit.DAYS.between(endDateObj, today).toInt()
+                            curTrip.active = dayInterval <= 0
+                        }
+                        curTrip.sendToDB()
+                        finish();
+                        overridePendingTransition(0, 0);
+                        startActivity(intent);
+                        overridePendingTransition(0, 0);
+
+                        this.supportFragmentManager.beginTransaction().remove(autocompleteFragment)
+                            .commit()
+                        Toast.makeText(this, "Successfully Edited", Toast.LENGTH_SHORT)
+                            .show()
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton("Cancel") { dialog, _ ->
+                        this.supportFragmentManager.beginTransaction().remove(autocompleteFragment)
+                            .commit()
+                        Log.d(
+                            "Places",
+                            this.supportFragmentManager.findFragmentById(R.id.etLocation2)
+                                .toString()
+                        )
+                        dialog.dismiss()
+                    }
+                    .create()
+                    .show()
+            } else {
+                Toast.makeText(
+                    this,
+                    "You do not have permission to preform this action",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
     }
 }
