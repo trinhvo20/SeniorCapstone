@@ -18,9 +18,8 @@ import kotlinx.android.synthetic.main.activity_friend.*
 import kotlinx.android.synthetic.main.friend_item.view.*
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.io.File
-
-class FriendAdapter (
-    private val friends: MutableList<Pair<User, Boolean>>
+class FriendAdapter(
+    private val friends: MutableList<Pair<User, List<Boolean>>>
 ): RecyclerView.Adapter<FriendAdapter.FriendViewHolder>() {
 
     inner class FriendViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
@@ -36,13 +35,15 @@ class FriendAdapter (
         lateinit var masterUserList: DatabaseReference
 
         val curFriend = friends[position].first
-        val friend = friends[position].second
+        val booleans = friends[position].second
+        val friend = booleans[0]
+        val remove = booleans[1]
 
         holder.itemView.apply {
 
             var storageReference = FirebaseStorage.getInstance().getReference("Users/${curFriend.uid}.jpg")
-            val localFileV2 =
-                File.createTempFile("tempImage_${curFriend.uid}", "jpg")
+            val localFileV2 = File.createTempFile("tempImage_${curFriend.uid}", "jpg")
+
             storageReference.getFile(localFileV2).addOnSuccessListener {
                 val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
                 friendsPP.setImageBitmap(bitmap)
@@ -51,20 +52,39 @@ class FriendAdapter (
             }
         }
 
-        if (friend == true) {
+
+        if (remove == true) {
+            holder.itemView.apply {
+                pendingReq.visibility = View.VISIBLE
+                acceptButton.visibility = View.INVISIBLE
+                acceptButton.isClickable = false
+                remButton.visibility = View.VISIBLE
+                remButton.isClickable = true
+
+                friendFullName.text = curFriend.username
+            }
+        }else if (friend == true) {
             holder.itemView.apply {
                 pendingReq.visibility = View.INVISIBLE
-                pendingReq.height = 0
                 acceptButton.visibility = View.INVISIBLE
+                acceptButton.isClickable = false
+                remButton.visibility = View.INVISIBLE
+                remButton.isClickable = false
+
                 friendFullName.text = curFriend.username
             }
         } else {
             holder.itemView.apply {
                 pendingReq.visibility = View.VISIBLE
                 acceptButton.visibility = View.VISIBLE
+                acceptButton.isClickable = true
+                remButton.visibility = View.INVISIBLE
+                remButton.isClickable = false
+
                 friendFullName.text = curFriend.username
             }
         }
+
         holder.itemView.apply {
             acceptButton.setOnClickListener {
                 firebaseAuth = FirebaseAuth.getInstance()

@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 class FriendActivity : AppCompatActivity() {
 
     // Variables for recycler view
-    private lateinit var friends: MutableList<Pair<User, Boolean>>
+    private lateinit var friends: MutableList<Pair<User, List<Boolean>>>
     private lateinit var friendAdapter: FriendAdapter
 
     // Variable for error messages
@@ -42,6 +42,7 @@ class FriendActivity : AppCompatActivity() {
     private var friend: Boolean = false
     private var sent: Boolean = false
     private var typed: Boolean = false
+    private var remove: Boolean = false
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var masterUserList: DatabaseReference
     private lateinit var curUser: DatabaseReference
@@ -79,7 +80,7 @@ class FriendActivity : AppCompatActivity() {
         btSearchFriend.setOnClickListener { searchVisibility() }
         btCancelReq.setOnClickListener { onCancelClicked() }
         btSendReq.setOnClickListener { onSendButtonClicked() }
-        btRmFriend.setOnClickListener { }
+        btRmFriend.setOnClickListener { onRmButtonCLicked(userCount) }
 
         // Sets up the text box to only allow you to send request if the textbox is not empty
         // This improves UI but also doubles as an easy way to check for null input
@@ -148,7 +149,6 @@ class FriendActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onRestart() {
         super.onRestart()
-        friendAdapter.clear()
         readData(userCount)
     }
 
@@ -212,6 +212,7 @@ class FriendActivity : AppCompatActivity() {
 
     private fun readData(userCount: Int) {
         Log.d("FriendActivity", "Reading Data")
+        friendAdapter.clear()
         val firebaseUser = firebaseAuth.currentUser
         val uid = firebaseUser!!.uid
         var curFriend = FirebaseDatabase.getInstance().getReference("users").child(uid).child("friendsList")
@@ -271,7 +272,8 @@ class FriendActivity : AppCompatActivity() {
                             "null",
                             "null"
                         )
-                        friends.add(Pair(user, friend))
+                        val booleans = listOf(friend, remove)
+                        friends.add(Pair(user, booleans))
                         friendAdapter.notifyDataSetChanged()
                     }
                 }
@@ -322,6 +324,12 @@ class FriendActivity : AppCompatActivity() {
             val theme = AppCompatDelegate.MODE_NIGHT_YES
             AppCompatDelegate.setDefaultNightMode(theme)
         }
+    }
+
+    private fun onRmButtonCLicked(userCount: Int) {
+        remove = !remove
+        readData(userCount)
+
     }
 
     private fun onExpandButtonClicked() {
