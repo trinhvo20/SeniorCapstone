@@ -63,7 +63,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
     private val PICK_IMAGE = 100
     private lateinit var storageReference: StorageReference
     private lateinit var imageUri: Uri
-    private lateinit var startDateObj: LocalDate
+    private lateinit var startDateObj : LocalDate
 
     // Variables for floating button animations
     private val rotateOpen: Animation by lazy {
@@ -527,5 +527,9 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
                     Toast.LENGTH_SHORT
                 ).show()
             }
+
+        else {
+            Toast.makeText(this, "You do not have permission to preform this action", Toast.LENGTH_SHORT).show()
         }
     }
+}
