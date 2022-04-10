@@ -153,6 +153,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         val etName = view.findViewById<EditText>(R.id.etName)
         val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
         val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
+        var endYear = 0
+        var endMonth = 0
+        var endDay = 0
 
         // Handle AutoComplete Places Search from GoogleAPI
         if (!Places.isInitialized()) {
@@ -197,6 +200,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 this,
                 { _, mYear, mMonth, mDay ->
                     etEndDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
+                    endYear = mYear
+                    endMonth = mMonth
+                    endDay = mDay
+                    Log.d("DATE","$endYear $endMonth $endDay")
                 }, year, month, day
             )
             datePickerDialog.datePicker.minDate = startDateObj.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
@@ -232,6 +239,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 val dayInterval = ChronoUnit.DAYS.between(endDateObj, today).toInt()
                 active = dayInterval <= 0
 
+                // get the epoch time for the start of the trip
+                val tripEpoch = Calendar.getInstance()
+                tripEpoch.set(endYear,endMonth,endDay,23,59)
+                Log.d("TIME","${tripEpoch.timeInMillis}")
                 // Grab the initial values for database manipulation
                 val trip = Trip(
                     name,
@@ -240,7 +251,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     endDate,
                     deleted = false,
                     active,
-                    tripID = tripCount
+                    tripID = tripCount,
+                    days = mutableListOf(),
+                    viewers = mutableListOf(),
+                    epoch = tripEpoch.timeInMillis
                 )
 
                 // Write to the database, then increment tripCount in the database
@@ -311,6 +325,14 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 val deleted = it.child("Deleted").value.toString()
                 var active = it.child("Active").value.toString()
                 var tripId = it.child("ID").value.toString().toInt()
+                val epoch = it.child("Epoch").value.toString().toLong()
+
+                // get current time
+                val calendar = Calendar.getInstance()
+                val calendarTime = calendar.timeInMillis
+                if(epoch-calendarTime < 0){
+                    active = false.toString()
+                }
 
                 startdate = LocalDate.parse(stDate, formatter)
 
@@ -410,6 +432,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         tripInstance.child("Deleted").setValue(trip.deleted)
         tripInstance.child("Active").setValue(trip.active)
         tripInstance.child("ID").setValue(trip.tripID)
+        tripInstance.child("Epoch").setValue(trip.epoch)
 
         // create days folder
         // will be accessed later in itinerary activity
@@ -464,8 +487,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     }
                 }
                 // go to settings
-                R.id.ic_settings -> {
-                    Intent(this, Settings::class.java).also {
+                R.id.ic_friends -> {
+                    Intent(this, FriendActivity::class.java).also {
                         startActivity(it)
                     }
                 }
