@@ -10,7 +10,6 @@ import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -20,13 +19,11 @@ import com.example.itin.adapters.FriendAdapter
 import com.example.itin.classes.User
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_friend.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
 
 class FriendActivity : AppCompatActivity() {
 
@@ -47,6 +44,8 @@ class FriendActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var masterUserList: DatabaseReference
     private lateinit var curUser: DatabaseReference
+    private lateinit var curUserFriends: DatabaseReference
+    private lateinit var curUserReqs: DatabaseReference
     private lateinit var uid: String
 
     // Variables for floating button animations
@@ -75,6 +74,8 @@ class FriendActivity : AppCompatActivity() {
         uid = firebaseUser!!.uid
         curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
         masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
+        curUserReqs = curUser.child("reqList")
+        curUserFriends = curUser.child("friendsList")
 
         // Setting up floating buttons
         btExpandMenu.setOnClickListener { onExpandButtonClicked() }
@@ -83,6 +84,27 @@ class FriendActivity : AppCompatActivity() {
         btSendReq.setOnClickListener { onSendButtonClicked() }
         btRmFriend.setOnClickListener { onRmButtonCLicked(userCount) }
         btCloseRm.setOnClickListener { onCloseRmClicked(userCount) }
+
+        // These next two listeners ensure that the page will auto refresh when the DB is changed
+        curUserFriends.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                friendAdapter.clear()
+                readData(userCount)
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toast.makeText(applicationContext, databaseError.message, Toast.LENGTH_SHORT).show()
+            }
+        })
+
+        curUserReqs.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                friendAdapter.clear()
+                readData(userCount)
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toast.makeText(applicationContext, databaseError.message, Toast.LENGTH_SHORT).show()
+            }
+        })
 
         // Sets up the text box to only allow you to send request if the textbox is not empty
         // This improves UI but also doubles as an easy way to check for null input
@@ -356,7 +378,6 @@ class FriendActivity : AppCompatActivity() {
         btCloseRm.startAnimation(appear)
 
         readData(userCount)
-
     }
 
     private fun onExpandButtonClicked() {
