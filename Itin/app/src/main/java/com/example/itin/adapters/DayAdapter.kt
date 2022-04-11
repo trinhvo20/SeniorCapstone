@@ -114,18 +114,22 @@ class DayAdapter(
             newDialog.setView(view)
 
             newDialog.setPositiveButton("Add") { dialog, _ ->
-                val name = etName.text.toString()
+                var name = etName.text.toString()
                 val cost = etCost.text.toString()
                 val notes = etNotes.text.toString()
                 val time = tvTime.text.toString()
 
-                if (location.isBlank() && name.isBlank()){
-                    context.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-                    Toast.makeText(context, "Name/Location & Time are required", Toast.LENGTH_LONG).show()
+                if (location.isBlank() && name.isBlank()) {
+                    context.supportFragmentManager.beginTransaction()
+                        .remove(autocompleteFragment).commit()
+                    Toast.makeText(context, "Name/Location & Time are required", Toast.LENGTH_LONG)
+                        .show()
                 } else {
 
-                    val name = etName.text.toString().ifBlank {
-                        location.substringBefore("\n")
+                    if (name.isBlank()) {
+                        name = location.substringBefore("\n")
+                    } else {
+                        name = etName.text.toString()
                     }
 
                     val activity = Activity(name, time, location, cost, notes, curDay.tripID, "")
