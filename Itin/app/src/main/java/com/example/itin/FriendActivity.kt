@@ -205,6 +205,10 @@ class FriendActivity : AppCompatActivity() {
                                     Toast.makeText(this, "This user is already your friend!", Toast.LENGTH_SHORT).show()
                                     friendsUsername.text?.clear()
                                 }
+                                else if (friendsIDStr == myID) {
+                                    Toast.makeText(this, "You can't add yourself, you weirdo", Toast.LENGTH_SHORT).show()
+                                    friendsUsername.text?.clear()
+                                }
                                 else {
                                     FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("reqList").child("Request $myID").setValue(myID)
                                     // User feedback
@@ -502,4 +506,3 @@ class FriendActivity : AppCompatActivity() {
         }
     }
 }
-
