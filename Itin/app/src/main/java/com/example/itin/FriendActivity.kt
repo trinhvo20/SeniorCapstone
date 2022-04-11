@@ -17,6 +17,9 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.FriendAdapter
 import com.example.itin.classes.User
+import com.example.itin.notifications.NotificationData
+import com.example.itin.notifications.PushNotification
+import com.example.itin.notifications.RetrofitInstance
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
@@ -32,7 +35,7 @@ class FriendActivity : AppCompatActivity() {
     private lateinit var friendAdapter: FriendAdapter
 
     // Variable for error messages
-    val TAG = "FriendActivity"
+    private val TAG = "FriendActivity"
 
     // Some global variables that are accessed throughout the activity
     private var userCount: Int = 0
@@ -304,6 +307,7 @@ class FriendActivity : AppCompatActivity() {
             }
         }
     }
+
     // function to make get the token of who we are sending the notification to
     // then fills out notification
     private fun createNotification(friendUID: String){
