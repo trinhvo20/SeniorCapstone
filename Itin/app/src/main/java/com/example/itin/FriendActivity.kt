@@ -20,6 +20,7 @@ import com.example.itin.classes.User
 import com.example.itin.notifications.NotificationData
 import com.example.itin.notifications.PushNotification
 import com.example.itin.notifications.RetrofitInstance
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -32,7 +33,7 @@ import kotlinx.coroutines.launch
 class FriendActivity : AppCompatActivity() {
 
     // Variables for recycler view
-    private lateinit var friends: MutableList<Pair<User, Boolean>>
+    private lateinit var friends: MutableList<Pair<User, List<Boolean>>>
     private lateinit var friendAdapter: FriendAdapter
 
     // Variable for error messages
@@ -44,6 +45,7 @@ class FriendActivity : AppCompatActivity() {
     private var friend: Boolean = false
     private var sent: Boolean = false
     private var typed: Boolean = false
+    private var remove: Boolean = false
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var masterUserList: DatabaseReference
     private lateinit var curUser: DatabaseReference
@@ -81,7 +83,8 @@ class FriendActivity : AppCompatActivity() {
         btSearchFriend.setOnClickListener { searchVisibility() }
         btCancelReq.setOnClickListener { onCancelClicked() }
         btSendReq.setOnClickListener { onSendButtonClicked() }
-        btRmFriend.setOnClickListener { }
+        btRmFriend.setOnClickListener { onRmButtonCLicked(userCount) }
+        btCloseRm.setOnClickListener { onCloseRmClicked(userCount) }
 
         // Sets up the text box to only allow you to send request if the textbox is not empty
         // This improves UI but also doubles as an easy way to check for null input
@@ -111,12 +114,6 @@ class FriendActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) { }
         })
 
-        // Finishes activity when back button is finished
-            backBtn.setOnClickListener {
-            finish()
-            startActivity(Intent(this, ProfileScreen::class.java))
-        }
-
         // Overwrites the initial value of 0 for numFriends if user has any friends
         masterUserList.get().addOnSuccessListener {
             if (it.exists()) {
@@ -145,12 +142,13 @@ class FriendActivity : AppCompatActivity() {
             android.R.color.holo_green_light,
             android.R.color.holo_orange_light,
             android.R.color.holo_red_light);
+
+        bottomNavBarSetup()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onRestart() {
         super.onRestart()
-        friendAdapter.clear()
         readData(userCount)
     }
 
@@ -214,6 +212,7 @@ class FriendActivity : AppCompatActivity() {
 
     private fun readData(userCount: Int) {
         Log.d("FriendActivity", "Reading Data")
+        friendAdapter.clear()
         val firebaseUser = firebaseAuth.currentUser
         val uid = firebaseUser!!.uid
         var curFriend = FirebaseDatabase.getInstance().getReference("users").child(uid).child("friendsList")
@@ -273,7 +272,8 @@ class FriendActivity : AppCompatActivity() {
                             "null",
                             "null"
                         )
-                        friends.add(Pair(user, friend))
+                        val booleans = listOf(friend, remove)
+                        friends.add(Pair(user, booleans))
                         friendAdapter.notifyDataSetChanged()
                     }
                 }
@@ -325,6 +325,41 @@ class FriendActivity : AppCompatActivity() {
             val theme = AppCompatDelegate.MODE_NIGHT_YES
             AppCompatDelegate.setDefaultNightMode(theme)
         }
+    }
+    private fun onCloseRmClicked(userCount: Int) {
+        remove = !remove
+        clicked = !clicked
+        btExpandMenu.visibility = View.VISIBLE
+        btExpandMenu.isClickable = true
+        btExpandMenu.startAnimation(rotateClose)
+
+        btCloseRm.visibility = View.INVISIBLE
+        btCloseRm.isClickable = false
+        btCloseRm.startAnimation(hide)
+
+        readData(userCount)
+    }
+
+    private fun onRmButtonCLicked(userCount: Int) {
+        remove = !remove
+        btSearchFriend.visibility = View.INVISIBLE
+        btSearchFriend.isClickable = false
+        btSearchFriend.startAnimation(toBottom)
+
+        btRmFriend.visibility = View.INVISIBLE
+        btRmFriend.isClickable = false
+        btRmFriend.startAnimation(toBottom)
+
+        btExpandMenu.visibility = View.INVISIBLE
+        btExpandMenu.isClickable = false
+        btExpandMenu.startAnimation(hide)
+
+        btCloseRm.visibility = View.VISIBLE
+        btCloseRm.isClickable = true
+        btCloseRm.startAnimation(appear)
+
+        readData(userCount)
+
     }
 
     private fun onExpandButtonClicked() {
@@ -417,4 +452,36 @@ class FriendActivity : AppCompatActivity() {
 
         sent = true
     }
+
+    // function to set up the bottom navigation bar
+    private fun bottomNavBarSetup(){
+        // create the bottom navigation bar
+        var bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavView_Bar)
+
+        // light up the icon you are on
+        var menu = bottomNavigationView.menu
+        var menuItem = menu.getItem(2)
+        menuItem.setChecked(true)
+
+        // actually switch between activities
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.ic_trips -> {
+                    Intent(this, TripActivity::class.java).also {
+                        startActivity(it)
+                    }
+                }
+                R.id.ic_profile -> {
+                    Intent(this, ProfileScreen::class.java).also {
+                        startActivity(it)
+                    }
+                }
+                R.id.ic_friends -> {
+
+                }
+            }
+            true
+        }
+    }
 }
+

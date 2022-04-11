@@ -60,8 +60,8 @@ class ProfileScreen : AppCompatActivity() {
             startActivity(intent)
         }
 
-        friendBtn.setOnClickListener {
-            val intent = Intent(this, FriendActivity::class.java)
+        settingsBtn.setOnClickListener {
+            val intent = Intent(this, Settings::class.java)
             startActivity(intent)
         }
 
@@ -281,8 +281,8 @@ class ProfileScreen : AppCompatActivity() {
                 R.id.ic_profile -> {
 
                 }
-                R.id.ic_settings -> {
-                    Intent(this, Settings::class.java).also {
+                R.id.ic_friends -> {
+                    Intent(this, FriendActivity::class.java).also {
                         startActivity(it)
                     }
                 }
