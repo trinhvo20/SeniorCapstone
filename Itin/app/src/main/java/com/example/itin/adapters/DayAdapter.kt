@@ -114,13 +114,14 @@ class DayAdapter(
             newDialog.setView(view)
 
             newDialog.setPositiveButton("Add") { dialog, _ ->
+                val name = etName.text.toString()
                 val cost = etCost.text.toString()
                 val notes = etNotes.text.toString()
                 val time = tvTime.text.toString()
 
-                if (location.isBlank() || time.isBlank()){
+                if (location.isBlank() && name.isBlank()){
                     context.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-                    Toast.makeText(context, "Location & Time are required", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Name/Location & Time are required", Toast.LENGTH_LONG).show()
                 } else {
 
                     val name = etName.text.toString().ifBlank {
@@ -146,10 +147,13 @@ class DayAdapter(
                 dialog.dismiss()
                 Toast.makeText(context, "Canceled", Toast.LENGTH_SHORT).show()
             }
-
+            newDialog.setOnCancelListener {
+                context.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
+            }
             newDialog.create()
             newDialog.show()
         }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

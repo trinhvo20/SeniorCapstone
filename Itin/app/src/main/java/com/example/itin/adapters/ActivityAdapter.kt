@@ -87,7 +87,6 @@ class ActivityAdapter(
         private fun removeActivityFromDB(curActivity: Activity) {
             val tripID = curActivity?.tripID.toString()
             val dayID = dayPos.toString()
-            val actID = curActivity?.actID.toString()
             val curDay = FirebaseDatabase.getInstance().getReference("masterTripList")
                 .child(tripID).child("Days").child(dayID)
 

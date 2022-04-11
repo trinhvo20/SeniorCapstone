@@ -264,6 +264,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             dialog.dismiss()
             Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
         }
+        newDialog.setOnCancelListener {
+            supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
+        }
         newDialog.create()
         newDialog.show()
     }
