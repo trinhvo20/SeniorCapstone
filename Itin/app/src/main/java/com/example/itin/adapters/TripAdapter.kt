@@ -341,11 +341,12 @@ class TripAdapter(
             // display trips images
             val tripId = curTrip.tripID.toString()
             var storageReferenceTrip = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
-            val localFile = File.createTempFile("tempImage","jpg")
+            val localFile = File.createTempFile("tempImage_$tripId","jpg")
             storageReferenceTrip.getFile(localFile).addOnSuccessListener {
                 val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                 tripImage.setImageBitmap(bitmap)
             }.addOnFailureListener {
+                tripImage.setImageResource(R.drawable.beach)
                 Log.d("ItineraryImage","Failed to retrieve image")
             }
 
