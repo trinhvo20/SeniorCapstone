@@ -60,19 +60,6 @@
         app:srcCompat="@drawable/ic_search" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btCancelReq"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_marginBottom="5dp"
-        android:clickable="false"
-        android:src="@drawable/ic_remove"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
-        app:layout_constraintEnd_toEndOf="@+id/btCloseRm" />
-
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btCloseRm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -85,17 +72,6 @@
         app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_remove" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btSendReq"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:clickable="false"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
-        app:layout_constraintEnd_toEndOf="@+id/btCloseRm"
-        app:srcCompat="@drawable/ic_send" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btExpandMenu"
@@ -144,14 +120,15 @@
         android:layout_width="match_parent"
         android:layout_height="53dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="5dp"
-        android:background="@color/white"
         android:layout_weight="1"
+        android:background="#DDDDDD"
         android:fontFamily="casual"
+        android:gravity="center"
         android:hint="Friends Username"
+        android:imeOptions="actionSend"
         android:inputType="text"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btCloseRm"
         app:layout_constraintStart_toStartOf="parent" />
 

@@ -1,5 +1,6 @@
 package com.example.itin
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -10,6 +11,8 @@ import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -83,15 +86,29 @@ class FriendActivity : AppCompatActivity() {
         // Setting up floating buttons
         btExpandMenu.setOnClickListener { onExpandButtonClicked() }
         btSearchFriend.setOnClickListener { searchVisibility() }
-        btCancelReq.setOnClickListener { onCancelClicked() }
-        btSendReq.setOnClickListener { onSendButtonClicked() }
         btRmFriend.setOnClickListener { onRmButtonCLicked(userCount) }
         btCloseRm.setOnClickListener { onCloseRmClicked(userCount) }
+
+        // Allow te soft input's enter key to send the request
+        friendsUsername.setOnEditorActionListener { v, actionId, event ->
+            return@setOnEditorActionListener when (actionId) {
+                EditorInfo.IME_ACTION_SEND -> {
+                    if (typed) {
+                        onSendButtonClicked()
+                    } else {
+                        onCancelClicked()
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
 
         // These next two listeners ensure that the page will auto refresh when the DB is changed
         curUserFriends.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 friendAdapter.clear()
+                friendsList.clear()
                 readData(userCount)
             }
             override fun onCancelled(databaseError: DatabaseError) {
@@ -99,39 +116,24 @@ class FriendActivity : AppCompatActivity() {
             }
         })
 
-        curUserReqs.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                friendAdapter.clear()
-                readData(userCount)
-            }
-            override fun onCancelled(databaseError: DatabaseError) {
-                Toast.makeText(applicationContext, databaseError.message, Toast.LENGTH_SHORT).show()
-            }
-        })
+//        curUserReqs.addValueEventListener(object : ValueEventListener {
+//            override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                friendAdapter.clear()
+//                friendsList.clear()
+//                readData(userCount)
+//            }
+//            override fun onCancelled(databaseError: DatabaseError) {
+//                Toast.makeText(applicationContext, databaseError.message, Toast.LENGTH_SHORT).show()
+//            }
+//        })
 
         // Sets up the text box to only allow you to send request if the textbox is not empty
         // This improves UI but also doubles as an easy way to check for null input
         friendsUsername.addTextChangedListener(object: TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                btCancelReq.isClickable = true
-                btCancelReq.visibility = View.VISIBLE
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (typed == false) {
-                    btCancelReq.isClickable = false
-                    btCancelReq.visibility = View.INVISIBLE
-                    btCancelReq.startAnimation(hide)
-
-                    btSendReq.isClickable = true
-                    btSendReq.visibility = View.VISIBLE
-                    btSendReq.startAnimation(appear)
-
                     typed = true
-                }
-                else if (sent == true){
-                    btSendReq.isClickable = false
-                    btSendReq.visibility = View.INVISIBLE
-                    btSendReq.startAnimation(hide)
                 }
             }
             override fun afterTextChanged(s: Editable?) { }
@@ -144,6 +146,7 @@ class FriendActivity : AppCompatActivity() {
                 try {
                     userCount = it.child("userCount").value.toString().toInt()
                     Log.d("FriendActivity", "userCount: $userCount")
+                    friendsList.clear()
                     readData(userCount)
                 } catch (e: NumberFormatException) {
                     masterUserList.child("userCount").setValue(0)
@@ -157,6 +160,7 @@ class FriendActivity : AppCompatActivity() {
         // It will clear the days list and load all days from the DB again
         friendSwipeContainer.setOnRefreshListener {
             friendAdapter.clear()
+            friendsList.clear()
             readData(userCount)
             friendSwipeContainer.isRefreshing = false
         }
@@ -172,6 +176,7 @@ class FriendActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onRestart() {
         super.onRestart()
+        friendsList.clear()
         readData(userCount)
     }
 
@@ -240,6 +245,7 @@ class FriendActivity : AppCompatActivity() {
     private fun readData(userCount: Int) {
         Log.d("FriendActivity", "Reading Data")
         friendAdapter.clear()
+        friendsList.clear()
         val firebaseUser = firebaseAuth.currentUser
         val uid = firebaseUser!!.uid
         var curFriend = FirebaseDatabase.getInstance().getReference("users").child(uid).child("friendsList")
@@ -364,6 +370,7 @@ class FriendActivity : AppCompatActivity() {
         btCloseRm.isClickable = false
         btCloseRm.startAnimation(hide)
 
+        friendsList.clear()
         readData(userCount)
     }
 
@@ -385,6 +392,7 @@ class FriendActivity : AppCompatActivity() {
         btCloseRm.isClickable = true
         btCloseRm.startAnimation(appear)
 
+        friendsList.clear()
         readData(userCount)
     }
 
@@ -408,9 +416,7 @@ class FriendActivity : AppCompatActivity() {
         btExpandMenu.isClickable = false
         btExpandMenu.startAnimation(hide)
 
-        btCancelReq.visibility = View.VISIBLE
-        btCancelReq.isClickable = true
-        btCancelReq.startAnimation(appear)
+        bottomNavView_Bar.visibility = View.INVISIBLE
 
         friendsUsername.visibility = View.VISIBLE
         clicked = !clicked
@@ -419,15 +425,17 @@ class FriendActivity : AppCompatActivity() {
     }
 
     private fun onSendButtonClicked() {
-        btSendReq.visibility = View.INVISIBLE
-        btSendReq.isClickable = false
-        btSendReq.startAnimation(hide)
         friendsUsername.visibility = View.INVISIBLE
 
         btExpandMenu.visibility = View.VISIBLE
         btExpandMenu.isClickable = true
         btExpandMenu.startAnimation(appear)
         btExpandMenu.startAnimation(rotateClose)
+
+        bottomNavView_Bar.visibility = View.VISIBLE
+
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(friendsUsername.getWindowToken(), 0)
 
         sent = true
         addFriendReq()
@@ -466,15 +474,17 @@ class FriendActivity : AppCompatActivity() {
     }
 
     private fun onCancelClicked() {
-        btCancelReq.visibility = View.INVISIBLE
-        btCancelReq.isClickable = false
-        btCancelReq.startAnimation(hide)
         friendsUsername.visibility = View.INVISIBLE
 
         btExpandMenu.visibility = View.VISIBLE
         btExpandMenu.isClickable = true
         btExpandMenu.startAnimation(appear)
         btExpandMenu.startAnimation(rotateClose)
+
+        bottomNavView_Bar.visibility = View.VISIBLE
+
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(friendsUsername.getWindowToken(), 0)
 
         sent = true
     }
