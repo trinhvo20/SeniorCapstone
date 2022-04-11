@@ -330,8 +330,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 // get current time
                 val calendar = Calendar.getInstance()
                 val calendarTime = calendar.timeInMillis
-                if(epoch-calendarTime < 0){
+                if(epoch-calendarTime < 0 && active != false.toString()){
                     active = false.toString()
+                    tripInstance.child("Active").setValue("false")
                 }
 
                 startdate = LocalDate.parse(stDate, formatter)
