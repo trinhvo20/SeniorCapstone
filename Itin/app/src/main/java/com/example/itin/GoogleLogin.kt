@@ -198,8 +198,8 @@ class GoogleLogin : AppCompatActivity() {
                     masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
                     masterUserList.get().addOnSuccessListener {
                         if (it.exists()) {
-                            masterUserList.child(userCount.toString()).child(username).setValue(uid)
-                            masterUserList.child(username).setValue(userCount)
+                            masterUserList.child(userCount.toString()).child("UID").setValue(uid)
+                            masterUserList.child(username).setValue(userCount.toString())
                             userCount += 1
                             Log.d("TripActivity", "tripCount updated: $userCount")
                             masterUserList.child("userCount").setValue(userCount)
