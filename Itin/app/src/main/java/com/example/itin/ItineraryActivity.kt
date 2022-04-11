@@ -521,12 +521,10 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
                     .setNegativeButton("Cancel") { dialog, _ ->
                         this.supportFragmentManager.beginTransaction().remove(autocompleteFragment)
                             .commit()
-                        Log.d(
-                            "Places",
-                            this.supportFragmentManager.findFragmentById(R.id.etLocation2)
-                                .toString()
-                        )
                         dialog.dismiss()
+                    }
+                    .setOnCancelListener {
+                        this.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
                     }
                     .create()
                     .show()
