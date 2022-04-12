@@ -170,13 +170,7 @@ class DayAdapter(
             else{
                 Toast.makeText(context, "You do not have permission to preform this action", Toast.LENGTH_SHORT).show()
             }
-            newDialog.setOnCancelListener {
-                context.supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-            }
-            newDialog.create()
-            newDialog.show()
         }
-
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

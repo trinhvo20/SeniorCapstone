@@ -196,18 +196,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/whoHere"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="casual"
-                    android:padding="5dp"
-                    android:text="People who is already here:"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/youHere" />
-
                 <Button
                     android:id="@+id/checkinBtn"
                     android:layout_width="wrap_content"
@@ -225,6 +213,57 @@
                     android:layout_marginLeft="10dp"
                     app:layout_constraintStart_toEndOf="@+id/checkinBtn"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/whoHere"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="casual"
+                    android:padding="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:text="People who is already here:"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/youHere" />
+
+                <TextView
+                    android:id="@+id/count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="casual"
+                    android:paddingRight="3dp"
+                    android:text="0"
+                    android:textSize="22dp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/whoHere"
+                    app:layout_constraintEnd_toStartOf="@+id/sign" />
+
+                <TextView
+                    android:id="@+id/sign"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="3dp"
+                    android:fontFamily="casual"
+                    android:text="/"
+                    android:textSize="28dp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="-5dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/whoHere"
+                    app:layout_constraintEnd_toStartOf="@+id/countTotal" />
+
+                <TextView
+                    android:id="@+id/countTotal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:fontFamily="casual"
+                    android:text="0"
+                    android:textSize="22dp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/whoHere"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:layout_marginHorizontal="20dp"

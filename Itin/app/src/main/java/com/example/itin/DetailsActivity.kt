@@ -36,6 +36,8 @@ class DetailsActivity : AppCompatActivity() {
     private lateinit var checkInList: MutableList<String>
     private lateinit var uid : String
     private lateinit var activity : Activity
+    private var countCheckIn : Int = 0
+    private var countTotal : Int = 0
     private var cur_viewer:Int = 2
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -205,11 +207,6 @@ class DetailsActivity : AppCompatActivity() {
         else{
             Toast.makeText(this, "You do not have permission to preform this action", Toast.LENGTH_SHORT).show()
         }
-        newDialog.setOnCancelListener {
-            supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-        }
-        newDialog.create()
-        newDialog.show()
     }
 
     private fun sendEditedActivityToDB(activity: Activity) {
@@ -229,7 +226,7 @@ class DetailsActivity : AppCompatActivity() {
         val tripID = "trip ${activity.tripID}"
         val dayID = "day $dayID"
         val actID = "activity ${activity.actID}"
-        databaseReference.child("checkIn"). child(tripID).child(dayID).child(actID).child("uid").setValue(uid)
+        databaseReference.child("checkIn"). child(tripID).child(dayID).child(actID).child(uid).setValue(uid)
     }
 
     private fun loadCheckInFromDB() {
@@ -269,6 +266,7 @@ class DetailsActivity : AppCompatActivity() {
                         val checkInUid = eachData.value
                         if (uid == checkInUid){
                             eachData.ref.removeValue()
+                            countCheckIn -= 1
                             checkinBtn.isClickable = true
                             checkinBtn.setBackgroundColor(resources.getColor(R.color.mint))
                             checkoutBtn.isClickable = false
@@ -276,6 +274,7 @@ class DetailsActivity : AppCompatActivity() {
                         }
                         checkInList.remove(checkInUid as String)
                     }
+                    count.text = countCheckIn.toString()
                     checkInAdapter.notifyDataSetChanged()
                 }
                 override fun onCancelled(error: DatabaseError) {
