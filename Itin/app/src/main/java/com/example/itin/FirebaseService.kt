@@ -25,6 +25,12 @@ private const val CHANNEL_ID = "my_channel"
 
 class FirebaseService : FirebaseMessagingService() {
 
+    var friendReq = true
+    var tripInvite = true
+    var groupMessage = true
+    var sendMessage = true
+    lateinit var activity: String
+
     companion object {
         var sharedPref: SharedPreferences? = null
 
@@ -43,34 +49,25 @@ class FirebaseService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-        val receiveRequests = loadSettings()
-        // if the user has the settings to receive requests, then perform the following code
-        if(receiveRequests) {
-            super.onMessageReceived(message)
+        loadSettings()
+        super.onMessageReceived(message)
 
-            val intent = Intent(this, FriendActivity::class.java)
-            val notificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val notificationID = Random.nextInt()
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                createNotificationChannel(notificationManager)
+        // get the title of the message
+        val title = message.data["title"]
+        if(title == "Friend Request"){
+            if(friendReq) {
+                populateMessage(message,FriendActivity::class.java,null,null)
             }
-
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            val pendingIntent = PendingIntent.getActivity(this, 0, intent, FLAG_IMMUTABLE)
-            val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle(message.data["title"])
-                .setContentText(message.data["message"])
-                .setSmallIcon(R.drawable.ic_logo_itin_redo)
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .build()
-
-            notificationManager.notify(notificationID, notification)
         }
-        else{
-            Log.d("OnMessageReceived:", "Notification preferences set to false")
+        else if(title == "Trip Invitation"){
+            if(tripInvite) {
+                populateMessage(message,null, TripActivity::class.java, null)
+            }
+        }
+        else if(title == "Group Message"){
+            if(groupMessage) {
+                populateMessage(message,null,null,TripActivity::class.java)
+            }
         }
     }
 
@@ -86,10 +83,47 @@ class FirebaseService : FirebaseMessagingService() {
     }
 
     // function to take the settings from root preferences and put them into action
-    private fun loadSettings(): Boolean{
+    private fun loadSettings(){
         val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         // return the value of friend_request_key from the system preferences
-        return sp.getBoolean("friend_request_key",true)
+        friendReq = sp.getBoolean("friend_request_key",true)
+        tripInvite = sp.getBoolean("trip_invite_key",true)
+        groupMessage = sp.getBoolean("group_message_key",true)
+    }
+
+    private fun populateMessage(message: RemoteMessage,friendR:Class<FriendActivity>?,tripI:Class<TripActivity>?,groupM:Class<TripActivity>?){
+        var intent: Intent? = null
+
+        if(friendR == null && tripI == null){
+            intent = Intent(this, groupM)
+        }
+        else if(groupM == null && tripI == null){
+            intent = Intent(this, friendR)
+        }
+        else if(groupM == null && friendR == null){
+            intent = Intent(this, tripI)
+        }
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationID = Random.nextInt()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel(notificationManager)
+        }
+
+        if (intent != null) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, FLAG_IMMUTABLE)
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(message.data["title"])
+            .setContentText(message.data["message"])
+            .setSmallIcon(R.drawable.ic_logo_itin_redo)
+            .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        notificationManager.notify(notificationID, notification)
     }
 
 }

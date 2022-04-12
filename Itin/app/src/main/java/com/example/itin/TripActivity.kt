@@ -1,6 +1,6 @@
 package com.example.itin
 
-import android.app.DatePickerDialog
+import android.app.*
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -35,6 +35,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
+import android.content.Context
 
 // Toggle Debugging
 const val DEBUG_TOGGLE: Boolean = true
@@ -61,6 +62,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         setContentView(R.layout.activity_trip)
 
         firebaseAuth = FirebaseAuth.getInstance()
+
+        //create a reminder notification channel
+        createNotificationChannel()
 
         // functions to retrieve FCM token (for notifications)
         // it is here so that no redundant code happens
@@ -153,6 +157,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         val etName = view.findViewById<EditText>(R.id.etName)
         val etStartDate = view.findViewById<TextView>(R.id.etStartDate)
         val etEndDate = view.findViewById<TextView>(R.id.etEndDate)
+        var endYear = 0
+        var endMonth = 0
+        var endDay = 0
 
         // Handle AutoComplete Places Search from GoogleAPI
         if (!Places.isInitialized()) {
@@ -197,6 +204,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 this,
                 { _, mYear, mMonth, mDay ->
                     etEndDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
+                    endYear = mYear
+                    endMonth = mMonth
+                    endDay = mDay
+                    Log.d("DATE","$endYear $endMonth $endDay")
                 }, year, month, day
             )
             datePickerDialog.datePicker.minDate = startDateObj.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
@@ -232,6 +243,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 val dayInterval = ChronoUnit.DAYS.between(endDateObj, today).toInt()
                 active = dayInterval <= 0
 
+                // get the epoch time for the start of the trip
+                val tripEpoch = Calendar.getInstance()
+                tripEpoch.set(endYear,endMonth,endDay,23,59)
+                Log.d("TIME","${tripEpoch.timeInMillis}")
                 // Grab the initial values for database manipulation
                 val trip = Trip(
                     name,
@@ -240,7 +255,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     endDate,
                     deleted = false,
                     active,
-                    tripID = tripCount
+                    tripID = tripCount,
+                    days = mutableListOf(),
+                    viewers = mutableMapOf(),
+                    epoch = tripEpoch.timeInMillis
                 )
 
                 // Write to the database, then increment tripCount in the database
@@ -255,6 +273,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 }
 
                 supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
+                scheduleNotification(year,month,day,"Itin Trip Reminder", "$name")
                 Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
@@ -314,6 +333,15 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 val deleted = it.child("Deleted").value.toString()
                 var active = it.child("Active").value.toString()
                 var tripId = it.child("ID").value.toString().toInt()
+                val epoch = it.child("Epoch").value.toString().toLong()
+
+                // get current time
+                val calendar = Calendar.getInstance()
+                val calendarTime = calendar.timeInMillis
+                if(epoch-calendarTime < 0 && active != false.toString()){
+                    active = false.toString()
+                    tripInstance.child("Active").setValue("false")
+                }
 
                 startdate = LocalDate.parse(stDate, formatter)
 
@@ -341,8 +369,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             if (it.exists()) {
                 // will cycle through the amount of days that we have
                 for (i in it.children){
+                    if (i.child("uid").value != null && i.child("Perm").value != null){
                     // will make the day classes
-                    trip.viewers.add(i.value.toString())
+                    trip.viewers[i.child("uid").value.toString()] = i.child("Perm").value.toString().toInt()
+                    }
                 }
             }
         }
@@ -411,6 +441,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         tripInstance.child("Deleted").setValue(trip.deleted)
         tripInstance.child("Active").setValue(trip.active)
         tripInstance.child("ID").setValue(trip.tripID)
+        tripInstance.child("Epoch").setValue(trip.epoch)
 
         // create days folder
         // will be accessed later in itinerary activity
@@ -424,7 +455,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         }
 
         //create Viewers folder
-        tripInstance.child("Viewers").child(uid).setValue(uid)
+        tripInstance.child("Viewers").child(uid).child("uid").setValue(uid)
+        tripInstance.child("Viewers").child(uid).child("Perm").setValue(1)
 
         // Record trips in the individual user
         curTrips.child("Trip $id").setValue(id)
@@ -464,8 +496,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     }
                 }
                 // go to settings
-                R.id.ic_settings -> {
-                    Intent(this, Settings::class.java).also {
+                R.id.ic_friends -> {
+                    Intent(this, FriendActivity::class.java).also {
                         startActivity(it)
                     }
                 }
@@ -517,6 +549,45 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         FirebaseMessaging.getInstance().subscribeToTopic(TOPIC)
     }
 
+    // function for creating the reminder notification
+    @RequiresApi(Build.VERSION_CODES.M)
+    private fun scheduleNotification(year:Int, month:Int, day:Int, title:String, tripName:String)
+    {
+        val message = "$tripName is happening today!"
+        val intent = Intent(applicationContext, ReminderNotification::class.java)
+        intent.putExtra(titleExtra, title)
+        intent.putExtra(messageExtra, message)
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            applicationContext,
+            notificationID,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val calendar = Calendar.getInstance()
+        calendar.set(year, month, day, 0, 0)
+        val remindTime = calendar.timeInMillis
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            remindTime,
+            pendingIntent
+        )
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel()
+    {
+        val name = "Notif Channel"
+        val desc = "A Description of the Channel"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(channelID, name, importance)
+        channel.description = desc
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
+    }
+
     //Creating Testing Trip ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     private fun createTestTrip() {
         if (DEBUG_TOGGLE) {
@@ -532,7 +603,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 active = true,
                 tripID = -1,
                 days = daylist,
-                viewers = mutableListOf("CNIyURFyEhRrb1sZNLJo47yMF4o2","LW4U6jdzqqcdLvqMMdw7tt1M9b73","dwJLMqs0Y5M65fmvS4lIJS5xFgf1","eZuf0wlulMe64K6ZXgFPBXTlFJs1","JFn2cxxk1xWl83eXDWsXf5fSwvu1","uSWyidP8E2axSFnBf1WZgGlcUgF3")
+                viewers = mutableMapOf("CNIyURFyEhRrb1sZNLJo47yMF4o2" to 1,"LW4U6jdzqqcdLvqMMdw7tt1M9b73" to 2,"dwJLMqs0Y5M65fmvS4lIJS5xFgf1" to 2,"eZuf0wlulMe64K6ZXgFPBXTlFJs1" to 2,"JFn2cxxk1xWl83eXDWsXf5fSwvu1" to 2,"uSWyidP8E2axSFnBf1WZgGlcUgF3" to 2)
             )
             trips.add(trip)
             tripAdapter.notifyDataSetChanged()

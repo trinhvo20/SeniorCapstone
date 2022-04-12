@@ -1,5 +1,6 @@
 package com.example.itin
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -18,23 +20,25 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.FriendAdapter
 import com.example.itin.classes.User
+import com.example.itin.notifications.NotificationData
+import com.example.itin.notifications.PushNotification
+import com.example.itin.notifications.RetrofitInstance
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_friend.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-
 class FriendActivity : AppCompatActivity() {
 
     // Variables for recycler view
-    private lateinit var friends: MutableList<Pair<User, Boolean>>
+    private lateinit var friends: MutableList<Pair<User, List<Boolean>>>
     private lateinit var friendAdapter: FriendAdapter
 
     // Variable for error messages
-    val TAG = "FriendActivity"
+    private val TAG = "FriendActivity"
 
     // Some global variables that are accessed throughout the activity
     private var userCount: Int = 0
@@ -42,9 +46,12 @@ class FriendActivity : AppCompatActivity() {
     private var friend: Boolean = false
     private var sent: Boolean = false
     private var typed: Boolean = false
+    private var remove: Boolean = false
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var masterUserList: DatabaseReference
     private lateinit var curUser: DatabaseReference
+    private lateinit var curUserFriends: DatabaseReference
+    private lateinit var curUserReqs: DatabaseReference
     private lateinit var uid: String
 
     // Variables for floating button animations
@@ -73,47 +80,64 @@ class FriendActivity : AppCompatActivity() {
         uid = firebaseUser!!.uid
         curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
         masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
+        curUserReqs = curUser.child("reqList")
+        curUserFriends = curUser.child("friendsList")
 
         // Setting up floating buttons
         btExpandMenu.setOnClickListener { onExpandButtonClicked() }
         btSearchFriend.setOnClickListener { searchVisibility() }
-        btCancelReq.setOnClickListener { onCancelClicked() }
-        btSendReq.setOnClickListener { onSendButtonClicked() }
-        btRmFriend.setOnClickListener { }
+        btRmFriend.setOnClickListener { onRmButtonCLicked(userCount) }
+        btCloseRm.setOnClickListener { onCloseRmClicked(userCount) }
+
+        // Allow te soft input's enter key to send the request
+        friendsUsername.setOnEditorActionListener { v, actionId, event ->
+            return@setOnEditorActionListener when (actionId) {
+                EditorInfo.IME_ACTION_SEND -> {
+                    if (typed) {
+                        onSendButtonClicked()
+                    } else {
+                        onCancelClicked()
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+
+        // These next two listeners ensure that the page will auto refresh when the DB is changed
+        curUserFriends.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                friendAdapter.clear()
+                friendsList.clear()
+                readData(userCount)
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toast.makeText(applicationContext, databaseError.message, Toast.LENGTH_SHORT).show()
+            }
+        })
+
+//        curUserReqs.addValueEventListener(object : ValueEventListener {
+//            override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                friendAdapter.clear()
+//                friendsList.clear()
+//                readData(userCount)
+//            }
+//            override fun onCancelled(databaseError: DatabaseError) {
+//                Toast.makeText(applicationContext, databaseError.message, Toast.LENGTH_SHORT).show()
+//            }
+//        })
 
         // Sets up the text box to only allow you to send request if the textbox is not empty
         // This improves UI but also doubles as an easy way to check for null input
         friendsUsername.addTextChangedListener(object: TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                btCancelReq.isClickable = true
-                btCancelReq.visibility = View.VISIBLE
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (typed == false) {
-                    btCancelReq.isClickable = false
-                    btCancelReq.visibility = View.INVISIBLE
-                    btCancelReq.startAnimation(hide)
-
-                    btSendReq.isClickable = true
-                    btSendReq.visibility = View.VISIBLE
-                    btSendReq.startAnimation(appear)
-
                     typed = true
-                }
-                else if (sent == true){
-                    btSendReq.isClickable = false
-                    btSendReq.visibility = View.INVISIBLE
-                    btSendReq.startAnimation(hide)
                 }
             }
             override fun afterTextChanged(s: Editable?) { }
         })
-
-        // Finishes activity when back button is finished
-            backBtn.setOnClickListener {
-            finish()
-            startActivity(Intent(this, ProfileScreen::class.java))
-        }
 
         // Overwrites the initial value of 0 for numFriends if user has any friends
         masterUserList.get().addOnSuccessListener {
@@ -122,6 +146,7 @@ class FriendActivity : AppCompatActivity() {
                 try {
                     userCount = it.child("userCount").value.toString().toInt()
                     Log.d("FriendActivity", "userCount: $userCount")
+                    friendsList.clear()
                     readData(userCount)
                 } catch (e: NumberFormatException) {
                     masterUserList.child("userCount").setValue(0)
@@ -135,6 +160,7 @@ class FriendActivity : AppCompatActivity() {
         // It will clear the days list and load all days from the DB again
         friendSwipeContainer.setOnRefreshListener {
             friendAdapter.clear()
+            friendsList.clear()
             readData(userCount)
             friendSwipeContainer.isRefreshing = false
         }
@@ -143,12 +169,14 @@ class FriendActivity : AppCompatActivity() {
             android.R.color.holo_green_light,
             android.R.color.holo_orange_light,
             android.R.color.holo_red_light);
+
+        bottomNavBarSetup()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onRestart() {
         super.onRestart()
-        friendAdapter.clear()
+        friendsList.clear()
         readData(userCount)
     }
 
@@ -185,6 +213,10 @@ class FriendActivity : AppCompatActivity() {
                                     Toast.makeText(this, "This user is already your friend!", Toast.LENGTH_SHORT).show()
                                     friendsUsername.text?.clear()
                                 }
+                                else if (friendsIDStr == myID) {
+                                    Toast.makeText(this, "You can't add yourself, you weirdo", Toast.LENGTH_SHORT).show()
+                                    friendsUsername.text?.clear()
+                                }
                                 else {
                                     FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("reqList").child("Request $myID").setValue(myID)
                                     // User feedback
@@ -212,6 +244,8 @@ class FriendActivity : AppCompatActivity() {
 
     private fun readData(userCount: Int) {
         Log.d("FriendActivity", "Reading Data")
+        friendAdapter.clear()
+        friendsList.clear()
         val firebaseUser = firebaseAuth.currentUser
         val uid = firebaseUser!!.uid
         var curFriend = FirebaseDatabase.getInstance().getReference("users").child(uid).child("friendsList")
@@ -271,13 +305,15 @@ class FriendActivity : AppCompatActivity() {
                             "null",
                             "null"
                         )
-                        friends.add(Pair(user, friend))
+                        val booleans = listOf(friend, remove)
+                        friends.add(Pair(user, booleans))
                         friendAdapter.notifyDataSetChanged()
                     }
                 }
             }
         }
     }
+
     // function to make get the token of who we are sending the notification to
     // then fills out notification
     private fun createNotification(friendUID: String){
@@ -323,6 +359,42 @@ class FriendActivity : AppCompatActivity() {
             AppCompatDelegate.setDefaultNightMode(theme)
         }
     }
+    private fun onCloseRmClicked(userCount: Int) {
+        remove = !remove
+        clicked = !clicked
+        btExpandMenu.visibility = View.VISIBLE
+        btExpandMenu.isClickable = true
+        btExpandMenu.startAnimation(rotateClose)
+
+        btCloseRm.visibility = View.INVISIBLE
+        btCloseRm.isClickable = false
+        btCloseRm.startAnimation(hide)
+
+        friendsList.clear()
+        readData(userCount)
+    }
+
+    private fun onRmButtonCLicked(userCount: Int) {
+        remove = !remove
+        btSearchFriend.visibility = View.INVISIBLE
+        btSearchFriend.isClickable = false
+        btSearchFriend.startAnimation(toBottom)
+
+        btRmFriend.visibility = View.INVISIBLE
+        btRmFriend.isClickable = false
+        btRmFriend.startAnimation(toBottom)
+
+        btExpandMenu.visibility = View.INVISIBLE
+        btExpandMenu.isClickable = false
+        btExpandMenu.startAnimation(hide)
+
+        btCloseRm.visibility = View.VISIBLE
+        btCloseRm.isClickable = true
+        btCloseRm.startAnimation(appear)
+
+        friendsList.clear()
+        readData(userCount)
+    }
 
     private fun onExpandButtonClicked() {
         setVisibility(clicked)
@@ -344,9 +416,7 @@ class FriendActivity : AppCompatActivity() {
         btExpandMenu.isClickable = false
         btExpandMenu.startAnimation(hide)
 
-        btCancelReq.visibility = View.VISIBLE
-        btCancelReq.isClickable = true
-        btCancelReq.startAnimation(appear)
+        bottomNavView_Bar.visibility = View.INVISIBLE
 
         friendsUsername.visibility = View.VISIBLE
         clicked = !clicked
@@ -355,15 +425,17 @@ class FriendActivity : AppCompatActivity() {
     }
 
     private fun onSendButtonClicked() {
-        btSendReq.visibility = View.INVISIBLE
-        btSendReq.isClickable = false
-        btSendReq.startAnimation(hide)
         friendsUsername.visibility = View.INVISIBLE
 
         btExpandMenu.visibility = View.VISIBLE
         btExpandMenu.isClickable = true
         btExpandMenu.startAnimation(appear)
         btExpandMenu.startAnimation(rotateClose)
+
+        bottomNavView_Bar.visibility = View.VISIBLE
+
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(friendsUsername.getWindowToken(), 0)
 
         sent = true
         addFriendReq()
@@ -402,9 +474,6 @@ class FriendActivity : AppCompatActivity() {
     }
 
     private fun onCancelClicked() {
-        btCancelReq.visibility = View.INVISIBLE
-        btCancelReq.isClickable = false
-        btCancelReq.startAnimation(hide)
         friendsUsername.visibility = View.INVISIBLE
 
         btExpandMenu.visibility = View.VISIBLE
@@ -412,6 +481,42 @@ class FriendActivity : AppCompatActivity() {
         btExpandMenu.startAnimation(appear)
         btExpandMenu.startAnimation(rotateClose)
 
+        bottomNavView_Bar.visibility = View.VISIBLE
+
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(friendsUsername.getWindowToken(), 0)
+
         sent = true
+    }
+
+    // function to set up the bottom navigation bar
+    private fun bottomNavBarSetup(){
+        // create the bottom navigation bar
+        var bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavView_Bar)
+
+        // light up the icon you are on
+        var menu = bottomNavigationView.menu
+        var menuItem = menu.getItem(2)
+        menuItem.setChecked(true)
+
+        // actually switch between activities
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.ic_trips -> {
+                    Intent(this, TripActivity::class.java).also {
+                        startActivity(it)
+                    }
+                }
+                R.id.ic_profile -> {
+                    Intent(this, ProfileScreen::class.java).also {
+                        startActivity(it)
+                    }
+                }
+                R.id.ic_friends -> {
+
+                }
+            }
+            true
+        }
     }
 }

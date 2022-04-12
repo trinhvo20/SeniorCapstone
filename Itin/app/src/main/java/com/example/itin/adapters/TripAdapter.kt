@@ -1,9 +1,7 @@
 package com.example.itin.adapters
 
 import android.app.AlertDialog
-import android.app.DatePickerDialog
 import android.content.Context
-import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -13,18 +11,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
-import com.example.itin.ShareTripActivity
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
-import com.google.android.gms.common.api.Status
-import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -32,7 +23,6 @@ import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.io.File
 import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
@@ -44,6 +34,7 @@ class TripAdapter(
     private val listener: OnItemClickListener
 ) : RecyclerView.Adapter<TripAdapter.TripViewHolder>() {
 
+    private lateinit var firebaseAuth: FirebaseAuth
     // create a view holder: holds a layout of a specific item
     @RequiresApi(Build.VERSION_CODES.O)
     inner class TripViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -60,6 +51,9 @@ class TripAdapter(
         @RequiresApi(Build.VERSION_CODES.O)
         private fun popupMenu(view: View) {
             val curTrip = trips[adapterPosition]
+            firebaseAuth = FirebaseAuth.getInstance()
+            val firebaseUser = firebaseAuth.currentUser
+            val uid = firebaseUser!!.uid
 
             val popupMenu = PopupMenu(context, view)
             popupMenu.inflate(R.menu.show_menu)
@@ -67,26 +61,36 @@ class TripAdapter(
                 when (it.itemId) {
                     // for Delete button
                     R.id.delete -> {
-                        val dialog = AlertDialog.Builder(context)
-                        dialog.setTitle("Delete")
-                            .setIcon(R.drawable.ic_warning)
-                            .setMessage("Are you sure you want to delete this trip?")
-                            .setPositiveButton("Yes") { dialog, _ ->
-                                curTrip.delByName(curTrip.name)
-                                curTrip.sendToDB()
-                                trips.removeAt(adapterPosition)
-                                tripsort(trips)
-                                notifyDataSetChanged()
+                        if (curTrip.viewers[uid] == 1) {
+                            val dialog = AlertDialog.Builder(context)
+                            dialog.setTitle("Delete")
+                                .setIcon(R.drawable.ic_warning)
+                                .setMessage("Are you sure you want to delete this trip?")
+                                .setPositiveButton("Yes") { dialog, _ ->
+                                    curTrip.delByName(curTrip.name)
+                                    curTrip.sendToDB()
+                                    trips.removeAt(adapterPosition)
+                                    tripsort(trips)
+                                    notifyDataSetChanged()
 
-                                Toast.makeText(context, "Trip Successfully Deleted", Toast.LENGTH_SHORT)
-                                    .show()
-                                dialog.dismiss()
-                            }
-                            .setNegativeButton("No") { dialog, _ ->
-                                dialog.dismiss()
-                            }
-                            .create()
-                            .show()
+                                    Toast.makeText(
+                                        context,
+                                        "Trip Successfully Deleted",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                    dialog.dismiss()
+                                }
+                                .setNegativeButton("No") { dialog, _ ->
+                                    dialog.dismiss()
+                                }
+                                .create()
+                                .show()
+                        }
+
+                        else {
+                            Toast.makeText(context, "You do not have permission to preform this action", Toast.LENGTH_SHORT).show()
+                        }
                         true
                     }
 
@@ -104,7 +108,7 @@ class TripAdapter(
                             .setMessage("Are you sure you want to leave this trip?")
                             .setPositiveButton("Yes") { dialog, _ ->
                                 if (curTrip.viewers.size > 1) {
-                                    leavetrip(curTrip.tripID)
+                                    leavetrip(curTrip.tripID,curTrip.viewers)
                                     trips.removeAt(adapterPosition)
                                     tripsort(trips)
                                     notifyDataSetChanged()
@@ -153,7 +157,7 @@ class TripAdapter(
                 .invoke(menu, true)
         }
 
-        private fun leavetrip(tripID: Int) {
+        private fun leavetrip(tripID: Int, viewers: MutableMap<String, Int>) {
             val firebaseAuth = FirebaseAuth.getInstance()
             val firebaseUser = firebaseAuth.currentUser
             var curUserTrips: DatabaseReference? = null
@@ -162,6 +166,16 @@ class TripAdapter(
             if (firebaseUser == null) { }
             else {
                 val uid = firebaseUser.uid
+                if(viewers[uid] == 1){
+                    Log.d("Perm Leave", "leavetrip: owner left")
+                    if (viewers.filterValues { it == 1 }.isNotEmpty()){
+                        Log.d("Perm Leave", "leavetrip: no other owners")
+                        viewers.remove(uid)
+                        val newowner = viewers.entries.elementAt(0).key
+                        FirebaseDatabase.getInstance().getReference("masterTripList").child(tripID.toString()).child("Viewers").child(newowner).child("Perm").setValue(1)
+
+                    }
+                }
                 val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
                 val curTrip = FirebaseDatabase.getInstance().getReference("masterTripList").child(tripID.toString())
 
@@ -327,20 +341,22 @@ class TripAdapter(
             // display trips images
             val tripId = curTrip.tripID.toString()
             var storageReferenceTrip = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
-            val localFile = File.createTempFile("tempImage","jpg")
+            val localFile = File.createTempFile("tempImage_$tripId","jpg")
             storageReferenceTrip.getFile(localFile).addOnSuccessListener {
                 val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                 tripImage.setImageBitmap(bitmap)
             }.addOnFailureListener {
+                tripImage.setImageResource(R.drawable.beach)
                 Log.d("ItineraryImage","Failed to retrieve image")
             }
 
             // display viewers images
             if (curTrip.viewers.size > 1) {
                 if (curTrip.viewers.size == 3) {
-                    var uid1 = curTrip.viewers[0]
-                    var uid2 = curTrip.viewers[1]
-                    var uid3 = curTrip.viewers[2]
+                    var viewerlist = curTrip.viewers.keys.toList()
+                    var uid1 = viewerlist[0]
+                    var uid2 = viewerlist[1]
+                    var uid3 = viewerlist[2]
 
                     var storageReference =
                         FirebaseStorage.getInstance().getReference("Users/$uid3.jpg")
@@ -378,8 +394,9 @@ class TripAdapter(
                 }
 
                 if (curTrip.viewers.size == 2) {
-                    var uid1 = curTrip.viewers[0]
-                    var uid2 = curTrip.viewers[1]
+                    var viewerlist = curTrip.viewers.keys.toList()
+                    var uid1 = viewerlist[0]
+                    var uid2 = viewerlist[1]
 
                     var storageReference =
                         FirebaseStorage.getInstance().getReference("Users/$uid2.jpg")
@@ -406,9 +423,10 @@ class TripAdapter(
                 }
 
                 else{
-                    var uid1 = curTrip.viewers[0]
-                    var uid2 = curTrip.viewers[1]
-                    var uid3 = curTrip.viewers[2]
+                    var viewerlist = curTrip.viewers.keys.toList()
+                    var uid1 = viewerlist[0]
+                    var uid2 = viewerlist[1]
+                    var uid3 = viewerlist[2]
 
 
                     var storageReference =

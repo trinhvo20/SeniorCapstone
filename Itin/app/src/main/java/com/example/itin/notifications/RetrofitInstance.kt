@@ -1,6 +1,6 @@
-package com.example.itin
+package com.example.itin.notifications
 
-import com.example.itin.Constants.Companion.BASE_URL
+import com.example.itin.notifications.Constants.Companion.BASE_URL
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

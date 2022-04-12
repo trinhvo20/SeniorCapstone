@@ -8,6 +8,7 @@ import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
 import com.example.itin.classes.Activity
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -19,8 +20,10 @@ class ActivityAdapter(
     private val Activities: MutableList<Activity?>, // parameter: a mutable list of Activity items
     private val listener: OnItemClickListener,
     private val dayPos: Int,
+    private val viewers: MutableMap<String, Int>,
 ) : RecyclerView.Adapter<ActivityAdapter.ActivityViewHolder>() {
 
+    private lateinit var firebaseAuth: FirebaseAuth
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ActivityViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val v  = inflater.inflate(R.layout.day_activity_item,parent,false)
@@ -61,27 +64,36 @@ class ActivityAdapter(
         }
 
         private fun removeActivity() {
-            val curActivity = Activities[adapterPosition]
+            firebaseAuth = FirebaseAuth.getInstance()
+            val firebaseUser = firebaseAuth.currentUser
+            val uid = firebaseUser!!.uid
 
-            val dialog = AlertDialog.Builder(context)
-            dialog.setTitle("Delete")
-                .setIcon(R.drawable.ic_warning)
-                .setMessage("Are you sure delete this activity?")
-                .setPositiveButton("Yes") { dialog, _ ->
-                    Activities.removeAt(adapterPosition)
-                    notifyDataSetChanged()
-                    if (curActivity != null) {
-                        removeActivityFromDB(curActivity)
+            if (viewers[uid] == 1){
+                val curActivity = Activities[adapterPosition]
+
+                val dialog = AlertDialog.Builder(context)
+                dialog.setTitle("Delete")
+                    .setIcon(R.drawable.ic_warning)
+                    .setMessage("Are you sure delete this activity?")
+                    .setPositiveButton("Yes") { dialog, _ ->
+                        Activities.removeAt(adapterPosition)
+                        notifyDataSetChanged()
+                        if (curActivity != null) {
+                            removeActivityFromDB(curActivity)
+                        }
+
+                        Toast.makeText(context, "Successfully Deleted", Toast.LENGTH_SHORT).show()
+                        dialog.dismiss()
                     }
-
-                    Toast.makeText(context, "Successfully Deleted", Toast.LENGTH_SHORT).show()
-                    dialog.dismiss()
+                    .setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .create()
+                    .show()
                 }
-                .setNegativeButton("No") { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .create()
-                .show()
+            else{
+                Toast.makeText(context, "You do not have permission to preform this action", Toast.LENGTH_SHORT).show()
+            }
         }
 
         private fun removeActivityFromDB(curActivity: Activity) {

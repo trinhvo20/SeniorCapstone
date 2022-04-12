@@ -20,62 +20,69 @@
             android:layout_marginVertical="5dp"
             android:src="@drawable/profile"
             app:civ_circle_background_color="@color/LightGray" />
-        
+
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="161dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="25dp"
-            android:layout_toRightOf="@+id/profileImageIV"
             android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/profileImageIV"
+            android:layout_weight="1"
             android:orientation="vertical"
-            android:padding="5dp"
-            android:layout_weight="1">
+            android:padding="5dp">
 
-        <TextView
-            android:id="@+id/friendFullName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/userNameTV"
-            android:fontFamily="@font/bungee"
-            android:includeFontPadding="false"
-            android:text="Full Name"
-            android:textSize="20sp" />
+            <TextView
+                android:id="@+id/friendFullName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/userNameTV"
+                android:fontFamily="@font/bungee"
+                android:includeFontPadding="false"
+                android:text="Full Name"
+                android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/pendingReq"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Pending Request"
-            android:textSize="13sp"
-            android:textColor="#F44336"
-            android:layout_gravity="bottom"/>
+            <TextView
+                android:id="@+id/pendingReq"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:text="Pending Request"
+                android:textColor="#F44336"
+                android:textSize="13sp" />
 
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/acceptButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center_vertical"
-            android:layout_marginRight="10dp"
-            android:src="@drawable/ic_add_grey"
-            android:text="Accept" />
-
-
-        <!--        <Button-->
-        <!--            android:id="@+id/rejButton"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="match_parent"-->
-        <!--            android:text="Reject" />-->
-
-
     </LinearLayout>
 
+    <Button
+        android:id="@+id/acceptButton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="Accept"
+        app:layout_constraintBottom_toBottomOf="@+id/friend"
+        app:layout_constraintEnd_toEndOf="@+id/friend"
+        android:layout_marginBottom="17dp"
+        android:layout_marginRight="10dp"/>
+
+
+    <Button
+        android:id="@+id/remButton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="Remove"
+        app:layout_constraintBottom_toBottomOf="@+id/friend"
+        app:layout_constraintEnd_toEndOf="@+id/friend"
+        android:layout_marginBottom="17dp"
+        android:layout_marginRight="10dp"
+        android:visibility="invisible"
+        android:clickable="false"/>
+
     <View
+        android:id="@+id/view2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/DarkGray"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/friend"/>
+        app:layout_constraintTop_toBottomOf="@+id/friend" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
