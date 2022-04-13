@@ -192,6 +192,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             it.putExtra("ACTIVITY", days[daypos][position])
             it.putExtra("DAY_ID", days[daypos].dayInt)
             it.putExtra("CUR_VIEWER", trip.viewers[uid])
+            it.putExtra("VIEWER_LIST", trip.viewers.size)
             startActivity(it)
         }
     }

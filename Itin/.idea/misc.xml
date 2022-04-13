@@ -6,8 +6,6 @@
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable-anydpi/ic_add.xml" value="0.2708333333333333" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable/bottom_sheet_background.xml" value="0.2708333333333333" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable/ic_back.xml" value="0.1845" />
-        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable/ic_chat.xml" value="0.23" />
-        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable/ic_check.xml" value="0.23" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable/ic_copy.xml" value="0.1845" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable/ic_delete.xml" value="0.2708333333333333" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/drawable/ic_edit.xml" value="0.2708333333333333" />
@@ -32,12 +30,12 @@
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/activity_trip_viewer.xml" value="0.2546875" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/activity_users.xml" value="0.2546875" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/add_activity.xml" value="0.2546875" />
-        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/checkin_item.xml" value="0.2546875" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/create_trip.xml" value="0.268" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/day_activity_item.xml" value="0.2546875" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/edit_activity.xml" value="0.2546875" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/edit_trip.xml" value="0.2546875" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/friend_item.xml" value="0.2546875" />
+        <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/friend_share_item.xml" value="0.2546875" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/google_login.xml" value="0.2546875" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/trip.xml" value="0.2546875" />
         <entry key="..\:/Users/babys/Documents/GitHub/SeniorCapstone/Itin/app/src/main/res/layout/trip_day_item.xml" value="0.2546875" />

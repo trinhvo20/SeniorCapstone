@@ -15,6 +15,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.CheckInAdapter
 import com.example.itin.adapters.MessageAdapter
@@ -37,7 +38,7 @@ class DetailsActivity : AppCompatActivity() {
     private lateinit var uid : String
     private lateinit var activity : Activity
     private var countCheckIn : Int = 0
-    private var countTotal : Int = 0
+    private var countViewers : Int = 0
     private var cur_viewer:Int = 2
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -51,6 +52,8 @@ class DetailsActivity : AppCompatActivity() {
         dayID = intent.getIntExtra("DAY_ID", 0) - 1
         activity = intent.getSerializableExtra("ACTIVITY") as Activity
         cur_viewer = intent.getIntExtra("CUR_VIEWER",2)
+        countViewers = intent.getIntExtra("VIEWER_LIST", 0)
+        countTotal.text = countViewers.toString()
 
         //filling in information
         tvName.text = activity.name
@@ -64,9 +67,10 @@ class DetailsActivity : AppCompatActivity() {
         checkinRV.adapter = checkInAdapter
         checkinRV.layoutManager = LinearLayoutManager(this)
         checkinBtn.isClickable = true
-        checkinBtn.setBackgroundColor(resources.getColor(R.color.mint))
+        checkinBtn.isVisible = true
         checkoutBtn.isClickable = false
-        checkoutBtn.setBackgroundColor(resources.getColor(R.color.DarkGray))
+        checkoutBtn.isVisible = false
+        checkinStatus.text = "You Here?"
         loadCheckInFromDB()
 
         btEdit.setOnClickListener{ editActivity(activity) }
@@ -241,13 +245,16 @@ class DetailsActivity : AppCompatActivity() {
                         val checkInUid = eachData.value
                         if (uid == checkInUid){
                             checkinBtn.isClickable = false
-                            checkinBtn.setBackgroundColor(resources.getColor(R.color.DarkGray))
+                            checkinBtn.isVisible = false
                             checkoutBtn.isClickable = true
-                            checkoutBtn.setBackgroundColor(resources.getColor(R.color.mint))
+                            checkoutBtn.isVisible = true
+                            checkinStatus.text = "Leaving?"
                         }
                         checkInList.add(checkInUid as String)
                     }
                     checkInAdapter.notifyDataSetChanged()
+                    countCheckIn = data.childrenCount.toInt()
+                    count.text = countCheckIn.toString()
                 }
                 override fun onCancelled(error: DatabaseError) {
                     TODO("Not yet implemented")
@@ -266,15 +273,14 @@ class DetailsActivity : AppCompatActivity() {
                         val checkInUid = eachData.value
                         if (uid == checkInUid){
                             eachData.ref.removeValue()
-                            countCheckIn -= 1
                             checkinBtn.isClickable = true
-                            checkinBtn.setBackgroundColor(resources.getColor(R.color.mint))
+                            checkinBtn.isVisible = true
                             checkoutBtn.isClickable = false
-                            checkoutBtn.setBackgroundColor(resources.getColor(R.color.DarkGray))
+                            checkoutBtn.isVisible = false
+                            checkinStatus.text = "You Here?"
                         }
                         checkInList.remove(checkInUid as String)
                     }
-                    count.text = countCheckIn.toString()
                     checkInAdapter.notifyDataSetChanged()
                 }
                 override fun onCancelled(error: DatabaseError) {
