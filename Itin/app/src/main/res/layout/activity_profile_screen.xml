@@ -28,9 +28,9 @@
             <RelativeLayout
                 android:id="@+id/relativeLayout"
                 android:layout_width="match_parent"
-                android:layout_height="170dp"
+                android:layout_height="180dp"
                 android:background="@color/mint"
-                android:padding="20dp"
+                android:padding="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -48,8 +48,8 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/profileImageIV"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
+                    android:layout_width="110dp"
+                    android:layout_height="110dp"
                     android:layout_below="@+id/profileTitle"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="-25dp"
@@ -68,19 +68,6 @@
                     app:civ_border_color="@color/white"
                     app:civ_border_width="2dp"
                     app:civ_circle_background_color="@color/LightGray" />
-
-                <!--                <TextView-->
-                <!--                    android:id="@+id/userNameTV"-->
-                <!--                    android:layout_width="wrap_content"-->
-                <!--                    android:layout_height="wrap_content"-->
-                <!--                    android:layout_alignBottom="@+id/profileImageIV"-->
-                <!--                    android:layout_centerHorizontal="true"-->
-                <!--                    android:layout_marginBottom="-50dp"-->
-                <!--                    android:fontFamily="casual"-->
-                <!--                    android:text="Username"-->
-                <!--                    android:textSize="25sp"-->
-                <!--                    android:textStyle="bold" />-->
-
             </RelativeLayout>
 
             <LinearLayout
@@ -96,23 +83,12 @@
                     android:id="@+id/usernameHolder"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="-20dp"
+                    android:layout_marginTop="-25dp"
                     android:layout_weight="1"
-                    app:cardBackgroundColor="@color/mint"
+                    app:cardBackgroundColor="#8EBFBA"
                     app:cardElevation="20dp"
+                    app:cardCornerRadius="20dp"
                     app:cardUseCompatPadding="true">
-
-                    <!--                    <RelativeLayout-->
-                    <!--                        android:layout_width="match_parent"-->
-                    <!--                        android:layout_height="match_parent"-->
-                    <!--                        android:padding="5dp">-->
-
-                    <!--                        <ImageView-->
-                    <!--                            android:id="@+id/previousTripsIV"-->
-                    <!--                            android:layout_width="40dp"-->
-                    <!--                            android:layout_height="40dp"-->
-                    <!--                            android:layout_centerHorizontal="true"-->
-                    <!--                            android:src="@drawable/ic_trips" />-->
 
                     <TextView
                         android:id="@+id/userNameTV"
@@ -129,45 +105,7 @@
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
-            <!--                <com.google.android.material.card.MaterialCardView-->
-            <!--                    android:id="@+id/settingsBtn"-->
-            <!--                    android:layout_width="0dp"-->
-            <!--                    android:layout_height="90dp"-->
-            <!--                    android:layout_margin="10dp"-->
-            <!--                    android:layout_weight="1"-->
-            <!--                    app:cardBackgroundColor="@color/mint"-->
-            <!--                    app:cardElevation="10dp">-->
-
-            <!--                    <RelativeLayout-->
-            <!--                        android:layout_width="match_parent"-->
-            <!--                        android:layout_height="match_parent"-->
-            <!--                        android:padding="5dp">-->
-
-            <!--                        <ImageView-->
-            <!--                            android:id="@+id/settingsIV"-->
-            <!--                            android:layout_width="40dp"-->
-            <!--                            android:layout_height="40dp"-->
-            <!--                            android:layout_centerHorizontal="true"-->
-            <!--                            android:src="@drawable/ic_settings" />-->
-
-            <!--                        <TextView-->
-            <!--                            android:id="@+id/settingsTV"-->
-            <!--                            android:layout_width="wrap_content"-->
-            <!--                            android:layout_height="wrap_content"-->
-            <!--                            android:layout_centerHorizontal="true"-->
-            <!--                            android:layout_marginTop="40dp"-->
-            <!--                            android:text="Settings"-->
-            <!--                            android:textColor="@color/black"-->
-            <!--                            android:textSize="18sp" />-->
-
-
-            <!--                    </RelativeLayout>-->
-            <!--                </com.google.android.material.card.MaterialCardView>-->
-
-            <!--            </LinearLayout>-->
-
             <LinearLayout
-
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -176,121 +114,181 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
-
-                <Button
-                    android:id="@+id/settingsBtn"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_weight="1"
-                    android:text="SETTINGS"
-                    android:fontFamily="@font/candal"
-                    android:textSize="15dp"
-                    app:cardBackgroundColor="@color/mint"/>
-
-                <Button
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/previousTripBtn"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_marginTop="-10dp"
-                    android:textSize="15dp"
-                    android:fontFamily="@font/candal"
-                    android:layout_weight="1"
-                    android:text="PREVIOUS TRIPS"
-                    app:cardBackgroundColor="@color/mint"/>
-
-<!--                <com.google.android.material.textfield.TextInputLayout-->
-<!--                    android:id="@+id/menu"-->
-<!--                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="60dp"-->
-<!--                    android:layout_marginTop="-4dp"-->
-<!--                    android:background="@color/mint">-->
-
-<!--                    <AutoCompleteTextView-->
-<!--                        android:id="@+id/autoCompleteTextView"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:inputType="text"-->
-<!--                        android:text="EDIT ACCOUNT INFO"-->
-<!--                        android:layout_gravity="center"-->
-<!--                        android:fontFamily="@font/candal"-->
-<!--                        android:textSize="15dp"-->
-<!--                        android:textColor="@color/white" />-->
-
-<!--                </com.google.android.material.textfield.TextInputLayout>-->
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/fullNameInput"
-                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:hint="Full Name"
-                    app:boxBackgroundColor="@color/transparent">
+                    android:background="@drawable/rounded_background"
+                    android:padding="10dp">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:id="@+id/previousTripIM"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_trips"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/previousTripTV"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableLeft="@drawable/ic_person_outline"
-                        android:drawablePadding="10dp"
-                        android:text="Full Name" />
+                        android:fontFamily="serif"
+                        android:text="Previous Trips"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="15dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/previousTripIM"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                </com.google.android.material.textfield.TextInputLayout>
+                    <ImageView
+                        android:id="@+id/forwardIV"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_forward"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/usernameInput"
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/settingsBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:hint="Username"
-                    app:boxBackgroundColor="@color/transparent">
+                    android:background="@drawable/rounded_background"
+                    android:padding="10dp"
+                    android:layout_marginTop="2dp">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:id="@+id/settingIV"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_settings"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/settingTV"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableLeft="@drawable/ic_person"
-                        android:drawablePadding="10dp"
-                        android:text="Username" />
+                        android:fontFamily="serif"
+                        android:text="Settings"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="15dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/settingIV"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                </com.google.android.material.textfield.TextInputLayout>
+                    <ImageView
+                        android:id="@+id/forwardIV2"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_forward"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/phoneNumberInput"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/accountBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:hint="Phone Number"
-                    app:boxBackgroundColor="@color/transparent">
+                    android:background="@drawable/rounded_background"
+                    android:padding="10dp"
+                    android:layout_marginTop="2dp">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:id="@+id/accountIV"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_person"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/accountTV"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableLeft="@drawable/ic_phone"
-                        android:drawablePadding="10dp"
-                        android:inputType="phone"
-                        android:text="123-456-7890" />
+                        android:fontFamily="serif"
+                        android:text="Account"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="15dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/accountIV"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                </com.google.android.material.textfield.TextInputLayout>
+                    <ImageView
+                        android:id="@+id/forwardIV3"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_forward"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <Button
-                    android:id="@+id/updateButton"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/usBtn"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/teal_200"
-                    android:text="Update"
-                    android:textStyle="bold" />
+                    android:background="@drawable/rounded_background"
+                    android:padding="10dp"
+                    android:layout_marginTop="2dp">
+
+                    <ImageView
+                        android:id="@+id/usIV"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/ic_us"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/usTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="serif"
+                        android:text="About Us"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="15dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/usIV"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <ImageView
+                        android:id="@+id/forwardIV4"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_forward"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
 
-            <Button
-                android:id="@+id/logoutBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|center_horizontal"
-                android:text="Logout" />
 
         </LinearLayout>
 
     </ScrollView>
+
+
+    <Button
+        android:id="@+id/logoutBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|center_horizontal"
+        android:backgroundTint="#8EBFBA"
+        android:text="Logout"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavView_Bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavView_Bar"
