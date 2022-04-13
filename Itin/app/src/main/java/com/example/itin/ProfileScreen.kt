@@ -180,8 +180,8 @@ class ProfileScreen : AppCompatActivity() {
         else if (newUsername == username) {
             return false
         }
-        else if (newUsername.length < 6) {
-            usernameInput.error = "Minimum 6 characters"
+        else if (newUsername.length < 4 || newUsername.length > 14) {
+            usernameInput.error = "Username must be between 4 to 14 characters"
             return false
         }
         else if (newUsername.matches(noWhiteSpace)) {

@@ -163,6 +163,14 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             }
         }
 
+        viewerBtn.setOnClickListener {
+            Intent(this, ViewerActivity::class.java).also {
+                it.putExtra("trip", trip)
+                it.putExtra("uid", uid)
+                startActivity(it)
+            }
+        }
+
         // This following codes handle Pull-to-Refresh the Days RecyclerView
         // It will clear the days list and load all days from the DB again
         swipeContainer.setOnRefreshListener {
@@ -328,7 +336,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         Log.d("ItineraryImage", "Getting Trip Image from DB")
         val tripId = trip.tripID.toString()
         storageReference = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
-        val localFile = File.createTempFile("tempImage_$tripId", "jpg")
+        val localFile = File.createTempFile("tempImage", "jpg")
         storageReference.getFile(localFile).addOnSuccessListener {
             val d = Drawable.createFromPath(localFile.absolutePath)
             tripHeader.background = d
@@ -359,11 +367,13 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             chatBoxBtn.startAnimation(fromBottom)
             shareBtn.startAnimation(fromBottom)
             editBtn.startAnimation(fromBottom)
+            viewerBtn.startAnimation(fromBottom)
             btExpandMenu.startAnimation(rotateOpen)
         } else {
             chatBoxBtn.startAnimation(toBottom)
             shareBtn.startAnimation(toBottom)
             editBtn.startAnimation(toBottom)
+            viewerBtn.startAnimation(toBottom)
             btExpandMenu.startAnimation(rotateClose)
         }
     }
@@ -373,19 +383,23 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             chatBoxBtn.visibility = View.VISIBLE
             shareBtn.visibility = View.VISIBLE
             editBtn.visibility = View.VISIBLE
+            viewerBtn.visibility = View.VISIBLE
 
             chatBoxBtn.isClickable = true
             shareBtn.isClickable = true
             editBtn.isClickable = true
+            viewerBtn.isClickable = true
 
         } else {
             chatBoxBtn.visibility = View.INVISIBLE
             shareBtn.visibility = View.INVISIBLE
             editBtn.visibility = View.INVISIBLE
+            viewerBtn.visibility = View.INVISIBLE
 
             chatBoxBtn.isClickable = false
             shareBtn.isClickable = false
             editBtn.isClickable = false
+            viewerBtn.isClickable = false
         }
     }
 
