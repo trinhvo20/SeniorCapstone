@@ -143,10 +143,11 @@ class ShareAdapter(
         holder.itemView.apply {
 
             var storageReference = FirebaseStorage.getInstance().getReference("Users/${curFriend.uid}.jpg")
-            val localFileV2 =
+            val localFile =
                 File.createTempFile("tempImage_${curFriend.uid}", "jpg")
-            storageReference.getFile(localFileV2).addOnSuccessListener {
-                val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
+            localFile.deleteOnExit()
+            storageReference.getFile(localFile).addOnSuccessListener {
+                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                 ivFriendPP.setImageBitmap(bitmap)
             }.addOnFailureListener {
                 ivFriendPP.setImageResource(R.drawable.profile)
