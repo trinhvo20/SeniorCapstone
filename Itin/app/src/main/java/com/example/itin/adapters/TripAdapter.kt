@@ -338,15 +338,25 @@ class TripAdapter(
             tvCost.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
 
+            //initial image sets
+            tripImage.setImageResource(R.drawable.beach)
+            ivViewers1.visibility = View.INVISIBLE
+            ivViewers2.visibility = View.INVISIBLE
+            ivViewers3.visibility = View.INVISIBLE
+            tvViewersE.visibility = View.INVISIBLE
+
             // display trips images
+
             val tripId = curTrip.tripID.toString()
             var storageReferenceTrip = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
             val localFile = File.createTempFile("tempImage","jpg")
+            localFile.deleteOnExit()
             storageReferenceTrip.getFile(localFile).addOnSuccessListener {
                 val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
                 tripImage.setImageBitmap(bitmap)
             }.addOnFailureListener {
                 Log.d("ItineraryImage","Failed to retrieve image")
+                tripImage.setImageResource(R.drawable.beach)
             }
 
             // display viewers images
@@ -361,6 +371,7 @@ class TripAdapter(
                         FirebaseStorage.getInstance().getReference("Users/$uid3.jpg")
                     val localFileV1 =
                         File.createTempFile("tempImage_${curTrip.tripID}_viewer1", "jpg")
+                    localFileV1.deleteOnExit()
                     storageReference.getFile(localFileV1).addOnSuccessListener {
                         val bitmap = BitmapFactory.decodeFile(localFileV1.absolutePath)
                         ivViewers1.setImageBitmap(bitmap)
@@ -371,6 +382,7 @@ class TripAdapter(
                     storageReference = FirebaseStorage.getInstance().getReference("Users/$uid2.jpg")
                     val localFileV2 =
                         File.createTempFile("tempImage_${curTrip.tripID}_viewer2", "jpg")
+                    localFileV2.deleteOnExit()
                     storageReference.getFile(localFileV2).addOnSuccessListener {
                         val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
                         ivViewers2.setImageBitmap(bitmap)
@@ -381,6 +393,7 @@ class TripAdapter(
                     storageReference = FirebaseStorage.getInstance().getReference("Users/$uid1.jpg")
                     val localFileV3 =
                         File.createTempFile("tempImage_${curTrip.tripID}_viewer3", "jpg")
+                    localFileV3.deleteOnExit()
                     storageReference.getFile(localFileV3).addOnSuccessListener {
                         val bitmap = BitmapFactory.decodeFile(localFileV3.absolutePath)
                         ivViewers3.setImageBitmap(bitmap)
@@ -401,6 +414,7 @@ class TripAdapter(
                         FirebaseStorage.getInstance().getReference("Users/$uid2.jpg")
                     val localFileV1 =
                         File.createTempFile("tempImage_${curTrip.tripID}_viewer1", "jpg")
+                    localFileV1.deleteOnExit()
                     storageReference.getFile(localFileV1).addOnSuccessListener {
                         val bitmap = BitmapFactory.decodeFile(localFileV1.absolutePath)
                         ivViewers1.setImageBitmap(bitmap)
@@ -411,6 +425,7 @@ class TripAdapter(
                     storageReference = FirebaseStorage.getInstance().getReference("Users/$uid1.jpg")
                     val localFileV2 =
                         File.createTempFile("tempImage_${curTrip.tripID}_viewer2", "jpg")
+                    localFileV2.deleteOnExit()
                     storageReference.getFile(localFileV2).addOnSuccessListener {
                         val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
                         ivViewers2.setImageBitmap(bitmap)
@@ -432,6 +447,7 @@ class TripAdapter(
                         FirebaseStorage.getInstance().getReference("Users/$uid3.jpg")
                     val localFileV1 =
                         File.createTempFile("tempImage_${curTrip.tripID}_viewer1", "jpg")
+                    localFileV1.deleteOnExit()
                     storageReference.getFile(localFileV1).addOnSuccessListener {
                         val bitmap = BitmapFactory.decodeFile(localFileV1.absolutePath)
                         ivViewers1.setImageBitmap(bitmap)
@@ -442,6 +458,7 @@ class TripAdapter(
                     storageReference = FirebaseStorage.getInstance().getReference("Users/$uid2.jpg")
                     val localFileV2 =
                         File.createTempFile("tempImage_${curTrip.tripID}_viewer2", "jpg")
+                    localFileV2.deleteOnExit()
                     storageReference.getFile(localFileV2).addOnSuccessListener {
                         val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
                         ivViewers2.setImageBitmap(bitmap)
@@ -452,6 +469,7 @@ class TripAdapter(
                     storageReference = FirebaseStorage.getInstance().getReference("Users/$uid1.jpg")
                     val localFileV3 =
                         File.createTempFile("tempImage_${curTrip.tripID}_viewer3", "jpg")
+                    localFileV3.deleteOnExit()
                     storageReference.getFile(localFileV3).addOnSuccessListener {
                         val bitmap = BitmapFactory.decodeFile(localFileV3.absolutePath)
                         ivViewers3.setImageBitmap(bitmap)
