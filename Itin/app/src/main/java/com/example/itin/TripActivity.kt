@@ -88,6 +88,13 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // what happen when click on AddTodo button -> call the addTrip function
         btAddTrip.setOnClickListener { addTrip() }
 
+        // what happen when click on notfication button -> call the notification activity
+        notificationButton.setOnClickListener {
+            Intent(this, NotificationListActivity::class.java).also {
+                startActivity(it)
+            }
+        }
+
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
         // This here checks the value in the database to overwrite the initial value of 0
