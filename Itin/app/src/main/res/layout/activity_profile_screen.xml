@@ -85,7 +85,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginTop="-25dp"
                     android:layout_weight="1"
-                    app:cardBackgroundColor="#8EBFBA"
+                    app:cardBackgroundColor="@color/mint2"
                     app:cardElevation="20dp"
                     app:cardCornerRadius="20dp"
                     app:cardUseCompatPadding="true">
@@ -283,7 +283,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center|center_horizontal"
-        android:backgroundTint="#8EBFBA"
+        android:backgroundTint="@color/mint2"
         android:text="Logout"
         android:layout_marginBottom="30dp"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavView_Bar"

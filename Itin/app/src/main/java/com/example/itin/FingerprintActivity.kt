@@ -49,6 +49,16 @@ class FingerprintActivity : AppCompatActivity() {
                 }).build()
             biometricPrompt.authenticate(getCancellationSignal(), mainExecutor, authenticationCallback)
         }
+
+          //gradiant for welcome page
+//        val paint = binding.welcomeTV.paint
+//        val width = paint.measureText(binding.welcomeTV.text.toString())
+//        val textShader: Shader = LinearGradient(0f, 0f, width, binding.welcomeTV.textSize, intArrayOf(
+//            Color.parseColor("#F97C3C"),
+//            Color.parseColor("#FDB54E"),
+//            Color.parseColor("#8446CC")
+//        ), null, Shader.TileMode.REPEAT)
+//        binding.welcomeTV.paint.shader = textShader
     }
     private fun notifyUser(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
