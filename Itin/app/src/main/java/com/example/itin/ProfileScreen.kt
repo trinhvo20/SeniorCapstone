@@ -79,6 +79,11 @@ class ProfileScreen : AppCompatActivity() {
 
         accountBtn.setOnClickListener { updateUserInfo() }
 
+        usBtn.setOnClickListener {
+            val intent = Intent(this, AboutUsActivity::class.java)
+            startActivity(intent)
+        }
+
         // bottom Navigation Bar
         bottomNavBarSetup()
     }
@@ -132,6 +137,10 @@ class ProfileScreen : AppCompatActivity() {
         newDialog.setPositiveButton("Update") { dialog, _ ->
             update(usernameInput, fullNameInput, phoneNumberInput)
             Toast.makeText(this, "Updated", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+        newDialog.setNegativeButton("Cancel") { dialog, _ ->
+            Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
         }
         newDialog.setOnCancelListener {
