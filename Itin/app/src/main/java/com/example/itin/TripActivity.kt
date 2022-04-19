@@ -354,6 +354,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     stringToBoolean(active),
                     tripId,
                     days = mutableListOf(),
+                    epoch = epoch,
                 )
                 if (trip.deleted == stringToBoolean("false") && trip.active == stringToBoolean("true")) {
                     trips.add(trip)
