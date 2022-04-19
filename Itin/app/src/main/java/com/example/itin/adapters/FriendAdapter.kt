@@ -54,7 +54,6 @@ class FriendAdapter(
             }
         }
 
-
         if (remove == true && friend == false) {
             holder.itemView.apply {
                 pendingReq.visibility = View.VISIBLE
@@ -63,7 +62,9 @@ class FriendAdapter(
                 remButton.visibility = View.VISIBLE
                 remButton.isClickable = true
 
-                friendFullName.text = curFriend.username
+                friendFullName.text = curFriend.fullName
+                tvFriendsUsername.text = curFriend.username
+                tvFriendsUsername.visibility = View.INVISIBLE
             }
         }else if (remove == true && friend == true) {
             holder.itemView.apply {
@@ -73,20 +74,21 @@ class FriendAdapter(
                 remButton.visibility = View.VISIBLE
                 remButton.isClickable = true
 
-                friendFullName.text = curFriend.username
+                friendFullName.text = curFriend.fullName
+                tvFriendsUsername.text = curFriend.username
+                tvFriendsUsername.visibility = View.VISIBLE
             }
         }else if (friend == true) {
             holder.itemView.apply {
                 pendingReq.visibility = View.INVISIBLE
                 acceptButton.visibility = View.INVISIBLE
-                friendFullName.text = curFriend.fullName
-                tvFriendsUsername.text = curFriend.username
-                tvFriendsUsername.visibility = View.VISIBLE
                 acceptButton.isClickable = false
                 remButton.visibility = View.INVISIBLE
                 remButton.isClickable = false
 
-                friendFullName.text = curFriend.username
+                friendFullName.text = curFriend.fullName
+                tvFriendsUsername.text = curFriend.username
+                tvFriendsUsername.visibility = View.VISIBLE
             }
         } else {
             holder.itemView.apply {

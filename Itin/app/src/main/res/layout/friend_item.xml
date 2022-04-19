@@ -22,7 +22,7 @@
         android:fontFamily="@font/aclonica"
         android:includeFontPadding="false"
         android:text="Full Name"
-        android:textSize="30sp"
+        android:textSize="25sp"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="10dp"
         app:layout_constraintStart_toEndOf="@+id/friendsPP"
@@ -37,7 +37,7 @@
         android:visibility="invisible"
         android:layout_marginLeft="10dp"
         android:textColor="#F44336"
-        android:textSize="13sp"
+        android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@+id/friendsPP"
         app:layout_constraintTop_toBottomOf="@+id/friendFullName" />
 
@@ -49,32 +49,33 @@
         android:fontFamily="@font/aclonica"
         android:text="Username"
         android:layout_marginLeft="10dp"
-        android:textSize="13sp"
+        android:textSize="16sp"
         app:layout_constraintStart_toEndOf="@+id/friendsPP"
         app:layout_constraintTop_toTopOf="@+id/pendingReq" />
 
-    <ImageView
+    <Button
         android:id="@+id/acceptButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/ic_add_grey"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="17dp"
+        android:clickable="false"
         android:text="Accept"
-        android:layout_marginRight="10dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
     <Button
         android:id="@+id/remButton"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:text="Remove"
-        app:layout_constraintBottom_toBottomOf="@+id/friend"
-        app:layout_constraintEnd_toEndOf="@+id/friend"
         android:layout_marginBottom="17dp"
-        android:layout_marginRight="10dp"
+        android:clickable="false"
+        android:text="Remove"
         android:visibility="invisible"
-        android:clickable="false"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/view2"

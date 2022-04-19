@@ -116,28 +116,17 @@ class FriendActivity : AppCompatActivity() {
             }
         })
 
-//        curUserReqs.addValueEventListener(object : ValueEventListener {
-//            override fun onDataChange(dataSnapshot: DataSnapshot) {
-//                friendAdapter.clear()
-//                friendsList.clear()
-//                readData(userCount)
+//        // Sets up the text box to only allow you to send request if the textbox is not empty
+//        // This improves UI but also doubles as an easy way to check for null input
+//        friendsUsername.addTextChangedListener(object: TextWatcher {
+//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
+//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//                if (typed == false) {
+//                    typed = true
+//                }
 //            }
-//            override fun onCancelled(databaseError: DatabaseError) {
-//                Toast.makeText(applicationContext, databaseError.message, Toast.LENGTH_SHORT).show()
-//            }
+//            override fun afterTextChanged(s: Editable?) { }
 //        })
-
-        // Sets up the text box to only allow you to send request if the textbox is not empty
-        // This improves UI but also doubles as an easy way to check for null input
-        friendsUsername.addTextChangedListener(object: TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                if (typed == false) {
-                    typed = true
-                }
-            }
-            override fun afterTextChanged(s: Editable?) { }
-        })
 
         // Overwrites the initial value of 0 for numFriends if user has any friends
         masterUserList.get().addOnSuccessListener {
@@ -194,50 +183,62 @@ class FriendActivity : AppCompatActivity() {
         var myUsername = ""
         var myID = ""
 
-        // If the friends username exists, add them to the current users profile, else tell the user that it does not exist
-        friendsID.get().addOnSuccessListener {
-            if (it.exists()) {
-                val friendsIDStr = it.value.toString()
-                val friendsIDInt = it.value.toString().toInt()
+        if (userName != "") {
+            // If the friends username exists, add them to the current users profile, else tell the user that it does not exist
+            friendsID.get().addOnSuccessListener {
+                if (it.exists()) {
+                    val friendsIDStr = it.value.toString()
+                    val friendsIDInt = it.value.toString().toInt()
 
-                curUser.get().addOnSuccessListener {
-                    if (it.exists()) {
-                        myUsername = it.child("userInfo").child("username").value.toString()
+                    curUser.get().addOnSuccessListener {
+                        if (it.exists()) {
+                            myUsername = it.child("userInfo").child("username").value.toString()
 
-                        masterUserList.get().addOnSuccessListener {
-                            if (it.exists()){
-                                myID = it.child(myUsername).value.toString()
-                                val friendsUID = it.child(friendsIDStr).child("UID").value.toString()
+                            masterUserList.get().addOnSuccessListener {
+                                if (it.exists()) {
+                                    myID = it.child(myUsername).value.toString()
+                                    val friendsUID =
+                                        it.child(friendsIDStr).child("UID").value.toString()
 
-                                if (friendsList.contains(friendsIDInt)) {
-                                    Toast.makeText(this, "This user is already your friend!", Toast.LENGTH_SHORT).show()
-                                    friendsUsername.text?.clear()
+                                    if (friendsList.contains(friendsIDInt)) {
+                                        Toast.makeText(
+                                            this,
+                                            "This user is already your friend!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        friendsUsername.text?.clear()
+                                    } else if (friendsIDStr == myID) {
+                                        Toast.makeText(
+                                            this,
+                                            "You can't add yourself, you weirdo",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        friendsUsername.text?.clear()
+                                    } else {
+                                        FirebaseDatabase.getInstance().getReference("users")
+                                            .child(friendsUID).child("reqList")
+                                            .child("Request $myID").setValue(myID)
+                                        // User feedback
+                                        Toast.makeText(this, "Request Sent", Toast.LENGTH_SHORT)
+                                            .show()
+                                        friendsUsername.text?.clear()
+                                        // send notification
+                                        createNotification(friendsUID)
+                                    }
                                 }
-                                else if (friendsIDStr == myID) {
-                                    Toast.makeText(this, "You can't add yourself, you weirdo", Toast.LENGTH_SHORT).show()
-                                    friendsUsername.text?.clear()
-                                }
+                                // User does not exist
                                 else {
-                                    FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("reqList").child("Request $myID").setValue(myID)
-                                    // User feedback
-                                    Toast.makeText(this, "Request Sent", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT)
+                                        .show()
                                     friendsUsername.text?.clear()
-                                    // send notification
-                                    createNotification(friendsUID)
                                 }
-                            }
-                            // User does not exist
-                            else {
-                                Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()
-                                friendsUsername.text?.clear()
                             }
                         }
                     }
+                } else {
+                    Toast.makeText(this, "User does not exist!", Toast.LENGTH_SHORT).show()
+                    friendsUsername.text?.clear()
                 }
-            }
-            else{
-                Toast.makeText(this, "User does not exist!", Toast.LENGTH_SHORT).show()
-                friendsUsername.text?.clear()
             }
         }
     }
