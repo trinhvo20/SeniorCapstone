@@ -16,6 +16,8 @@ import com.google.firebase.storage.FirebaseStorage
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.activity_friend.*
 import kotlinx.android.synthetic.main.friend_item.view.*
+import kotlinx.android.synthetic.main.friend_item.view.friendFullName
+import kotlinx.android.synthetic.main.friend_share_item.view.*
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.io.File
 
@@ -56,13 +58,16 @@ class FriendAdapter (
                 pendingReq.visibility = View.INVISIBLE
                 pendingReq.height = 0
                 acceptButton.visibility = View.INVISIBLE
-                friendFullName.text = curFriend.username
+                friendFullName.text = curFriend.fullName
+                tvFriendsUsername.text = curFriend.username
+                tvFriendsUsername.visibility = View.VISIBLE
             }
         } else {
             holder.itemView.apply {
+                tvFriendsUsername.visibility = View.INVISIBLE
                 pendingReq.visibility = View.VISIBLE
                 acceptButton.visibility = View.VISIBLE
-                friendFullName.text = curFriend.username
+                friendFullName.text = curFriend.fullName
             }
         }
         holder.itemView.apply {
