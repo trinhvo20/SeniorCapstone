@@ -1,9 +1,10 @@
 package com.example.itin
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import kotlinx.android.synthetic.main.activity_settings.*
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_settings.backBtn
+
 
 class NotificationListActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,5 +16,6 @@ class NotificationListActivity : AppCompatActivity() {
             finish()
             startActivity(Intent(this, TripActivity::class.java))
         }
+
     }
 }
