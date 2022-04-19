@@ -1,4 +1,4 @@
-package com.example.itin
+package com.example.itin.notifications
 
 data class PushNotification(
     val data: NotificationData,

@@ -17,6 +17,18 @@
             app:defaultValue="true"/>
 
         <SwitchPreferenceCompat
+            app:key="@string/trip_invite_key"
+            app:title="@string/trip_invite_title"
+            app:summary="@string/trip_invite_summary"
+            app:defaultValue="true"/>
+
+        <SwitchPreferenceCompat
+            app:key="@string/group_message_key"
+            app:title="@string/group_message_title"
+            app:summary="@string/group_message_summary"
+            app:defaultValue="true"/>
+
+        <SwitchPreferenceCompat
             app:key="@string/trip_remind_key"
             app:title="@string/trip_remind_title"
             app:summary="@string/trip_remind_summary"

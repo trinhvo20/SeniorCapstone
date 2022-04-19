@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.telephony.PhoneNumberUtils
 import android.util.Log
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.itin.databinding.ActivityProfileScreenBinding
@@ -45,6 +46,11 @@ class ProfileScreen : AppCompatActivity() {
 
         firebaseAuth = FirebaseAuth.getInstance()
         checkUser()
+
+        // For the dropdown menu
+//        val userInformation =
+//        val arrayAdapter = ArrayAdapter(this, R.layout.dropdown_item, userInformation)
+//        binding.autoCompleteTextView.setAdapter(arrayAdapter)
 
         // Logout button
         logoutBtn.setOnClickListener {
@@ -99,9 +105,9 @@ class ProfileScreen : AppCompatActivity() {
                 phoneNo = it.child("phone").value.toString()
 
                 // Show user info
-                emailTV.text = email
+                //emailTV.text = email
                 userNameTV.text = username
-                fullNameTV.text = fullName
+                //fullNameTV.text = fullName
 
                 fullNameInput.editText?.setText(fullName)
                 usernameInput.editText?.setText(username)

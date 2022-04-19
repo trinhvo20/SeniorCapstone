@@ -64,8 +64,20 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <Button
+        android:id="@+id/remButton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:text="Remove"
+        app:layout_constraintBottom_toBottomOf="@+id/friend"
+        app:layout_constraintEnd_toEndOf="@+id/friend"
+        android:layout_marginBottom="17dp"
+        android:layout_marginRight="10dp"
+        android:visibility="invisible"
+        android:clickable="false"/>
 
     <View
+        android:id="@+id/view2"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/DarkGray"

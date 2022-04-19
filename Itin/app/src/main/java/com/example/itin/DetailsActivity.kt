@@ -26,6 +26,7 @@ import kotlinx.android.synthetic.main.activity_details.*
 class DetailsActivity : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
     private var dayID : Int = 0
+    private var cur_viewer:Int = 2
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +37,7 @@ class DetailsActivity : AppCompatActivity() {
 
         dayID = intent.getIntExtra("DAY_ID", 0) - 1
         val activity = intent.getSerializableExtra("ACTIVITY") as Activity
+        cur_viewer = intent.getIntExtra("CUR_VIEWER",2)
 
         //filling in information
         tvName.text = activity.name
@@ -55,106 +57,122 @@ class DetailsActivity : AppCompatActivity() {
     // function to edit the activity
     @RequiresApi(Build.VERSION_CODES.N)
     private fun editActivity(activity: Activity) {
-        val view = LayoutInflater.from(this).inflate(R.layout.edit_activity, null)
+        if (cur_viewer == 1) {
+            val view = LayoutInflater.from(this).inflate(R.layout.edit_activity, null)
 
-        var location = activity.location
-        val etName = view.findViewById<EditText>(R.id.etName)
-        val tvTime = view.findViewById<TextView>(R.id.tvTime)
-        val etCost = view.findViewById<EditText>(R.id.etCost)
-        val etNotes = view.findViewById<EditText>(R.id.etNotes)
+            var location = activity.location
+            val etName = view.findViewById<EditText>(R.id.etName)
+            val tvTime = view.findViewById<TextView>(R.id.tvTime)
+            val etCost = view.findViewById<EditText>(R.id.etCost)
+            val etNotes = view.findViewById<EditText>(R.id.etNotes)
 
-        // auto fill fields with existing data, very convenient
-        etName.setText(activity.name)
-        tvTime.text = activity.time
-        etCost.setText(activity.cost)
-        etNotes.setText(activity.notes)
+            // auto fill fields with existing data, very convenient
+            etName.setText(activity.name)
+            tvTime.text = activity.time
+            etCost.setText(activity.cost)
+            etNotes.setText(activity.notes)
 
-        // Handle AutoComplete Places Search from GoogleAPI
-        if (!Places.isInitialized()) {
-            Places.initialize(this,getString(R.string.API_KEY))
-        }
-        val placesClient = Places.createClient(this)
-        val autocompleteFragment = supportFragmentManager.findFragmentById(R.id.etEditedActLocation) as AutocompleteSupportFragment
-        autocompleteFragment.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS))
-        autocompleteFragment.setText(location)
-        autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
-            override fun onPlaceSelected(place: Place) {
-                location = "${place.name}\n${place.address}"
-                Log.i("Places", "Place: ${place.name}, ${place.id}")
+            // Handle AutoComplete Places Search from GoogleAPI
+            if (!Places.isInitialized()) {
+                Places.initialize(this, getString(R.string.API_KEY))
             }
-            override fun onError(status: Status) {
-                Log.i("Places", "An error occurred: $status")
-            }
-        })
-
-        val ibTimePicker = view.findViewById<View>(R.id.ibTimePick)
-        ibTimePicker.setOnClickListener{
-            val hour = 1
-            val minute = 10
-
-            val tpd = TimePickerDialog(this,
-                TimePickerDialog.OnTimeSetListener(function = { view, h, m ->
-                var input = "$h:$m"
-
-                val df = SimpleDateFormat("H:mm")
-                val outputFormat = SimpleDateFormat("h:mm a")
-                tvTime.text = outputFormat.format(df.parse(input))
-
-
-            }),hour,minute,false)
-
-            tpd.show()
-        }
-
-        val newDialog = AlertDialog.Builder(this)
-        newDialog.setView(view)
-
-        newDialog.setPositiveButton("Edit") { dialog, _ ->
-            val name = etName.text.toString()
-            val cost = etCost.text.toString()
-            val notes = etNotes.text.toString()
-            val time = tvTime.text.toString()
-
-            if (name == activity.name) {
-                if (location != activity.location) {
-                    activity.name = location.substringBefore("\n")
+            val placesClient = Places.createClient(this)
+            val autocompleteFragment =
+                supportFragmentManager.findFragmentById(R.id.etEditedActLocation) as AutocompleteSupportFragment
+            autocompleteFragment.setPlaceFields(
+                listOf(
+                    Place.Field.ID,
+                    Place.Field.NAME,
+                    Place.Field.ADDRESS
+                )
+            )
+            autocompleteFragment.setText(location)
+            autocompleteFragment.setOnPlaceSelectedListener(object : PlaceSelectionListener {
+                override fun onPlaceSelected(place: Place) {
+                    location = "${place.name}\n${place.address}"
+                    Log.i("Places", "Place: ${place.name}, ${place.id}")
                 }
-            } else {
-                activity.name = name
-            }
-            if (location != activity.location) {
-                activity.location = location
-            }
-            if (cost != activity.cost) {
-                activity.cost = cost
-            }
-            if (notes != activity.notes) {
-                activity.notes = notes
-            }
-            if (time != activity.time) {
-                activity.time = time
+
+                override fun onError(status: Status) {
+                    Log.i("Places", "An error occurred: $status")
+                }
+            })
+
+            val ibTimePicker = view.findViewById<View>(R.id.ibTimePick)
+            ibTimePicker.setOnClickListener {
+                val hour = 1
+                val minute = 10
+
+                val tpd = TimePickerDialog(this,
+                    TimePickerDialog.OnTimeSetListener(function = { view, h, m ->
+                        var input = "$h:$m"
+
+                        val df = SimpleDateFormat("H:mm")
+                        val outputFormat = SimpleDateFormat("h:mm a")
+                        tvTime.text = outputFormat.format(df.parse(input))
+
+
+                    }), hour, minute, false
+                )
+
+                tpd.show()
             }
 
-            sendEditedActivityToDB(activity)
-            supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-            Toast.makeText(this, "Activity Edited", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
+            val newDialog = AlertDialog.Builder(this)
+            newDialog.setView(view)
 
-            //reload the activity with no transition
-            finish();
-            overridePendingTransition(0, 0);
-            startActivity(intent);
-            overridePendingTransition(0, 0);
+            newDialog.setPositiveButton("Edit") { dialog, _ ->
+                val name = etName.text.toString()
+                val cost = etCost.text.toString()
+                val notes = etNotes.text.toString()
+                val time = tvTime.text.toString()
+
+                if (name == activity.name) {
+                    if (location != activity.location) {
+                        activity.name = location.substringBefore("\n")
+                    }
+                } else {
+                    activity.name = name
+                }
+                if (location != activity.location) {
+                    activity.location = location
+                }
+                if (cost != activity.cost) {
+                    activity.cost = cost
+                }
+                if (notes != activity.notes) {
+                    activity.notes = notes
+                }
+                if (time != activity.time) {
+                    activity.time = time
+                }
+
+                sendEditedActivityToDB(activity)
+                supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
+                Toast.makeText(this, "Activity Edited", Toast.LENGTH_SHORT).show()
+                dialog.dismiss()
+
+                //reload the activity with no transition
+                finish();
+                overridePendingTransition(0, 0);
+                startActivity(intent);
+                overridePendingTransition(0, 0);
+            }
+
+            newDialog.setNegativeButton("Cancel") { dialog, _ ->
+                supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
+                dialog.dismiss()
+                Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
+            }
+            newDialog.setOnCancelListener {
+                supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
+            }
+            newDialog.create()
+            newDialog.show()
         }
-
-        newDialog.setNegativeButton("Cancel") { dialog, _ ->
-            supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-            dialog.dismiss()
-            Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
+        else{
+            Toast.makeText(this, "You do not have permission to preform this action", Toast.LENGTH_SHORT).show()
         }
-
-        newDialog.create()
-        newDialog.show()
     }
 
     private fun sendEditedActivityToDB(activity: Activity) {

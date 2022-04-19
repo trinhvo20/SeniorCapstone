@@ -1,4 +1,6 @@
-package com.example.itin
+package com.example.itin.notifications
+
+import com.example.itin.BuildConfig
 
 class Constants {
 

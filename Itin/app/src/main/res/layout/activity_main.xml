@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/mint"
+    android:background="@drawable/background_mint"
     tools:context=".MainActivity">
 
     <ImageView
@@ -25,6 +25,7 @@
         android:layout_marginTop="50dp"
         android:fontFamily="@font/bangers"
         android:text="ITIN"
+        android:textColor="@color/mint"
         android:textAlignment="center"
         android:textSize="70dp"
         app:layout_constraintEnd_toEndOf="parent"

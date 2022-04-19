@@ -30,20 +30,6 @@
     </RelativeLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btExpandMenu"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"
-        android:tint="@android:color/white"
-        android:layout_gravity="bottom|right"
-        android:layout_marginBottom="5dp"
-        android:layout_marginRight="5dp"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_add" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btRmFriend"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -74,42 +60,43 @@
         app:srcCompat="@drawable/ic_search" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btSendReq"
+        android:id="@+id/btCloseRm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
         android:clickable="false"
+        android:tint="@android:color/white"
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
-        app:layout_constraintStart_toEndOf="@+id/friendsUsername"
-        app:srcCompat="@drawable/ic_send" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_remove" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btCancelReq"
+        android:id="@+id/btExpandMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
+        android:clickable="true"
+        android:focusable="true"
+        android:tint="@android:color/white"
         android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
-        android:clickable="false"
-        android:visibility="invisible"
+        android:layout_gravity="bottom|right"
         app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
-        app:layout_constraintStart_toEndOf="@+id/friendsUsername"
-        android:src="@drawable/ic_remove" />
-
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/ic_add" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/friendSwipeContainer"
-        android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginHorizontal="10dp"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
+        android:layout_marginEnd="4dp"
+        android:layout_weight="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/relativeLayout4">
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvFriends"
             android:layout_width="match_parent"
@@ -130,18 +117,20 @@
     <EditText
 
         android:id="@+id/friendsUsername"
-        android:layout_width="350dp"
+        android:layout_width="match_parent"
         android:layout_height="53dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="5dp"
         android:layout_weight="1"
+        android:background="#DDDDDD"
         android:fontFamily="casual"
+        android:gravity="center"
         android:hint="Friends Username"
+        android:imeOptions="actionSend"
         android:inputType="text"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btCancelReq"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btCloseRm"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavView_Bar"

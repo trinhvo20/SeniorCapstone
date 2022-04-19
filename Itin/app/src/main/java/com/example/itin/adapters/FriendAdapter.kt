@@ -20,9 +20,8 @@ import kotlinx.android.synthetic.main.friend_item.view.friendFullName
 import kotlinx.android.synthetic.main.friend_share_item.view.*
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.io.File
-
-class FriendAdapter (
-    private val friends: MutableList<Pair<User, Boolean>>
+class FriendAdapter(
+    private val friends: MutableList<Pair<User, List<Boolean>>>
 ): RecyclerView.Adapter<FriendAdapter.FriendViewHolder>() {
 
     inner class FriendViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
@@ -38,13 +37,15 @@ class FriendAdapter (
         lateinit var masterUserList: DatabaseReference
 
         val curFriend = friends[position].first
-        val friend = friends[position].second
+        val booleans = friends[position].second
+        val friend = booleans[0]
+        val remove = booleans[1]
 
         holder.itemView.apply {
 
             var storageReference = FirebaseStorage.getInstance().getReference("Users/${curFriend.uid}.jpg")
-            val localFileV2 =
-                File.createTempFile("tempImage_${curFriend.uid}", "jpg")
+            val localFileV2 = File.createTempFile("tempImage_${curFriend.uid}", "jpg")
+
             storageReference.getFile(localFileV2).addOnSuccessListener {
                 val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
                 friendsPP.setImageBitmap(bitmap)
@@ -53,14 +54,39 @@ class FriendAdapter (
             }
         }
 
-        if (friend == true) {
+
+        if (remove == true && friend == false) {
+            holder.itemView.apply {
+                pendingReq.visibility = View.VISIBLE
+                acceptButton.visibility = View.INVISIBLE
+                acceptButton.isClickable = false
+                remButton.visibility = View.VISIBLE
+                remButton.isClickable = true
+
+                friendFullName.text = curFriend.username
+            }
+        }else if (remove == true && friend == true) {
             holder.itemView.apply {
                 pendingReq.visibility = View.INVISIBLE
-                pendingReq.height = 0
+                acceptButton.visibility = View.INVISIBLE
+                acceptButton.isClickable = false
+                remButton.visibility = View.VISIBLE
+                remButton.isClickable = true
+
+                friendFullName.text = curFriend.username
+            }
+        }else if (friend == true) {
+            holder.itemView.apply {
+                pendingReq.visibility = View.INVISIBLE
                 acceptButton.visibility = View.INVISIBLE
                 friendFullName.text = curFriend.fullName
                 tvFriendsUsername.text = curFriend.username
                 tvFriendsUsername.visibility = View.VISIBLE
+                acceptButton.isClickable = false
+                remButton.visibility = View.INVISIBLE
+                remButton.isClickable = false
+
+                friendFullName.text = curFriend.username
             }
         } else {
             holder.itemView.apply {
@@ -68,8 +94,54 @@ class FriendAdapter (
                 pendingReq.visibility = View.VISIBLE
                 acceptButton.visibility = View.VISIBLE
                 friendFullName.text = curFriend.fullName
+                acceptButton.isClickable = true
+                remButton.visibility = View.INVISIBLE
+                remButton.isClickable = false
             }
         }
+
+        holder.itemView.apply {
+            remButton.setOnClickListener{
+                firebaseAuth = FirebaseAuth.getInstance()
+                val firebaseUser = firebaseAuth.currentUser
+                val uid = firebaseUser!!.uid
+                masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
+                curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+
+                val friendsID = masterUserList.child(curFriend.username) //masterUserList.child(userName)
+                var myID = ""
+                var myUsername = ""
+
+                friendsID.get().addOnSuccessListener {
+                    if (it.exists()) {
+                        val friendsIDStr = it.value.toString()
+
+                        curUser.get().addOnSuccessListener {
+                            if (it.exists()) {
+                                myUsername = it.child("userInfo").child("username").value.toString()
+
+                                masterUserList.get().addOnSuccessListener {
+                                    if (it.exists()) {
+                                        myID = it.child(myUsername).value.toString()
+                                        val friendsUID = it.child(friendsIDStr).child("UID").value.toString()
+
+                                        if (friend == true) {
+                                            curUser.child("friendsList").child("Friend $friendsIDStr").removeValue()
+                                            FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("friendsList").child("Friend $myID").removeValue()
+
+                                        } else {
+                                            curUser.child("reqList").child("Request $friendsIDStr").removeValue()
+                                            FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("reqList").child("Request $myID").removeValue()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         holder.itemView.apply {
             acceptButton.setOnClickListener {
                 firebaseAuth = FirebaseAuth.getInstance()
