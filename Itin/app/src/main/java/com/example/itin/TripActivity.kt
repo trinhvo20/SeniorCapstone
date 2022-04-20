@@ -160,6 +160,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         var endYear = 0
         var endMonth = 0
         var endDay = 0
+        var startYear = 0
+        var startMonth = 0
+        var startDay = 0
 
         // Handle AutoComplete Places Search from GoogleAPI
         if (!Places.isInitialized()) {
@@ -192,6 +195,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 this,
                 { _, mYear, mMonth, mDay ->
                     etStartDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
+                    startYear = mYear
+                    startMonth = mMonth
+                    startDay = mDay
                     startDateObj = LocalDate.parse(etStartDate.text.toString(), formatter)
                 }, year, month, day
             )
@@ -244,9 +250,11 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 active = dayInterval <= 0
 
                 // get the epoch time for the start of the trip
-                val tripEpoch = Calendar.getInstance()
-                tripEpoch.set(endYear,endMonth,endDay,23,59)
-                Log.d("TIME","${tripEpoch.timeInMillis}")
+                val startEpoch = Calendar.getInstance()
+                startEpoch.set(startYear,startMonth,startDay,0,0)
+                val endEpoch = Calendar.getInstance()
+                endEpoch.set(endYear,endMonth,endDay,23,59)
+
                 // Grab the initial values for database manipulation
                 val trip = Trip(
                     name,
@@ -258,7 +266,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     tripID = tripCount,
                     days = mutableListOf(),
                     viewers = mutableMapOf(),
-                    epoch = tripEpoch.timeInMillis
+                    epochStart = startEpoch.timeInMillis,
+                    epochEnd = endEpoch.timeInMillis
                 )
 
                 // Write to the database, then increment tripCount in the database
@@ -333,12 +342,13 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 val deleted = it.child("Deleted").value.toString()
                 var active = it.child("Active").value.toString()
                 var tripId = it.child("ID").value.toString().toInt()
-                val epoch = it.child("Epoch").value.toString().toLong()
+                val epochEnd = it.child("EpochEnd").value.toString().toLong()
+                val epochStart = it.child("EpochStart").value.toString().toLong()
 
                 // get current time
                 val calendar = Calendar.getInstance()
                 val calendarTime = calendar.timeInMillis
-                if(epoch-calendarTime < 0 && active != false.toString()){
+                if(epochEnd-calendarTime < 0 && active != false.toString()){
                     active = false.toString()
                     tripInstance.child("Active").setValue("false")
                 }
@@ -354,7 +364,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     stringToBoolean(active),
                     tripId,
                     days = mutableListOf(),
-                    epoch = epoch,
+                    epochStart = epochStart,
+                    epochEnd = epochEnd
                 )
                 if (trip.deleted == stringToBoolean("false") && trip.active == stringToBoolean("true")) {
                     trips.add(trip)
@@ -442,7 +453,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         tripInstance.child("Deleted").setValue(trip.deleted)
         tripInstance.child("Active").setValue(trip.active)
         tripInstance.child("ID").setValue(trip.tripID)
-        tripInstance.child("Epoch").setValue(trip.epoch)
+        tripInstance.child("EpochEnd").setValue(trip.epochEnd)
+        tripInstance.child("EpochStart").setValue(trip.epochStart)
 
         // create days folder
         // will be accessed later in itinerary activity
