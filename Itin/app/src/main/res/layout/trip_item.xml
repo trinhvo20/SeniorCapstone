@@ -130,4 +130,26 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <Button
+        android:id="@+id/btAccept"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:backgroundTint="@android:color/holo_green_light"
+        android:text="Accept"
+        app:layout_constraintEnd_toStartOf="@id/btDeny"
+        app:layout_constraintStart_toEndOf="@id/tripImage"
+        app:layout_constraintTop_toBottomOf="@+id/tvName" />
+
+    <Button
+        android:id="@+id/btDeny"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:backgroundTint="@android:color/holo_red_light"
+        android:text="Deny"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btAccept"
+        app:layout_constraintTop_toBottomOf="@id/tvName" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
