@@ -212,6 +212,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 this,
                 { _, mYear, mMonth, mDay ->
                     etStartDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
+                    startYear = mYear
+                    startMonth = mMonth
+                    startDay = mDay
                     startDateObj = LocalDate.parse(etStartDate.text.toString(), formatter)
                 }, year, month, day
             )
@@ -358,7 +361,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 var tripId = it.child("ID").value.toString().toInt()
                 val epochEnd = it.child("EpochEnd").value.toString().toLong()
                 val epochStart = it.child("EpochStart").value.toString().toLong()
-
 
                 // get current time
                 val calendar = Calendar.getInstance()
