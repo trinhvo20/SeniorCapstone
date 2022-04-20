@@ -1,12 +1,13 @@
 package com.example.itin
 
-import android.R.attr.label
 import android.app.TimePickerDialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Paint
 import android.icu.text.SimpleDateFormat
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -64,6 +65,14 @@ class DetailsActivity : AppCompatActivity() {
         tvAddress.text = activity.location.substringAfter("\n")
         tvCost.text = activity.cost
         tvNotes.text = activity.notes
+        tvAddress.paintFlags = tvAddress.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+
+//        tvAddress.text = Html.fromHtml(
+//
+//                    "<a href=\"http://maps.google.com\">" +
+//                            activity.location.substringAfter("\n") +
+//                    "</a>");
+//        tvAddress.movementMethod = LinkMovementMethod.getInstance();
 
         checkInList = mutableListOf()
         checkInAdapter = CheckInAdapter(checkInList)
@@ -81,6 +90,7 @@ class DetailsActivity : AppCompatActivity() {
         checkinBtn.setOnClickListener{ sendCheckInToDB() }
         checkoutBtn.setOnClickListener{ deleteCheckInFromDB() }
         copyAddressBtn.setOnClickListener { copyAddress() }
+        tvAddress.setOnClickListener { clickAddress() }
     }
 
     private fun checkUser() {
@@ -94,8 +104,18 @@ class DetailsActivity : AppCompatActivity() {
         }
     }
 
+    private fun clickAddress() {
+        val address = activity.location.substringAfter("\n")
+        val gmmIntentUri = Uri.parse("geo:0,0?q=$address")
+        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+        mapIntent.setPackage("com.google.android.apps.maps")
+        mapIntent.resolveActivity(packageManager)?.let {
+            startActivity(mapIntent)
+        }
+    }
+
     private fun copyAddress() {
-        val address = tvAddress.text
+        val address = activity.location.substringAfter("\n")
         val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clipData = ClipData.newPlainText("text", address)
         clipboardManager.setPrimaryClip(clipData)
