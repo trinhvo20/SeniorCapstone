@@ -72,7 +72,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:fontFamily="casual"
+                android:fontFamily="serif"
                 android:text="Trip Location"
                 android:textSize="22dp"
                 android:textStyle="bold"
