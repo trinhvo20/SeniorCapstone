@@ -49,6 +49,7 @@ class FingerprintActivity : AppCompatActivity() {
                 }).build()
             biometricPrompt.authenticate(getCancellationSignal(), mainExecutor, authenticationCallback)
         }
+
     }
     private fun notifyUser(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
