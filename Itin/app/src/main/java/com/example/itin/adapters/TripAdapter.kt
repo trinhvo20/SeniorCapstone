@@ -22,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.io.File
+import java.lang.Math.floor
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -387,6 +388,7 @@ class TripAdapter(
             tvName.text = curTrip.name
             tvStartDate.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
+            tvCountdown.text = "${countdown(curTrip.epochStart).toInt().toString()} days until trip."
 
             //initial image sets
             tripImage.setImageResource(R.drawable.beach)
@@ -563,6 +565,17 @@ class TripAdapter(
 
     override fun getItemCount(): Int {
         return trips.size
+    }
+
+    // calculates how many days until trip starts
+    private fun countdown(startTime: Long): Double{
+        val curTime = Calendar.getInstance().timeInMillis
+        val dif = startTime - curTime
+        val days = kotlin.math.floor((dif/86400000).toDouble())
+        if(days < 0){
+            return 0.toDouble()
+        }
+        return days
     }
 
     fun clear() {
