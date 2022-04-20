@@ -616,7 +616,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 active = true,
                 tripID = -1,
                 days = daylist,
-                viewers = mutableMapOf("CNIyURFyEhRrb1sZNLJo47yMF4o2" to 1,"LW4U6jdzqqcdLvqMMdw7tt1M9b73" to 2,"dwJLMqs0Y5M65fmvS4lIJS5xFgf1" to 2,"eZuf0wlulMe64K6ZXgFPBXTlFJs1" to 2,"JFn2cxxk1xWl83eXDWsXf5fSwvu1" to 2,"uSWyidP8E2axSFnBf1WZgGlcUgF3" to 2)
+                viewers = mutableMapOf("CNIyURFyEhRrb1sZNLJo47yMF4o2" to 1,"LW4U6jdzqqcdLvqMMdw7tt1M9b73" to 2,"dwJLMqs0Y5M65fmvS4lIJS5xFgf1" to 2,"eZuf0wlulMe64K6ZXgFPBXTlFJs1" to 2,"JFn2cxxk1xWl83eXDWsXf5fSwvu1" to 2,"uSWyidP8E2axSFnBf1WZgGlcUgF3" to 2),
+                epochStart = 0.toLong()
             )
             trips.add(trip)
             tripAdapter.notifyDataSetChanged()
