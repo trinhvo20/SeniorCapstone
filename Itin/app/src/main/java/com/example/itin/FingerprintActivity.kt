@@ -13,6 +13,7 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CancellationSignal
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -45,8 +46,7 @@ class FingerprintActivity : AppCompatActivity() {
             val biometricPrompt : BiometricPrompt = BiometricPrompt.Builder(this)
                 .setTitle("Itin Security")
                 .setDescription("Fingerprint Authentication")
-                .setNegativeButton("Cancel", this.mainExecutor, DialogInterface.OnClickListener { dialog, which ->
-                }).build()
+                .setNegativeButton("Cancel", this.mainExecutor, DialogInterface.OnClickListener { dialog, which -> Log.d("beans","beans") }).build()
             biometricPrompt.authenticate(getCancellationSignal(), mainExecutor, authenticationCallback)
         }
     }
