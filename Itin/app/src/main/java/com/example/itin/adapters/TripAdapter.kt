@@ -349,7 +349,7 @@ class TripAdapter(
 
             val tripId = curTrip.tripID.toString()
             var storageReferenceTrip = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
-            val localFile = File.createTempFile("tempImage","jpg")
+            val localFile = File.createTempFile("tempImage_$tripId","jpg")
             localFile.deleteOnExit()
             storageReferenceTrip.getFile(localFile).addOnSuccessListener {
                 val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)

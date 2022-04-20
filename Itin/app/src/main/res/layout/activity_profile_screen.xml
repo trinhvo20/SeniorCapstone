@@ -28,7 +28,7 @@
             <RelativeLayout
                 android:id="@+id/relativeLayout"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="170dp"
                 android:background="@color/mint"
                 android:padding="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -89,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="-35dp"
                 android:paddingHorizontal="20dp"
-                android:paddingVertical="10dp"
+                android:paddingTop="10dp"
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <com.google.android.material.card.MaterialCardView

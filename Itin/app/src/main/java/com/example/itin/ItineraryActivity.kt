@@ -327,7 +327,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         Log.d("ItineraryImage", "Getting Trip Image from DB")
         val tripId = trip.tripID.toString()
         storageReference = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
-        val localFile = File.createTempFile("tempImage", "jpg")
+        val localFile = File.createTempFile("tempImage_$tripId", "jpg")
         storageReference.getFile(localFile).addOnSuccessListener {
             val d = Drawable.createFromPath(localFile.absolutePath)
             tripHeader.background = d
