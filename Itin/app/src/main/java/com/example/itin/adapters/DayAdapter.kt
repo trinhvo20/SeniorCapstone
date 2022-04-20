@@ -112,12 +112,7 @@ class DayAdapter(
                             val df = SimpleDateFormat("H:mm")
                             val outputformat = SimpleDateFormat("h:mm a")
                             tvTime.text = outputformat.format(df.parse(input))
-
-
-                        }),
-                        hour,
-                        minute,
-                        false
+                        }), hour, minute, false
                     )
 
                     tpd.show()
