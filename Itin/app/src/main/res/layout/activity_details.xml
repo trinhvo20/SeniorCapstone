@@ -292,7 +292,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Check In"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="20dp"
                     app:layout_constraintStart_toEndOf="@+id/checkinStatus"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -301,6 +301,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Check Out"
+                    android:layout_marginLeft="20dp"
                     android:backgroundTint="@color/DarkGray"
                     app:layout_constraintStart_toEndOf="@+id/checkinStatus"
                     app:layout_constraintTop_toTopOf="parent" />
