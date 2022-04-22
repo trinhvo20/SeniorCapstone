@@ -310,6 +310,7 @@ class ProfileScreen : AppCompatActivity() {
     private fun getUserProfile() {
         storageReference = FirebaseStorage.getInstance().getReference("Users/$uid.jpg")
         val localFile = File.createTempFile("tempImage","jpg")
+        localFile.deleteOnExit()
         storageReference.getFile(localFile).addOnSuccessListener {
             val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
             profileImageIV.setImageBitmap(bitmap)

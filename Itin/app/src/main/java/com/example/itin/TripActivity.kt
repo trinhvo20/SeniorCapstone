@@ -257,7 +257,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     active,
                     tripID = tripCount,
                     days = mutableListOf(),
-                    viewers = mutableMapOf(),
+                    mutableMapOf(uid to 1),
                     epoch = tripEpoch.timeInMillis
                 )
 

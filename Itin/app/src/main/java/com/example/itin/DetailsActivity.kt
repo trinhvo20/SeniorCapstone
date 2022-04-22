@@ -1,15 +1,19 @@
 package com.example.itin
 
 import android.app.TimePickerDialog
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
+import android.graphics.Paint
 import android.icu.text.SimpleDateFormat
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -18,9 +22,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.CheckInAdapter
-import com.example.itin.adapters.MessageAdapter
 import com.example.itin.classes.Activity
-import com.example.itin.classes.Message
 import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -29,6 +31,7 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_details.*
+
 
 class DetailsActivity : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
@@ -58,9 +61,18 @@ class DetailsActivity : AppCompatActivity() {
         //filling in information
         tvName.text = activity.name
         tvTime.text = activity.time
-        tvLocation.text = activity.location
+        tvLocation.text = activity.location.substringBefore("\n")
+        tvAddress.text = activity.location.substringAfter("\n")
         tvCost.text = activity.cost
         tvNotes.text = activity.notes
+        tvAddress.paintFlags = tvAddress.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+
+//        tvAddress.text = Html.fromHtml(
+//
+//                    "<a href=\"http://maps.google.com\">" +
+//                            activity.location.substringAfter("\n") +
+//                    "</a>");
+//        tvAddress.movementMethod = LinkMovementMethod.getInstance();
 
         checkInList = mutableListOf()
         checkInAdapter = CheckInAdapter(checkInList)
@@ -74,11 +86,11 @@ class DetailsActivity : AppCompatActivity() {
         loadCheckInFromDB()
 
         btEdit.setOnClickListener{ editActivity(activity) }
-
         backBtn.setOnClickListener { finish() }
-
         checkinBtn.setOnClickListener{ sendCheckInToDB() }
         checkoutBtn.setOnClickListener{ deleteCheckInFromDB() }
+        copyAddressBtn.setOnClickListener { copyAddress() }
+        tvAddress.setOnClickListener { clickAddress() }
     }
 
     private fun checkUser() {
@@ -90,6 +102,24 @@ class DetailsActivity : AppCompatActivity() {
         else {
             uid = firebaseUser.uid
         }
+    }
+
+    private fun clickAddress() {
+        val address = activity.location.substringAfter("\n")
+        val gmmIntentUri = Uri.parse("geo:0,0?q=$address")
+        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+        mapIntent.setPackage("com.google.android.apps.maps")
+        mapIntent.resolveActivity(packageManager)?.let {
+            startActivity(mapIntent)
+        }
+    }
+
+    private fun copyAddress() {
+        val address = activity.location.substringAfter("\n")
+        val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = ClipData.newPlainText("text", address)
+        clipboardManager.setPrimaryClip(clipData)
+        Toast.makeText(this, "Copied", Toast.LENGTH_LONG).show()
     }
 
     // function to edit the activity
