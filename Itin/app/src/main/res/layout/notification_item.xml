@@ -10,8 +10,8 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/notifImage"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
         android:src="@drawable/ic_mail"
@@ -30,7 +30,7 @@
         android:paddingBottom="2dp"
         android:text="Title"
         android:textColor="@color/mint"
-        android:textSize="27dp"
+        android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/notifImage"
         app:layout_constraintTop_toTopOf="parent" />
@@ -42,7 +42,7 @@
         android:layout_marginLeft="10dp"
         android:fontFamily="casual"
         android:text="Message"
-        android:textSize="18dp"
+        android:textSize="15dp"
         app:layout_constraintBottom_toTopOf="@+id/tvNotifTime"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/notifImage"

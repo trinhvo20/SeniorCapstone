@@ -98,7 +98,8 @@ class FirebaseService : FirebaseMessagingService() {
         groupMessage = sp.getBoolean("group_message_key",true)
     }
 
-    private fun populateMessage(message: RemoteMessage,friendR:Class<FriendActivity>?,tripI:Class<TripActivity>?,groupM:Class<TripActivity>?){
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun populateMessage(message: RemoteMessage, friendR:Class<FriendActivity>?, tripI:Class<TripActivity>?, groupM:Class<TripActivity>?){
         var intent: Intent? = null
 
         if(friendR == null && tripI == null){
@@ -131,6 +132,7 @@ class FirebaseService : FirebaseMessagingService() {
             .build()
 
         notificationManager.notify(notificationID, notification)
+        sendToDB(message)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -151,20 +153,20 @@ class FirebaseService : FirebaseMessagingService() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun sendToDB(message: RemoteMessage){
         val curUser = checkUser()
-        val notifInstance = curUser?.child("notifications")
-        if (notifInstance != null) {
+        val notifDirectory = curUser?.child("notifications")
+        if (notifDirectory != null) {
+            val notifInstance = notifDirectory.push()
             notifInstance.child("title").setValue(message.data["title"])
             notifInstance.child("message").setValue(message.data["message"])
             val time = getTime()
             notifInstance.child("time").setValue(time)
         }
-
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getTime(): String{
         val calendar = Calendar.getInstance()
-        val dateFormat = "dd/MM hh:mm"
+        val dateFormat = "MM/dd hh:mm"
         val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
         return formatter.format(calendar.time)
     }

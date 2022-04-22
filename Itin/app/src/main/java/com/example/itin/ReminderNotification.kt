@@ -63,20 +63,20 @@ class ReminderNotification : BroadcastReceiver()
     @RequiresApi(Build.VERSION_CODES.O)
     private fun sendToDB(intent: Intent){
         val curUser = checkUser()
-        val notifInstance = curUser?.child("notifications")
-        if (notifInstance != null) {
+        val notifDirectory = curUser?.child("notifications")
+        if (notifDirectory != null) {
+            val notifInstance = notifDirectory.push()
             notifInstance.child("title").setValue(intent.getStringExtra(titleExtra))
             notifInstance.child("message").setValue(intent.getStringExtra(messageExtra))
             val time = getTime()
             notifInstance.child("time").setValue(time)
         }
-
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getTime(): String{
         val calendar = Calendar.getInstance()
-        val dateFormat = "dd/MM hh:mm"
+        val dateFormat = "MM/dd hh:mm"
         val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
         return formatter.format(calendar.time)
     }

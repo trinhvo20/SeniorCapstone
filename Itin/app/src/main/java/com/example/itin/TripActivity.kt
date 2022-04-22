@@ -71,6 +71,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // it is here so that no redundant code happens
         // (i.e. everyone is logged in at the point of ItineraryActivity)
         checkToken()
+
+        // check to see if any notifications and set bell accordingly
+        isNotifPresent()
+
         formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
 
         // set trip list
@@ -284,7 +288,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 }
 
                 supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-                scheduleNotification(year,month,day,"Itin Trip Reminder", "$name")
+                scheduleNotification(year,month,day,"Trip Reminder", "$name")
                 Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
@@ -629,6 +633,22 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             )
             trips.add(trip)
             tripAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun isNotifPresent(){
+        val firebaseUser = firebaseAuth.currentUser
+        if(firebaseUser != null){
+            uid = firebaseUser.uid
+            curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+            curUser.get().addOnSuccessListener {
+                if (it.hasChild("notifications")) {
+                    notificationButton.setImageResource(R.drawable.ic_new_notification)
+                }
+                else {
+                    notificationButton.setImageResource(R.drawable.ic_notifications)
+                }
+            }
         }
     }
 }
