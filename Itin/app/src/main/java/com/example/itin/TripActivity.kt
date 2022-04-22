@@ -379,11 +379,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     private fun checkpending(trip: Trip){
         curUser.child("pending trips").get().addOnSuccessListener {
             if(it.child("Trip ${trip.tripID}").exists()){
-                var pendtrip = it.child("Trip ${trip.tripID}").value.toString().toInt()
-                if (pendtrip == trip.tripID){
-                    trip.pending = 1
-                    Log.d("pending trip","${trip.tripID} is pending")
-                }
+                trip.pending = 1
+                Log.d("pending trip","${trip.tripID} is pending")
             }
         }
         Log.d("pending trip","${trip.tripID} : $pending")

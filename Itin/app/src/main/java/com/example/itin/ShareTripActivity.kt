@@ -102,6 +102,7 @@ class ShareTripActivity : AppCompatActivity() {
                                 val friendsUID =
                                     it.child(friendsIDStr).child("UID").value.toString()
                                 Users.child(friendsUID).child("pending trips").child("Trip $tripID").setValue(tripID).addOnCompleteListener { /*addtoviewers(masterTripList,tripID,friendsUID)*/ }
+                                Users.child(friendsUID).child("trips").child("Trip $tripID").setValue(tripID)
                                 // send notification to friend
                                 createNotification(friendsUID)
                                 Toast.makeText(this, "Trip Shared", Toast.LENGTH_SHORT).show()

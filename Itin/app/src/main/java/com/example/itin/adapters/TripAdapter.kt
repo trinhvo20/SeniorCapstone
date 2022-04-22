@@ -39,12 +39,51 @@ class TripAdapter(
     @RequiresApi(Build.VERSION_CODES.O)
     inner class TripViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val ivMenu: ImageView = itemView.findViewById(R.id.ivMenu)
-        private lateinit var masterTripList: DatabaseReference
+        private val btAccept: Button = itemView.findViewById(R.id.btAccept)
+        private val btDeny: Button = itemView.findViewById(R.id.btDeny)
+        private var masterTripList: DatabaseReference = FirebaseDatabase.getInstance().getReference("masterTripList")
         private var formatter : DateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy")
         private lateinit var startDateObj : LocalDate
 
         init {
             ivMenu.setOnClickListener { popupMenu(it) }
+            btAccept.setOnClickListener { accepttrip(it) }
+            btDeny.setOnClickListener { denytrip(it) }
+        }
+
+        private fun denytrip(it: View?) {
+            val curTrip = trips[adapterPosition]
+            firebaseAuth = FirebaseAuth.getInstance()
+            val firebaseUser = firebaseAuth.currentUser
+            val uid = firebaseUser!!.uid
+            val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+
+            curUser.child("trips").child("Trip ${curTrip.tripID}").removeValue()
+            curUser.child("pending trips").child("Trip ${curTrip.tripID}").removeValue()
+
+            trips.removeAt(adapterPosition)
+            notifyItemChanged(adapterPosition)
+        }
+
+        private fun accepttrip(it: View?) {
+            val curTrip = trips[adapterPosition]
+            firebaseAuth = FirebaseAuth.getInstance()
+            val firebaseUser = firebaseAuth.currentUser
+            val uid = firebaseUser!!.uid
+            val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+
+            curUser.child("pending trips").get().addOnSuccessListener {
+                if(it.child("Trip ${curTrip.tripID}").exists()){
+                    curTrip.viewers[uid] = it.child("Trip ${curTrip.tripID}").value.toString().toInt()
+                }
+            }
+
+            masterTripList.child(curTrip.tripID.toString()).child("Viewers").child(uid).child("uid").setValue(uid)
+            masterTripList.child(curTrip.tripID.toString()).child("Viewers").child(uid).child("Perm").setValue(curTrip.viewers[uid])
+
+            curUser.child("pending trips").child("Trip ${curTrip.tripID}").removeValue()
+            curTrip.pending = 0
+            notifyItemChanged(adapterPosition)
         }
 
         // this function handles the popup menu for each item in the trips list
