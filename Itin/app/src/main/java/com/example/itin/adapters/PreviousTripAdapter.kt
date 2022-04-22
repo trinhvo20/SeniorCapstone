@@ -102,7 +102,7 @@ class PreviousTripAdapter(
         // access to trip_item.xml
         holder.itemView.apply {
             tvName.text = curTrip.name
-            tvCost.text = curTrip.startDate
+            tvStartDate.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
 
             // display trips images

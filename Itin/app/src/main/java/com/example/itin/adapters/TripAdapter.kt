@@ -335,12 +335,19 @@ class TripAdapter(
         holder.itemView.apply {
             // get the data from our trips list and put them in the corresponding TextView in trip_item.xml
             tvName.text = curTrip.name
-            tvCost.text = curTrip.startDate
+            tvStartDate.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
 
             if(curTrip.pending == 1){
                 btAccept.visibility = View.VISIBLE
                 btDeny.visibility = View.VISIBLE
+                btAccept.isClickable = true
+                btDeny.isClickable = true
+                tvStartDate.visibility = View.INVISIBLE
+                tvEndDate.visibility = View.INVISIBLE
+                tvHyphen.visibility = View.INVISIBLE
+                ivMenu.visibility = View.INVISIBLE
+                ivMenu.isClickable = false
             }
 
             // display trips images
@@ -470,6 +477,13 @@ class TripAdapter(
                     tvViewersE.text = "+${curTrip.viewers.size - 3}"
                     tvViewersE.visibility = View.VISIBLE
                 }
+            }
+
+            if(curTrip.pending == 1){
+                ivViewers1.visibility = View.INVISIBLE
+                ivViewers2.visibility = View.INVISIBLE
+                ivViewers3.visibility = View.INVISIBLE
+                tvViewersE.visibility = View.INVISIBLE
             }
         }
 

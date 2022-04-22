@@ -36,7 +36,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tvCost"
+        android:id="@+id/tvStartDate"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:fontFamily="casual"
@@ -64,7 +64,7 @@
         android:fontFamily="casual"
         android:textSize="18dp"
         app:layout_constraintBottom_toTopOf="@+id/tvCountdown"
-        app:layout_constraintStart_toEndOf="@+id/tvCost"
+        app:layout_constraintStart_toEndOf="@+id/tvStartDate"
         app:layout_constraintTop_toBottomOf="@+id/tvName" />
 
     <TextView
@@ -75,7 +75,7 @@
         android:textSize="15dp"
         android:layout_marginLeft="10dp"
         app:layout_constraintStart_toEndOf="@+id/tripImage"
-        app:layout_constraintTop_toBottomOf="@+id/tvCost" />
+        app:layout_constraintTop_toBottomOf="@+id/tvStartDate" />
 
     <ImageView
         android:id="@+id/ivMenu"

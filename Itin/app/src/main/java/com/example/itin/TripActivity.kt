@@ -147,11 +147,13 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // this will let the DB reload from whatever is added on a trip
         //finish()
         // jump to ItineraryActivity
-        Intent(this, ItineraryActivity::class.java).also {
-            // pass the current trip object between activities
-            it.putExtra("EXTRA_TRIP", trips[position])
-            // start ItineraryActivity
-            startActivity(it)
+        if(trips[position].pending == 0) {
+            Intent(this, ItineraryActivity::class.java).also {
+                // pass the current trip object between activities
+                it.putExtra("EXTRA_TRIP", trips[position])
+                // start ItineraryActivity
+                startActivity(it)
+            }
         }
     }
 
