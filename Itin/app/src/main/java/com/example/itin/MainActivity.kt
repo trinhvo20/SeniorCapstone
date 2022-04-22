@@ -13,6 +13,10 @@ import androidx.appcompat.app.AppCompatDelegate
 //import androidx.preference.PreferenceManager
 import kotlinx.android.synthetic.main.activity_main.*
 
+// NEED TO COMPILE NOTIF LIST HERE
+// SEND TO TRIP ACTIVITY
+// FROM TRIP ACTIVITY SEND TO NOTIFICATION ACTIVITY
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var topAnim: Animation

@@ -17,8 +17,15 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.NotificationCompat
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.*
 import kotlin.random.Random
 
 private const val CHANNEL_ID = "my_channel"
@@ -124,6 +131,42 @@ class FirebaseService : FirebaseMessagingService() {
             .build()
 
         notificationManager.notify(notificationID, notification)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun checkUser(): DatabaseReference? {
+        val firebaseAuth = FirebaseAuth.getInstance()
+        val firebaseUser = firebaseAuth.currentUser
+        var curUser: DatabaseReference? = null
+        // If the use is not current logged in:
+        if (firebaseUser == null) {
+            startActivity(Intent(this, GoogleLogin::class.java))
+        } else {
+            val uid = firebaseUser.uid
+            curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+        }
+        return curUser
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun sendToDB(message: RemoteMessage){
+        val curUser = checkUser()
+        val notifInstance = curUser?.child("notifications")
+        if (notifInstance != null) {
+            notifInstance.child("title").setValue(message.data["title"])
+            notifInstance.child("message").setValue(message.data["message"])
+            val time = getTime()
+            notifInstance.child("time").setValue(time)
+        }
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun getTime(): String{
+        val calendar = Calendar.getInstance()
+        val dateFormat = "dd/MM hh:mm"
+        val formatter = SimpleDateFormat(dateFormat, Locale.getDefault())
+        return formatter.format(calendar.time)
     }
 
 }

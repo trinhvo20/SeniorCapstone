@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
 import com.example.itin.classes.NotificationInstance
+import kotlinx.android.synthetic.main.trip_item.view.*
 
 class NotificationListAdapter (
     private val notificationList : MutableList<NotificationInstance>

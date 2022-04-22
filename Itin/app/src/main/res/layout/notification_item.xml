@@ -14,7 +14,7 @@
         android:layout_height="100dp"
         android:scaleType="centerCrop"
         android:adjustViewBounds="true"
-        android:src="@drawable/beach"
+        android:src="@drawable/ic_mail"
         app:shapeAppearanceOverlay="@style/RoundCorner"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
