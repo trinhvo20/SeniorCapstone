@@ -77,8 +77,7 @@ class TripAdapter(
                                         context,
                                         "Trip Successfully Deleted",
                                         Toast.LENGTH_SHORT
-                                    )
-                                        .show()
+                                    ).show()
                                     dialog.dismiss()
                                 }
                                 .setNegativeButton("No") { dialog, _ ->
@@ -86,8 +85,13 @@ class TripAdapter(
                                 }
                                 .create()
                                 .show()
+                            val tripImageRef = FirebaseStorage.getInstance().getReference("Trips/${curTrip.tripID}.jpg")
+                            tripImageRef.delete().addOnSuccessListener {
+                                // File deleted successfully
+                            }.addOnFailureListener {
+                                // Uh-oh, an error occurred!
+                            }
                         }
-
                         else {
                             Toast.makeText(context, "You do not have permission to preform this action", Toast.LENGTH_SHORT).show()
                         }
