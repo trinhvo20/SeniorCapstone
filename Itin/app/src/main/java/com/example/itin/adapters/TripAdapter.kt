@@ -338,6 +338,11 @@ class TripAdapter(
             tvCost.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
 
+            if(curTrip.pending == 1){
+                btAccept.visibility = View.VISIBLE
+                btDeny.visibility = View.VISIBLE
+            }
+
             // display trips images
             val tripId = curTrip.tripID.toString()
             var storageReferenceTrip = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")

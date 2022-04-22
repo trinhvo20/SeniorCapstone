@@ -55,6 +55,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     private lateinit var startdate : LocalDate
     private lateinit var formatter : DateTimeFormatter
     private lateinit var startDateObj : LocalDate
+    private var pending = 0
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -265,7 +266,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     tripID = tripCount,
                     days = mutableListOf(),
                     viewers = mutableMapOf(),
-                    epoch = tripEpoch.timeInMillis
+                    epoch = tripEpoch.timeInMillis,
+                    pending = 0
                 )
 
                 // Write to the database, then increment tripCount in the database
@@ -362,6 +364,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     tripId,
                     days = mutableListOf(),
                 )
+                checkpending(trip)
                 if (trip.deleted == stringToBoolean("false") && trip.active == stringToBoolean("true")) {
                     trips.add(trip)
                     readDays(tripInstance, trip)
@@ -369,6 +372,19 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 }
             }
         }
+    }
+
+    private fun checkpending(trip: Trip){
+        curUser.child("pending trips").get().addOnSuccessListener {
+            if(it.child("Trip ${trip.tripID}").exists()){
+                var pendtrip = it.child("Trip ${trip.tripID}").value.toString().toInt()
+                if (pendtrip == trip.tripID){
+                    trip.pending = 1
+                    Log.d("pending trip","${trip.tripID} is pending")
+                }
+            }
+        }
+        Log.d("pending trip","${trip.tripID} : $pending")
     }
 
     private fun readViewers(tripInstance: DatabaseReference, trip: Trip) {

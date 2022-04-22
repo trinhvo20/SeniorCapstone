@@ -78,7 +78,7 @@ class ShareAdapter(
                             masterUserList.get().addOnSuccessListener {
                                 if (it.exists()) {
                                     val friendsUID = it.child(friendsIDStr).child("UID").value.toString()
-                                    Users.child(friendsUID).child("trips").child("Trip $tripID").setValue(tripID).addOnCompleteListener { addtoviewers(masterTripList,friendsUID) }
+                                    Users.child(friendsUID).child("pending trips").child("Trip $tripID").setValue(tripID).addOnCompleteListener { /*addtoviewers(masterTripList,friendsUID)*/ }
                                     // send notification to friend
                                     createNotification(friendsUID)
                                     Toast.makeText(context, "Trip Shared", Toast.LENGTH_SHORT).show()

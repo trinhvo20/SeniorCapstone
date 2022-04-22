@@ -136,10 +136,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:backgroundTint="@android:color/holo_green_light"
+        android:clickable="false"
         android:text="Accept"
+        android:visibility="invisible"
         app:layout_constraintEnd_toStartOf="@id/btDeny"
         app:layout_constraintStart_toEndOf="@id/tripImage"
-        app:layout_constraintTop_toBottomOf="@+id/tvName" />
+        app:layout_constraintTop_toBottomOf="@+id/tvName"
+        tools:visibility="visible" />
 
     <Button
         android:id="@+id/btDeny"
@@ -147,9 +150,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:backgroundTint="@android:color/holo_red_light"
+        android:clickable="false"
+        android:linksClickable="false"
         android:text="Deny"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btAccept"
-        app:layout_constraintTop_toBottomOf="@id/tvName" />
+        app:layout_constraintTop_toBottomOf="@id/tvName"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
