@@ -26,7 +26,8 @@
         <activity
             android:name=".NotificationListActivity"/>
         <activity
-            android:name=".FriendInfoActivity" />
+            android:name=".FriendInfoActivity"
+            android:exported="false" />
         <activity
             android:name=".FingerprintActivity"
             android:exported="false" />
