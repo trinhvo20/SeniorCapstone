@@ -31,7 +31,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class FriendActivity : AppCompatActivity() {
+class FriendActivity : AppCompatActivity(), FriendAdapter.OnItemClickListener {
 
     // Variables for recycler view
     private lateinit var friends: MutableList<Pair<User, List<Boolean>>>
@@ -70,7 +70,7 @@ class FriendActivity : AppCompatActivity() {
         loadSettings()
 
         friends = mutableListOf()
-        friendAdapter = FriendAdapter(friends)
+        friendAdapter = FriendAdapter(friends, this)
         rvFriends.adapter = friendAdapter
         rvFriends.layoutManager = LinearLayoutManager(this)
 
@@ -171,6 +171,21 @@ class FriendActivity : AppCompatActivity() {
             android.R.color.holo_red_light);
 
         bottomNavBarSetup()
+    }
+
+    // This function handles RecyclerView that lead you to TripDetails page
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onItemClick(position: Int) {
+        // jump to FriendInfoActivity if they are your friend
+        if(true){
+        //if(friends[position].second[0]) {
+            Intent(this, FriendInfoActivity::class.java).also {
+                // pass the current trip object between activities
+                //it.putExtra("EXTRA_FRIEND", friends[position])
+                // start ItineraryActivity
+                startActivity(it)
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
