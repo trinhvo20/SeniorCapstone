@@ -55,6 +55,7 @@ class FirebaseService : FirebaseMessagingService() {
         token = newToken
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onMessageReceived(message: RemoteMessage) {
         loadSettings()
         super.onMessageReceived(message)
@@ -102,14 +103,15 @@ class FirebaseService : FirebaseMessagingService() {
     private fun populateMessage(message: RemoteMessage, friendR:Class<FriendActivity>?, tripI:Class<TripActivity>?, groupM:Class<TripActivity>?){
         var intent: Intent? = null
 
+        // if you wanted to send to other activities, replace NotificationList Activity with friendR, tripI, etc.
         if(friendR == null && tripI == null){
-            intent = Intent(this, groupM)
+            intent = Intent(this, NotificationListActivity::class.java)
         }
         else if(groupM == null && tripI == null){
-            intent = Intent(this, friendR)
+            intent = Intent(this, NotificationListActivity::class.java)
         }
         else if(groupM == null && friendR == null){
-            intent = Intent(this, tripI)
+            intent = Intent(this, NotificationListActivity::class.java)
         }
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
