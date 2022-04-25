@@ -7,13 +7,14 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.telephony.PhoneNumberUtils
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.itin.databinding.ActivityProfileScreenBinding
-import com.google.android.gms.auth.account.WorkAccount.API
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.CredentialPickerConfig
@@ -27,6 +28,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.account.*
 import kotlinx.android.synthetic.main.activity_profile_screen.*
+import kotlinx.android.synthetic.main.activity_share_trip.view.*
 import java.io.File
 
 
@@ -43,6 +45,7 @@ class ProfileScreen : AppCompatActivity() {
     private lateinit var storageReference: StorageReference
     private lateinit var imageUri: Uri
     private lateinit var mGoogleApiClient: GoogleApiClient
+    private lateinit var phoneNumberInput: TextView
 
     private lateinit var fullName: String
     private lateinit var username: String
@@ -104,7 +107,7 @@ class ProfileScreen : AppCompatActivity() {
         bottomNavBarSetup()
     }
 
-    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     private fun showHint() {
         val hintRequest = HintRequest.Builder()
@@ -119,7 +122,6 @@ class ProfileScreen : AppCompatActivity() {
         val intent = Auth.CredentialsApi.getHintPickerIntent(mGoogleApiClient, hintRequest)
         try {
             startIntentSenderForResult(intent.intentSender, RC_HINT, null, 0, 0, 0)
-            phoneNoRead = true
         } catch (e: SendIntentException) {
             Log.e("Phone Number Debugging", "Could not start hint picker Intent", e)
         }
@@ -142,32 +144,26 @@ class ProfileScreen : AppCompatActivity() {
         }
     }
 
+//    private fun updateUserInfo() {
+//        showHint()
+//    }
+
     private fun updateUserInfo() {
-//        val view = LayoutInflater.from(this).inflate(R.layout.account, null)
-//
-//        val usernameInput = view.findViewById<TextInputLayout>(R.id.usernameInput)
-//        val fullNameInput = view.findViewById<TextInputLayout>(R.id.fullNameInput)
-//        val phoneNumberInput = view.findViewById<TextInputLayout>(R.id.phoneNumberInput)
-//
-//        val newDialog = AlertDialog.Builder(this)
-//        newDialog.setView(view)
-
-        showHint()
-    }
-
-    private fun getValues() {
 
         val view = LayoutInflater.from(this).inflate(R.layout.account, null)
 
         val usernameInput = view.findViewById<TextInputLayout>(R.id.usernameInput)
         val fullNameInput = view.findViewById<TextInputLayout>(R.id.fullNameInput)
-        val phoneNumberInput = view.findViewById<TextInputLayout>(R.id.phoneNumberInput)
+        phoneNumberInput = view.findViewById<TextView>(R.id.phoneNumberInput)
 
         val newDialog = AlertDialog.Builder(this)
         newDialog.setView(view)
 
-        Log.d("Phone Number Debugging", "$phoneNo")
+        phoneNumberInput.setOnClickListener{
+            showHint()
+        }
 
+        Log.d("Phone Number Debugging", "$phoneNo")
 
         FirebaseDatabase.getInstance().getReference("users").child(uid).child("userInfo")
             .get().addOnSuccessListener {
@@ -178,7 +174,6 @@ class ProfileScreen : AppCompatActivity() {
 
                     fullNameInput.editText?.setText(fullName)
                     usernameInput.editText?.setText(username)
-                    phoneNumberInput.editText?.setText(phoneNo)
                 } else {
                     Log.d("print", "User does not exist")
                 }
@@ -227,7 +222,7 @@ class ProfileScreen : AppCompatActivity() {
     }
 
     // function to update user info
-    private fun update(usernameInput: TextInputLayout, fullNameInput: TextInputLayout, phoneNumberInput: TextInputLayout) {
+    private fun update(usernameInput: TextInputLayout, fullNameInput: TextInputLayout, phoneNumberInput: TextView) {
         val newUsername = usernameInput.editText?.text.toString()
         val usernameQuery = FirebaseDatabase.getInstance().reference.child("users")
         usernameQuery.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -314,20 +309,19 @@ class ProfileScreen : AppCompatActivity() {
         }
     }
 
-    private fun isPhoneNoChanged(phoneNumberInput: TextInputLayout): Boolean {
-        val newPhoneNo = phoneNumberInput.editText?.text.toString()
-        if (newPhoneNo == phoneNo) {
+    private fun isPhoneNoChanged(phoneNumberInput: TextView): Boolean {
+        val newPhoneNo = phoneNumberInput.text.toString()
+        Log.d("Phone Number Debugging", "$newPhoneNo")
+        if (newPhoneNo == curUserInfo.child("phone").get().toString()) {
             return false
         }
-        else if (newPhoneNo.length != 11) {
-            phoneNumberInput.error = "Must contain 11 digits"
-            return false
-        }
+//        else if (newPhoneNo.length != 11) {
+//            phoneNumberInput.error = "Must contain 11 digits"
+//            return false
+//        }
         else {
-            val formattedPhoneNo = PhoneNumberUtils.formatNumber(newPhoneNo, "US")
-            curUserInfo.child("phone").setValue(formattedPhoneNo)
-            phoneNumberInput.error = null
-            phoneNumberInput.isErrorEnabled = false
+//            val formattedPhoneNo = PhoneNumberUtils.formatNumber(newPhoneNo, "US")
+            curUserInfo.child("phone").setValue(newPhoneNo)
             return true
         }
     }
@@ -345,10 +339,11 @@ class ProfileScreen : AppCompatActivity() {
                 val cred: Credential? = data?.getParcelableExtra(Credential.EXTRA_KEY)
                 if (cred != null) {
                     phoneNo = cred.id
-                    getValues()
+                    phoneNumberInput.text = phoneNo
+                    //getValues()
                 }
             } else {
-                getValues()
+                //getValues()
             }
         }
         else if (resultCode == RESULT_OK && requestCode == PICK_IMAGE){
