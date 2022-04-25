@@ -60,7 +60,7 @@ class DayAdapter(
             val firebaseUser = firebaseAuth.currentUser
             val uid = firebaseUser!!.uid
 
-            if (viewers[uid] == 1) {
+            if (viewers[uid] == 1 || viewers[uid] == 2) {
 
                 val view = LayoutInflater.from(context).inflate(R.layout.add_activity, null)
 

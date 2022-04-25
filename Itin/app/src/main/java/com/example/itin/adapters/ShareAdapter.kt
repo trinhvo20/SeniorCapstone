@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
+import com.example.itin.classes.Trip
 import com.example.itin.classes.User
 import com.example.itin.notifications.NotificationData
 import com.example.itin.notifications.PushNotification
@@ -34,10 +35,12 @@ private val TAG = "ShareAdapter"
 class ShareAdapter(
     private val context: Context,
     private val Friends: MutableList<User>,
-    private val tripID: Int?,
+    private val Curtrip: Trip,
 
     ) : RecyclerView.Adapter<ShareAdapter.ShareViewHolder>() {
 
+    val tripID = Curtrip.tripID
+    val Viewers = Curtrip.viewers
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var uid : String
     private lateinit var curUser: DatabaseReference
@@ -78,7 +81,7 @@ class ShareAdapter(
                             masterUserList.get().addOnSuccessListener {
                                 if (it.exists()) {
                                     val friendsUID = it.child(friendsIDStr).child("UID").value.toString()
-                                    Users.child(friendsUID).child("pending trips").child("Trip $tripID").setValue(2).addOnCompleteListener { /*addtoviewers(masterTripList,friendsUID)*/ }
+                                    Users.child(friendsUID).child("pending trips").child("Trip $tripID").setValue(2)
                                     Users.child(friendsUID).child("trips").child("Trip $tripID").setValue(tripID)
                                     // send notification to friend
                                     createNotification(friendsUID)
@@ -93,10 +96,6 @@ class ShareAdapter(
             }
         }
 
-        private fun addtoviewers(masterTripList: DatabaseReference, friendsUID: String) {
-            masterTripList.child(tripID.toString()).child("Viewers").child(friendsUID).child("uid").setValue(friendsUID)
-            masterTripList.child(tripID.toString()).child("Viewers").child(friendsUID).child("Perm").setValue(2)
-        }
 
         // function to make get the token of who we are sending the notification to
         // then fills out notification
@@ -142,6 +141,11 @@ class ShareAdapter(
         val curFriend = Friends[position]
 
         holder.itemView.apply {
+
+            if(Viewers.containsKey(curFriend.uid)){
+                ibShareFriend.isClickable = false
+                ibShareFriend.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
+            }
 
             var storageReference = FirebaseStorage.getInstance().getReference("Users/${curFriend.uid}.jpg")
             val localFileV2 =

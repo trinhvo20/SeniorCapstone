@@ -390,7 +390,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
 
     private fun onShareClicked() {
         val nit = Intent(this, ShareTripActivity::class.java).apply {
-            putExtra("TRIP_ID", trip.tripID.toString())
+            putExtra("TRIP", trip)
         }
         Toast.makeText(this, trip.tripID.toString(), Toast.LENGTH_SHORT).show()
         this.startActivity(nit)
