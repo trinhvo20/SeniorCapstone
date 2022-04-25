@@ -67,23 +67,17 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
+        <TextView
             android:id="@+id/phoneNumberInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:hint="Phone Number"
-            app:boxBackgroundColor="@color/transparent">
+            app:boxBackgroundColor="@color/transparent"
+            android:drawableLeft="@drawable/ic_phone"
+            android:drawablePadding="10dp"
+            android:fontFamily="serif">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:drawableLeft="@drawable/ic_phone"
-                android:drawablePadding="10dp"
-                android:inputType="phone"
-                android:text="123-456-7890" />
-
-        </com.google.android.material.textfield.TextInputLayout>
+        </TextView>
 
     </LinearLayout>
 
