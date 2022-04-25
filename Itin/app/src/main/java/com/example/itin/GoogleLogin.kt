@@ -15,6 +15,7 @@ import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.example.itin.classes.NotificationInstance
 import com.example.itin.classes.User
 import com.example.itin.databinding.GoogleLoginBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -146,6 +147,7 @@ class GoogleLogin : AppCompatActivity() {
         if (firebaseUser != null) {
             if(!useFingerprint) {
                 startActivity(Intent(this@GoogleLogin, TripActivity::class.java))
+
                 finish()
             }
             else{
@@ -223,5 +225,7 @@ class GoogleLogin : AppCompatActivity() {
                 Toast.makeText(this@GoogleLogin, "Login failed due to ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
+
+
 }
 

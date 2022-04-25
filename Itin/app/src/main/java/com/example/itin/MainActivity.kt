@@ -10,8 +10,13 @@ import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatDelegate
+import com.example.itin.classes.NotificationInstance
 //import androidx.preference.PreferenceManager
 import kotlinx.android.synthetic.main.activity_main.*
+
+// NEED TO COMPILE NOTIF LIST HERE
+// SEND TO TRIP ACTIVITY
+// FROM TRIP ACTIVITY SEND TO NOTIFICATION ACTIVITY
 
 class MainActivity : AppCompatActivity() {
 

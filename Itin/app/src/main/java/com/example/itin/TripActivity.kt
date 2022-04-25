@@ -55,6 +55,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     private lateinit var startdate : LocalDate
     private lateinit var formatter : DateTimeFormatter
     private lateinit var startDateObj : LocalDate
+    private var pending = 0
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,6 +71,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // it is here so that no redundant code happens
         // (i.e. everyone is logged in at the point of ItineraryActivity)
         checkToken()
+
+        // check to see if any notifications and set bell accordingly
+        isNotifPresent()
+
         formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
 
         // set trip list
@@ -87,6 +92,13 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         // what happen when click on AddTodo button -> call the addTrip function
         btAddTrip.setOnClickListener { addTrip() }
+
+        // what happen when click on notfication button -> call the notification activity
+        notificationButton.setOnClickListener {
+            Intent(this, NotificationListActivity::class.java).also {
+                startActivity(it)
+            }
+        }
 
         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -139,11 +151,13 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // this will let the DB reload from whatever is added on a trip
         //finish()
         // jump to ItineraryActivity
-        Intent(this, ItineraryActivity::class.java).also {
-            // pass the current trip object between activities
-            it.putExtra("EXTRA_TRIP", trips[position])
-            // start ItineraryActivity
-            startActivity(it)
+        if(trips[position].pending == 0) {
+            Intent(this, ItineraryActivity::class.java).also {
+                // pass the current trip object between activities
+                it.putExtra("EXTRA_TRIP", trips[position])
+                // start ItineraryActivity
+                startActivity(it)
+            }
         }
     }
 
@@ -257,8 +271,9 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     active,
                     tripID = tripCount,
                     days = mutableListOf(),
-                    mutableMapOf(uid to 1),
-                    epoch = tripEpoch.timeInMillis
+                    viewers = mutableMapOf(),
+                    epoch = tripEpoch.timeInMillis,
+                    pending = 0
                 )
 
                 // Write to the database, then increment tripCount in the database
@@ -273,7 +288,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 }
 
                 supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-                scheduleNotification(year,month,day,"Itin Trip Reminder", "$name")
+                scheduleNotification(year,month,day,"Trip Reminder", "$name")
                 Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
@@ -355,6 +370,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     tripId,
                     days = mutableListOf(),
                 )
+                checkpending(trip)
                 if (trip.deleted == stringToBoolean("false") && trip.active == stringToBoolean("true")) {
                     trips.add(trip)
                     readDays(tripInstance, trip)
@@ -362,6 +378,16 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 }
             }
         }
+    }
+
+    private fun checkpending(trip: Trip){
+        curUser.child("pending trips").get().addOnSuccessListener {
+            if(it.child("Trip ${trip.tripID}").exists()){
+                trip.pending = 1
+                Log.d("pending trip","${trip.tripID} is pending")
+            }
+        }
+        Log.d("pending trip","${trip.tripID} : $pending")
     }
 
     private fun readViewers(tripInstance: DatabaseReference, trip: Trip) {
@@ -607,6 +633,22 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             )
             trips.add(trip)
             tripAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun isNotifPresent(){
+        val firebaseUser = firebaseAuth.currentUser
+        if(firebaseUser != null){
+            uid = firebaseUser.uid
+            curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+            curUser.get().addOnSuccessListener {
+                if (it.hasChild("notifications")) {
+                    notificationButton.setImageResource(R.drawable.ic_new_notification)
+                }
+                else {
+                    notificationButton.setImageResource(R.drawable.ic_notifications)
+                }
+            }
         }
     }
 }

@@ -22,6 +22,7 @@
             android:exported="false" />
         <activity
             android:name=".ViewerActivity"
+            android:name=".NotificationListActivity"
             android:exported="false" />
         <activity
             android:name=".FingerprintActivity"
