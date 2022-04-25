@@ -117,6 +117,18 @@ class FriendActivity : AppCompatActivity() {
             }
         })
 
+        // Sets up the text box to only allow you to send request if the textbox is not empty
+        // This improves UI but also doubles as an easy way to check for null input
+        friendsUsername.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (typed == false) {
+                    typed = true
+                }
+            }
+            override fun afterTextChanged(s: Editable?) { }
+        })
+
         // Overwrites the initial value of 0 for numFriends if user has any friends
         masterUserList.get().addOnSuccessListener {
             if (it.exists()) {
