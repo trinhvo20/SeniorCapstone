@@ -21,7 +21,9 @@
             android:name=".AboutUsActivity"
             android:exported="false" />
         <activity
-            android:name=".ViewerActivity"
+            android:name="ViewerActivity"
+            android:exported="false" />
+        <activity
             android:name=".NotificationListActivity"
             android:exported="false" />
         <activity
