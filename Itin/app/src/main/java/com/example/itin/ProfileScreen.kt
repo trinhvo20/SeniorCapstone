@@ -1,6 +1,7 @@
 package com.example.itin
 
 import android.content.Intent
+import android.content.IntentSender.SendIntentException
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
@@ -8,19 +9,24 @@ import android.provider.MediaStore
 import android.telephony.PhoneNumberUtils
 import android.util.Log
 import android.view.LayoutInflater
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.itin.databinding.ActivityProfileScreenBinding
+import com.google.android.gms.auth.account.WorkAccount.API
+import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.credentials.Credential
+import com.google.android.gms.auth.api.credentials.CredentialPickerConfig
+import com.google.android.gms.auth.api.credentials.HintRequest
+import com.google.android.gms.common.api.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import kotlinx.android.synthetic.main.activity_profile_screen.*
 import kotlinx.android.synthetic.main.account.*
+import kotlinx.android.synthetic.main.activity_profile_screen.*
 import java.io.File
 import java.io.IOException
 
@@ -29,19 +35,22 @@ class ProfileScreen : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileScreenBinding
     private lateinit var firebaseAuth: FirebaseAuth
-    private lateinit var uid : String
+    private lateinit var uid: String
     private lateinit var curUser: DatabaseReference
     private lateinit var masterUserList: DatabaseReference
     private lateinit var ID: String
+    private var phoneNoRead: Boolean = false
     private lateinit var curUserInfo: DatabaseReference
     private lateinit var storageReference: StorageReference
     private lateinit var imageUri: Uri
+    private lateinit var mGoogleApiClient: GoogleApiClient
 
     private lateinit var fullName: String
     private lateinit var username: String
     private lateinit var email: String
     private lateinit var phoneNo: String
 
+    private val RC_HINT = 1000
     private val PICK_IMAGE = 100
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,19 +61,26 @@ class ProfileScreen : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
         checkUser()
 
-        // For the dropdown menu
-//        val userInformation =
-//        val arrayAdapter = ArrayAdapter(this, R.layout.dropdown_item, userInformation)
-//        binding.autoCompleteTextView.setAdapter(arrayAdapter)
+//        // Grabbing api client for phone number import
+//        mCredentialsApiClient = GoogleApiClient.Builder(this)
+////            .addConnectionCallbacks(this)
+////            .enableAutoManage(this, this)
+////            (Auth.CREDENTIALS_API)
+////            .build()
+
+        mGoogleApiClient = GoogleApiClient.Builder(this)
+            .addApi(Auth.CREDENTIALS_API)
+            .build()
+//            .enableAutoManage(
+//                this /* FragmentActivity */,
+//                this /* OnConnectionFailedListener */
+//            )
 
         // Logout button
         logoutBtn.setOnClickListener {
             firebaseAuth.signOut()
             checkUser()
         }
-
-        // update button
-        //updateButton.setOnClickListener { update() }
 
         previousTripBtn.setOnClickListener {
             val intent = Intent(this, PreviousTripActivity::class.java)
@@ -91,6 +107,27 @@ class ProfileScreen : AppCompatActivity() {
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+    private fun showHint() {
+        val hintRequest = HintRequest.Builder()
+            .setHintPickerConfig(
+                CredentialPickerConfig.Builder()
+                    .setShowCancelButton(true)
+                    .build()
+            )
+            .setPhoneNumberIdentifierSupported(true)
+            .build()
+
+        val intent = Auth.CredentialsApi.getHintPickerIntent(mGoogleApiClient, hintRequest)
+        try {
+            startIntentSenderForResult(intent.intentSender, RC_HINT, null, 0, 0, 0)
+            phoneNoRead = true
+        } catch (e: SendIntentException) {
+            Log.e("Phone Number Debugging", "Could not start hint picker Intent", e)
+        }
+    }
+
+
+
     private fun checkUser() {
         val firebaseUser = firebaseAuth.currentUser
         // If the user is not currently logged in:
@@ -107,6 +144,20 @@ class ProfileScreen : AppCompatActivity() {
     }
 
     private fun updateUserInfo() {
+//        val view = LayoutInflater.from(this).inflate(R.layout.account, null)
+//
+//        val usernameInput = view.findViewById<TextInputLayout>(R.id.usernameInput)
+//        val fullNameInput = view.findViewById<TextInputLayout>(R.id.fullNameInput)
+//        val phoneNumberInput = view.findViewById<TextInputLayout>(R.id.phoneNumberInput)
+//
+//        val newDialog = AlertDialog.Builder(this)
+//        newDialog.setView(view)
+
+        showHint()
+    }
+
+    private fun getValues() {
+
         val view = LayoutInflater.from(this).inflate(R.layout.account, null)
 
         val usernameInput = view.findViewById<TextInputLayout>(R.id.usernameInput)
@@ -116,13 +167,15 @@ class ProfileScreen : AppCompatActivity() {
         val newDialog = AlertDialog.Builder(this)
         newDialog.setView(view)
 
+        Log.d("Phone Number Debugging", "$phoneNo")
+
 
         FirebaseDatabase.getInstance().getReference("users").child(uid).child("userInfo")
             .get().addOnSuccessListener {
                 if (it.exists()){
                     fullName = it.child("fullName").value.toString()
                     username = it.child("username").value.toString()
-                    phoneNo = it.child("phone").value.toString()
+                    //phoneNo =  it.child("phone").value.toString()
 
                     fullNameInput.editText?.setText(fullName)
                     usernameInput.editText?.setText(username)
@@ -133,7 +186,6 @@ class ProfileScreen : AppCompatActivity() {
             }.addOnCanceledListener {
                 Log.d("print", "Failed to fetch the user")
             }
-
 
         newDialog.setPositiveButton("Update") { dialog, _ ->
             update(usernameInput, fullNameInput, phoneNumberInput)
@@ -147,6 +199,7 @@ class ProfileScreen : AppCompatActivity() {
         newDialog.setOnCancelListener {
             Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
         }
+
         newDialog.create()
         newDialog.show()
     }
@@ -288,15 +341,26 @@ class ProfileScreen : AppCompatActivity() {
     // handle the profile_picture change
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK && requestCode == PICK_IMAGE){
-            if (data != null) {
-                imageUri = data.data!!
-                Log.d("Profile",imageUri.toString())
-                profileImageIV.setImageURI(imageUri)
-                uploadProfilePic()
+        if (requestCode == RC_HINT) {
+            if (resultCode == RESULT_OK) {
+                val cred: Credential? = data?.getParcelableExtra(Credential.EXTRA_KEY)
+                if (cred != null) {
+                    phoneNo = cred.id
+                    getValues()
+                }
+            } else {
+                getValues()
             }
         }
+        else if (resultCode == RESULT_OK && requestCode == PICK_IMAGE){
+        if (data != null) {
+            imageUri = data.data!!
+            Log.d("Profile",imageUri.toString())
+            profileImageIV.setImageURI(imageUri)
+            uploadProfilePic()
+        }
     }
+}
 
     private fun uploadProfilePic() {
         //imageUri = Uri.parse("android.resource://$packageName/${R.drawable.profile}")
@@ -350,4 +414,7 @@ class ProfileScreen : AppCompatActivity() {
             }
         }
 }
+
+private fun Any.addConnectionCallbacks(profileScreen: ProfileScreen) { }
+private fun Any.enableAutoManage(profileScreen: ProfileScreen, profileScreen1: ProfileScreen) { }
 
