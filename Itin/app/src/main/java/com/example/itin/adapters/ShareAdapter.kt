@@ -76,21 +76,28 @@ class ShareAdapter(
                 if (it.exists()) {
                     val friendsIDStr = it.value.toString()
 
-                    curUser.get().addOnSuccessListener {
-                        if (it.exists()) {
-                            masterUserList.get().addOnSuccessListener {
-                                if (it.exists()) {
-                                    val friendsUID = it.child(friendsIDStr).child("UID").value.toString()
-                                    Users.child(friendsUID).child("pending trips").child("Trip $tripID").setValue(2)
-                                    Users.child(friendsUID).child("trips").child("Trip $tripID").setValue(tripID)
-                                    // send notification to friend
-                                    createNotification(friendsUID)
-                                    Toast.makeText(context, "Trip Shared", Toast.LENGTH_SHORT).show()
+                    if(!(it.child("trips").child("Trip $tripID").exists())) {
+                        curUser.get().addOnSuccessListener {
+                            if (it.exists()) {
+                                masterUserList.get().addOnSuccessListener {
+                                    if (it.exists()) {
+                                        val friendsUID =
+                                            it.child(friendsIDStr).child("UID").value.toString()
+                                        Users.child(friendsUID).child("pending trips")
+                                            .child("Trip $tripID").setValue(2)
+                                        Users.child(friendsUID).child("trips").child("Trip $tripID")
+                                            .setValue(tripID)
+                                        // send notification to friend
+                                        createNotification(friendsUID)
+                                        Toast.makeText(context, "Trip Shared", Toast.LENGTH_SHORT)
+                                            .show()
+                                    }
                                 }
                             }
                         }
                     }
-                } else {
+                }
+                else {
                     Toast.makeText(context, "User does not exist", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -156,8 +163,14 @@ class ShareAdapter(
             }.addOnFailureListener {
                 ivFriendPP.setImageResource(R.drawable.profile)
             }
+            if(curFriend.fullName.length > 15){
+                var shortname = curFriend.fullName.substring(0..11)
+                tvFriendFullName.text = shortname+"..."
+            }
+            else{
+                tvFriendFullName.text = curFriend.fullName
+            }
             tvFriendName.text = curFriend.username
-            tvFriendFullName.text = curFriend.fullName
         }
     }
 
