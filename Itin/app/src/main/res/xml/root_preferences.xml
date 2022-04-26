@@ -46,4 +46,13 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="Cache Memory">
+        <CheckBoxPreference
+            app:key="cache_key"
+            app:title="Clear Cache"
+            app:summary="The app's cache memory will be cleared."
+            app:defaultValue="false" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

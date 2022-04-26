@@ -20,6 +20,8 @@ class Trip (
     var viewers : MutableMap<String, Int> = mutableMapOf(),
     var epoch : Long = 0,
     var pending : Int = 0
+    var epochStart : Long = 0,
+    var epochEnd : Long = 0
 ): Serializable
 // objects of this class can be transferred between activities
 // need to implement a function to calculate countdown from NOW to startDate

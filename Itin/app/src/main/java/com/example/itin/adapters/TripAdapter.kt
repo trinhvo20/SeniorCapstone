@@ -22,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.io.File
+import java.lang.Math.floor
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -116,8 +117,7 @@ class TripAdapter(
                                         context,
                                         "Trip Successfully Deleted",
                                         Toast.LENGTH_SHORT
-                                    )
-                                        .show()
+                                    ).show()
                                     dialog.dismiss()
                                 }
                                 .setNegativeButton("No") { dialog, _ ->
@@ -125,8 +125,13 @@ class TripAdapter(
                                 }
                                 .create()
                                 .show()
+                            val tripImageRef = FirebaseStorage.getInstance().getReference("Trips/${curTrip.tripID}.jpg")
+                            tripImageRef.delete().addOnSuccessListener {
+                                // File deleted successfully
+                            }.addOnFailureListener {
+                                // Uh-oh, an error occurred!
+                            }
                         }
-
                         else {
                             Toast.makeText(context, "You do not have permission to preform this action", Toast.LENGTH_SHORT).show()
                         }
@@ -240,7 +245,9 @@ class TripAdapter(
                         deleted = curTrip.deleted,
                         active = curTrip.active,
                         tripID = tripCount,
-                        curTrip.days
+                        curTrip.days,
+                        epochStart = curTrip.epochStart,
+                        epochEnd = curTrip.epochEnd
                     )
                     // when reading from DB, it does not correctly make the days list
                     // check that the heck out
@@ -265,12 +272,13 @@ class TripAdapter(
             val firebaseAuth = FirebaseAuth.getInstance()
             val firebaseUser = firebaseAuth.currentUser
             var curTrips: DatabaseReference? = null
+            var uid : String = ""
 
             // If the use is not current logged in:
             if (firebaseUser == null) {
 
             } else {
-                val uid = firebaseUser.uid
+                uid = firebaseUser.uid
                 val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
                 curTrips = curUser.child("trips")
             }
@@ -285,6 +293,8 @@ class TripAdapter(
             tripInstance.child("Deleted").setValue(trip.deleted)
             tripInstance.child("Active").setValue(trip.active)
             tripInstance.child("ID").setValue(trip.tripID)
+            tripInstance.child("EpochEnd").setValue(trip.epochEnd)
+            tripInstance.child("EpochStart").setValue(trip.epochStart)
 
             // create days folder
             // will be accessed later in itinerary activity
@@ -296,6 +306,11 @@ class TripAdapter(
             for (i in 0 until dayNum + 1) {
                 makeDayInstance(itineraryInstance,i.toInt(), trip)
             }
+
+            //create Viewers folder
+            tripInstance.child("Viewers").child(uid).child("uid").setValue(uid)
+            tripInstance.child("Viewers").child(uid).child("Perm").setValue(1)
+
 
             // Record trips in the individual user
             if (curTrips != null) {
@@ -315,14 +330,14 @@ class TripAdapter(
 
                 val activity = trip.days[dayNum].activities[i]
                 if (activity != null) {
-                    sendActivityToDB(trip.days[dayNum], activity)
+                    sendActivityToDB(trip.days[dayNum],trip, activity)
                 }
             }
         }
 
-        private fun sendActivityToDB(curDay: Day, activity: Activity) {
+        private fun sendActivityToDB(curDay: Day, trip: Trip, activity: Activity) {
             val dayInstance = FirebaseDatabase.getInstance().getReference("masterTripList")
-                .child(curDay.tripID.toString()).child("Days").child((curDay.dayInt-1).toString())
+                .child(trip.tripID.toString()).child("Days").child((curDay.dayInt-1).toString())
             dayInstance.child("ActivityCount").setValue(curDay.activities.size)
 
             val activityInstance = dayInstance.push()
@@ -376,6 +391,7 @@ class TripAdapter(
             tvName.text = curTrip.name
             tvStartDate.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
+            tvCountdown.text = "${countdown(curTrip.epochStart).toInt().toString()} days until trip."
 
             //initial image sets
             tripImage.setImageResource(R.drawable.beach)
@@ -552,6 +568,17 @@ class TripAdapter(
 
     override fun getItemCount(): Int {
         return trips.size
+    }
+
+    // calculates how many days until trip starts
+    private fun countdown(startTime: Long): Double{
+        val curTime = Calendar.getInstance().timeInMillis
+        val dif = startTime - curTime
+        val days = kotlin.math.floor((dif/86400000).toDouble())
+        if(days < 0){
+            return 0.toDouble()
+        }
+        return days
     }
 
     fun clear() {

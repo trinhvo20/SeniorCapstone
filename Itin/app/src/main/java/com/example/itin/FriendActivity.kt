@@ -32,7 +32,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class FriendActivity : AppCompatActivity() {
+class FriendActivity : AppCompatActivity(), FriendAdapter.OnItemClickListener {
 
     // Variables for recycler view
     private lateinit var friends: MutableList<Pair<User, List<Boolean>>>
@@ -71,7 +71,7 @@ class FriendActivity : AppCompatActivity() {
         loadSettings()
 
         friends = mutableListOf()
-        friendAdapter = FriendAdapter(friends)
+        friendAdapter = FriendAdapter(friends, this)
         rvFriends.adapter = friendAdapter
         rvFriends.layoutManager = LinearLayoutManager(this)
 
@@ -161,6 +161,20 @@ class FriendActivity : AppCompatActivity() {
             android.R.color.holo_red_light);
 
         bottomNavBarSetup()
+    }
+
+    // This function handles RecyclerView that lead you to TripDetails page
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onItemClick(position: Int) {
+        // jump to FriendInfoActivity if they are your friend
+        if(friends[position].second[0]) {
+            Intent(this, FriendInfoActivity::class.java).also {
+                // pass the current trip object between activities
+                it.putExtra("EXTRA_FRIEND", friends[position].first)
+                // start ItineraryActivity
+                startActivity(it)
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -319,13 +333,16 @@ class FriendActivity : AppCompatActivity() {
                         val username = it.child("userInfo").child("username").value.toString()
                         val fullname = it.child("userInfo").child("fullName").value.toString()
                         val uid = it.child("userInfo").child("uid").value.toString()
+                        val fullName = it.child("userInfo").child("fullName").value.toString()
+                        val email = it.child("userInfo").child("email").value.toString()
+                        val phone = it.child("userInfo").child("phone").value.toString()
 
                         val user = User(
                             uid,
-                            fullname,
+                            fullName,
                             username,
-                            "null",
-                            "null"
+                            email,
+                            phone
                         )
                         val booleans = listOf(friend, remove)
                         friends.add(Pair(user, booleans))
