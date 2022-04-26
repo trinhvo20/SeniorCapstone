@@ -27,7 +27,7 @@
         android:fontFamily="@font/candal"
         android:text="Name"
         android:textColor="@color/mint"
-        android:textSize="27dp"
+        android:textSize="25dp"
         android:includeFontPadding="false"
         android:layout_marginLeft="10dp"
         android:paddingBottom="2dp"

@@ -138,7 +138,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_share"
             app:layout_constraintBottom_toBottomOf="@+id/swipeContainer"
-            android:layout_marginBottom="2dp"
+            android:layout_marginBottom="-3dp"
             android:layout_marginRight="5dp"
             android:backgroundTint="@color/DarkGray"
             android:clickable="false"
@@ -153,13 +153,28 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_edit"
             app:layout_constraintBottom_toBottomOf="@+id/swipeContainer"
-            android:layout_marginBottom="2dp"
+            android:layout_marginBottom="-3dp"
             android:layout_marginRight="5dp"
             android:backgroundTint="@color/DarkGray"
             android:clickable="false"
             android:tint="@android:color/white"
             android:visibility="invisible"
             app:layout_constraintBottom_toTopOf="@+id/shareBtn"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+<com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/viewerBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_friends"
+            app:layout_constraintBottom_toBottomOf="@+id/swipeContainer"
+            android:layout_marginBottom="-3dp"
+            android:layout_marginRight="5dp"
+            android:backgroundTint="@color/DarkGray"
+            android:clickable="false"
+            android:tint="@android:color/white"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toTopOf="@+id/editBtn"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -16,6 +16,8 @@ import com.google.firebase.storage.FirebaseStorage
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.activity_friend.*
 import kotlinx.android.synthetic.main.friend_item.view.*
+import kotlinx.android.synthetic.main.friend_item.view.friendFullName
+import kotlinx.android.synthetic.main.friend_share_item.view.*
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.io.File
 class FriendAdapter(
@@ -44,6 +46,7 @@ class FriendAdapter(
 
             var storageReference = FirebaseStorage.getInstance().getReference("Users/${curFriend.uid}.jpg")
             val localFileV2 = File.createTempFile("tempImage_${curFriend.uid}", "jpg")
+            localFileV2.deleteOnExit()
 
             storageReference.getFile(localFileV2).addOnSuccessListener {
                 val bitmap = BitmapFactory.decodeFile(localFileV2.absolutePath)
@@ -53,7 +56,6 @@ class FriendAdapter(
             }
         }
 
-
         if (remove == true && friend == false) {
             holder.itemView.apply {
                 pendingReq.visibility = View.VISIBLE
@@ -62,7 +64,9 @@ class FriendAdapter(
                 remButton.visibility = View.VISIBLE
                 remButton.isClickable = true
 
-                friendFullName.text = curFriend.username
+                friendFullName.text = curFriend.fullName
+                tvFriendsUsername.text = curFriend.username
+                tvFriendsUsername.visibility = View.INVISIBLE
             }
         }else if (remove == true && friend == true) {
             holder.itemView.apply {
@@ -72,7 +76,9 @@ class FriendAdapter(
                 remButton.visibility = View.VISIBLE
                 remButton.isClickable = true
 
-                friendFullName.text = curFriend.username
+                friendFullName.text = curFriend.fullName
+                tvFriendsUsername.text = curFriend.username
+                tvFriendsUsername.visibility = View.VISIBLE
             }
         }else if (friend == true) {
             holder.itemView.apply {
@@ -82,17 +88,19 @@ class FriendAdapter(
                 remButton.visibility = View.INVISIBLE
                 remButton.isClickable = false
 
-                friendFullName.text = curFriend.username
+                friendFullName.text = curFriend.fullName
+                tvFriendsUsername.text = curFriend.username
+                tvFriendsUsername.visibility = View.VISIBLE
             }
         } else {
             holder.itemView.apply {
+                tvFriendsUsername.visibility = View.INVISIBLE
                 pendingReq.visibility = View.VISIBLE
                 acceptButton.visibility = View.VISIBLE
+                friendFullName.text = curFriend.fullName
                 acceptButton.isClickable = true
                 remButton.visibility = View.INVISIBLE
                 remButton.isClickable = false
-
-                friendFullName.text = curFriend.username
             }
         }
 

@@ -7,16 +7,20 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.telephony.PhoneNumberUtils
 import android.util.Log
+import android.view.LayoutInflater
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.itin.databinding.ActivityProfileScreenBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_profile_screen.*
+import kotlinx.android.synthetic.main.account.*
 import java.io.File
 import java.io.IOException
 
@@ -60,7 +64,7 @@ class ProfileScreen : AppCompatActivity() {
         }
 
         // update button
-        updateButton.setOnClickListener { update() }
+        //updateButton.setOnClickListener { update() }
 
         previousTripBtn.setOnClickListener {
             val intent = Intent(this, PreviousTripActivity::class.java)
@@ -74,9 +78,17 @@ class ProfileScreen : AppCompatActivity() {
 
         editProfileIV.setOnClickListener { openGallery() }
 
+        accountBtn.setOnClickListener { updateUserInfo() }
+
+        usBtn.setOnClickListener {
+            val intent = Intent(this, AboutUsActivity::class.java)
+            startActivity(intent)
+        }
+
         // bottom Navigation Bar
         bottomNavBarSetup()
     }
+
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     private fun checkUser() {
@@ -94,6 +106,51 @@ class ProfileScreen : AppCompatActivity() {
         }
     }
 
+    private fun updateUserInfo() {
+        val view = LayoutInflater.from(this).inflate(R.layout.account, null)
+
+        val usernameInput = view.findViewById<TextInputLayout>(R.id.usernameInput)
+        val fullNameInput = view.findViewById<TextInputLayout>(R.id.fullNameInput)
+        val phoneNumberInput = view.findViewById<TextInputLayout>(R.id.phoneNumberInput)
+
+        val newDialog = AlertDialog.Builder(this)
+        newDialog.setView(view)
+
+
+        FirebaseDatabase.getInstance().getReference("users").child(uid).child("userInfo")
+            .get().addOnSuccessListener {
+                if (it.exists()){
+                    fullName = it.child("fullName").value.toString()
+                    username = it.child("username").value.toString()
+                    phoneNo = it.child("phone").value.toString()
+
+                    fullNameInput.editText?.setText(fullName)
+                    usernameInput.editText?.setText(username)
+                    phoneNumberInput.editText?.setText(phoneNo)
+                } else {
+                    Log.d("print", "User does not exist")
+                }
+            }.addOnCanceledListener {
+                Log.d("print", "Failed to fetch the user")
+            }
+
+
+        newDialog.setPositiveButton("Update") { dialog, _ ->
+            update(usernameInput, fullNameInput, phoneNumberInput)
+            Toast.makeText(this, "Updated", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+        newDialog.setNegativeButton("Cancel") { dialog, _ ->
+            Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
+            dialog.dismiss()
+        }
+        newDialog.setOnCancelListener {
+            Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
+        }
+        newDialog.create()
+        newDialog.show()
+    }
+
     // function to read data from Realtime Database
     private fun readData(uid: String) {
         curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
@@ -106,13 +163,7 @@ class ProfileScreen : AppCompatActivity() {
                 phoneNo = it.child("phone").value.toString()
 
                 // Show user info
-                //emailTV.text = email
                 userNameTV.text = username
-                //fullNameTV.text = fullName
-
-                fullNameInput.editText?.setText(fullName)
-                usernameInput.editText?.setText(username)
-                phoneNumberInput.editText?.setText(phoneNo)
 
                 getUserProfile()
             } else {
@@ -124,7 +175,7 @@ class ProfileScreen : AppCompatActivity() {
     }
 
     // function to update user info
-    private fun update() {
+    private fun update(usernameInput: TextInputLayout, fullNameInput: TextInputLayout, phoneNumberInput: TextInputLayout) {
         val newUsername = usernameInput.editText?.text.toString()
         val usernameQuery = FirebaseDatabase.getInstance().reference.child("users")
         usernameQuery.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -144,7 +195,7 @@ class ProfileScreen : AppCompatActivity() {
                 }
                 Log.d("INSIDE",isExist.toString())
 
-                if (isNameChanged() || isUsernameChanged(isExist) || isPhoneNoChanged()) {
+                if (isNameChanged(fullNameInput) || isUsernameChanged(isExist, usernameInput) || isPhoneNoChanged(phoneNumberInput)) {
                     Toast.makeText(this@ProfileScreen,"Updated", Toast.LENGTH_SHORT).show()
                 } else{
                     Toast.makeText(this@ProfileScreen,"Update at least one field", Toast.LENGTH_SHORT).show()
@@ -157,7 +208,7 @@ class ProfileScreen : AppCompatActivity() {
         })
     }
 
-    private fun isNameChanged(): Boolean {
+    private fun isNameChanged(fullNameInput: TextInputLayout): Boolean {
         val newName = fullNameInput.editText?.text.toString()
         if (newName == fullName) {
             return false
@@ -170,7 +221,7 @@ class ProfileScreen : AppCompatActivity() {
         }
     }
 
-    private fun isUsernameChanged(isExist:Boolean): Boolean {
+    private fun isUsernameChanged(isExist:Boolean, usernameInput: TextInputLayout): Boolean {
         val newUsername = usernameInput.editText?.text.toString()
         val noWhiteSpace = Regex("^(.*\\s+.*)+\$")
 
@@ -181,8 +232,8 @@ class ProfileScreen : AppCompatActivity() {
         else if (newUsername == username) {
             return false
         }
-        else if (newUsername.length < 6) {
-            usernameInput.error = "Minimum 6 characters"
+        else if (newUsername.length < 4 || newUsername.length > 14) {
+            usernameInput.error = "Username must be between 4 to 14 characters"
             return false
         }
         else if (newUsername.matches(noWhiteSpace)) {
@@ -211,7 +262,7 @@ class ProfileScreen : AppCompatActivity() {
         }
     }
 
-    private fun isPhoneNoChanged(): Boolean {
+    private fun isPhoneNoChanged(phoneNumberInput: TextInputLayout): Boolean {
         val newPhoneNo = phoneNumberInput.editText?.text.toString()
         if (newPhoneNo == phoneNo) {
             return false
@@ -258,15 +309,15 @@ class ProfileScreen : AppCompatActivity() {
     }
 
     private fun getUserProfile() {
-            storageReference = FirebaseStorage.getInstance().getReference("Users/$uid.jpg")
-            val localFile = File.createTempFile("tempImage", "jpg")
-            localFile.deleteOnExit()
-            storageReference.getFile(localFile).addOnSuccessListener {
-                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
-                profileImageIV.setImageBitmap(bitmap)
-            }.addOnFailureListener {
-                Log.d("ProfilePicture", "Failed to retrieve image")
-            }
+        storageReference = FirebaseStorage.getInstance().getReference("Users/$uid.jpg")
+        val localFile = File.createTempFile("tempImage","jpg")
+        localFile.deleteOnExit()
+        storageReference.getFile(localFile).addOnSuccessListener {
+            val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+            profileImageIV.setImageBitmap(bitmap)
+        }.addOnFailureListener {
+            Log.d("ProfilePicture","Failed to retrieve image")
+        }
     }
     // function to set up the bottom navigation bar
     private fun bottomNavBarSetup(){

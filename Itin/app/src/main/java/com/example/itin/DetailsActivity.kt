@@ -1,7 +1,13 @@
 package com.example.itin
 
 import android.app.TimePickerDialog
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import android.graphics.Paint
 import android.icu.text.SimpleDateFormat
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -13,19 +19,29 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.itin.adapters.CheckInAdapter
 import com.example.itin.classes.Activity
 import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_details.*
+
 
 class DetailsActivity : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
     private var dayID : Int = 0
+    private lateinit var checkInAdapter: CheckInAdapter
+    private lateinit var checkInList: MutableList<String>
+    private lateinit var uid : String
+    private lateinit var activity : Activity
+    private var countCheckIn : Int = 0
+    private var countViewers : Int = 0
     private var cur_viewer:Int = 2
 
     @RequiresApi(Build.VERSION_CODES.N)
@@ -34,24 +50,76 @@ class DetailsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_details)
 
         databaseReference = FirebaseDatabase.getInstance().reference
+        checkUser()
 
         dayID = intent.getIntExtra("DAY_ID", 0) - 1
-        val activity = intent.getSerializableExtra("ACTIVITY") as Activity
+        activity = intent.getSerializableExtra("ACTIVITY") as Activity
         cur_viewer = intent.getIntExtra("CUR_VIEWER",2)
+        countViewers = intent.getIntExtra("VIEWER_LIST", 0)
+        countTotal.text = countViewers.toString()
 
         //filling in information
         tvName.text = activity.name
         tvTime.text = activity.time
-        tvLocation.text = activity.location
+        tvLocation.text = activity.location.substringBefore("\n")
+        tvAddress.text = activity.location.substringAfter("\n")
         tvCost.text = activity.cost
         tvNotes.text = activity.notes
+        tvAddress.paintFlags = tvAddress.paintFlags or Paint.UNDERLINE_TEXT_FLAG
 
-        btEdit.setOnClickListener{editActivity(activity)}
+//        tvAddress.text = Html.fromHtml(
+//
+//                    "<a href=\"http://maps.google.com\">" +
+//                            activity.location.substringAfter("\n") +
+//                    "</a>");
+//        tvAddress.movementMethod = LinkMovementMethod.getInstance();
 
-        backBtn.setOnClickListener {
-            finish()
+        checkInList = mutableListOf()
+        checkInAdapter = CheckInAdapter(checkInList)
+        checkinRV.adapter = checkInAdapter
+        checkinRV.layoutManager = LinearLayoutManager(this)
+        checkinBtn.isClickable = true
+        checkinBtn.isVisible = true
+        checkoutBtn.isClickable = false
+        checkoutBtn.isVisible = false
+        checkinStatus.text = "You Here?"
+        loadCheckInFromDB()
+
+        btEdit.setOnClickListener{ editActivity(activity) }
+        backBtn.setOnClickListener { finish() }
+        checkinBtn.setOnClickListener{ sendCheckInToDB() }
+        checkoutBtn.setOnClickListener{ deleteCheckInFromDB() }
+        copyAddressBtn.setOnClickListener { copyAddress() }
+        tvAddress.setOnClickListener { clickAddress() }
+    }
+
+    private fun checkUser() {
+        val firebaseAuth = FirebaseAuth.getInstance()
+        val firebaseUser = firebaseAuth.currentUser
+        if (firebaseUser == null) {
+            startActivity(Intent(this, GoogleLogin::class.java))
         }
+        else {
+            uid = firebaseUser.uid
+        }
+    }
 
+    private fun clickAddress() {
+        val address = activity.location.substringAfter("\n")
+        val gmmIntentUri = Uri.parse("geo:0,0?q=$address")
+        val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
+        mapIntent.setPackage("com.google.android.apps.maps")
+        mapIntent.resolveActivity(packageManager)?.let {
+            startActivity(mapIntent)
+        }
+    }
+
+    private fun copyAddress() {
+        val address = activity.location.substringAfter("\n")
+        val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = ClipData.newPlainText("text", address)
+        clipboardManager.setPrimaryClip(clipData)
+        Toast.makeText(this, "Copied", Toast.LENGTH_LONG).show()
     }
 
     // function to edit the activity
@@ -186,5 +254,68 @@ class DetailsActivity : AppCompatActivity() {
         curActivity.child("name").setValue(activity.name)
         curActivity.child("notes").setValue(activity.notes)
         curActivity.child("time").setValue(activity.time)
+    }
+
+    private fun sendCheckInToDB() {
+        val tripID = "trip ${activity.tripID}"
+        val dayID = "day $dayID"
+        val actID = "activity ${activity.actID}"
+        databaseReference.child("checkIn"). child(tripID).child(dayID).child(actID).child(uid).setValue(uid)
+    }
+
+    private fun loadCheckInFromDB() {
+        val tripID = "trip ${activity.tripID}"
+        val dayID = "day $dayID"
+        val actID = "activity ${activity.actID}"
+        databaseReference.child("checkIn"). child(tripID).child(dayID).child(actID)
+            .addValueEventListener(object: ValueEventListener {
+                override fun onDataChange(data: DataSnapshot) {
+                    checkInList.clear()     // clear the old list to load new list
+                    for (eachData in data.children) {
+                        val checkInUid = eachData.value
+                        if (uid == checkInUid){
+                            checkinBtn.isClickable = false
+                            checkinBtn.isVisible = false
+                            checkoutBtn.isClickable = true
+                            checkoutBtn.isVisible = true
+                            checkinStatus.text = "Leaving?"
+                        }
+                        checkInList.add(checkInUid as String)
+                    }
+                    checkInAdapter.notifyDataSetChanged()
+                    countCheckIn = data.childrenCount.toInt()
+                    count.text = countCheckIn.toString()
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+            })
+    }
+
+    private fun deleteCheckInFromDB() {
+        val tripID = "trip ${activity.tripID}"
+        val dayID = "day $dayID"
+        val actID = "activity ${activity.actID}"
+        databaseReference.child("checkIn"). child(tripID).child(dayID).child(actID)
+            .addListenerForSingleValueEvent(object: ValueEventListener {
+                override fun onDataChange(data: DataSnapshot) {
+                    for (eachData in data.children) {
+                        val checkInUid = eachData.value
+                        if (uid == checkInUid){
+                            eachData.ref.removeValue()
+                            checkinBtn.isClickable = true
+                            checkinBtn.isVisible = true
+                            checkoutBtn.isClickable = false
+                            checkoutBtn.isVisible = false
+                            checkinStatus.text = "You Here?"
+                        }
+                        checkInList.remove(checkInUid as String)
+                    }
+                    checkInAdapter.notifyDataSetChanged()
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+            })
     }
 }

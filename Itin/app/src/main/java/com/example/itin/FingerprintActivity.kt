@@ -49,6 +49,7 @@ class FingerprintActivity : AppCompatActivity() {
                 .setNegativeButton("Cancel", this.mainExecutor, DialogInterface.OnClickListener { dialog, which -> Log.d("beans","beans") }).build()
             biometricPrompt.authenticate(getCancellationSignal(), mainExecutor, authenticationCallback)
         }
+
     }
     private fun notifyUser(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
