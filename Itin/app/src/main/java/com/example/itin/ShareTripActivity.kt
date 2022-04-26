@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.ShareAdapter
+import com.example.itin.classes.Trip
 import com.example.itin.classes.User
 import com.example.itin.notifications.NotificationData
 import com.example.itin.notifications.PushNotification
@@ -37,10 +38,12 @@ class ShareTripActivity : AppCompatActivity() {
         setContentView(R.layout.activity_share_trip)
         firebaseAuth = FirebaseAuth.getInstance()
 
-        val tripID = intent.getStringExtra("TRIP_ID")?.toInt()
+        val Curtrip = intent.getSerializableExtra("TRIP") as Trip
+        val tripID = Curtrip.tripID
+        val Viewers = Curtrip.viewers
 
         // initiate a new object of class ShareAdapter, pass in friends list as parameter
-        shareAdapter = ShareAdapter(this, friends, tripID)
+        shareAdapter = ShareAdapter(this, friends, Curtrip)
 
         // assign adapter for our RecyclerView
         rvShareFriends.adapter = shareAdapter
@@ -94,31 +97,31 @@ class ShareTripActivity : AppCompatActivity() {
         friendsID.get().addOnSuccessListener {
             if (it.exists()) {
                 val friendsIDStr = it.value.toString()
+                if(!(it.child("trips").child("Trip $tripID").exists())) {
 
-                curUser.get().addOnSuccessListener {
-                    if (it.exists()) {
-                        masterUserList.get().addOnSuccessListener {
-                            if (it.exists()) {
-                                val friendsUID =
-                                    it.child(friendsIDStr).child("UID").value.toString()
-                                Users.child(friendsUID).child("pending trips").child("Trip $tripID").setValue(tripID).addOnCompleteListener { /*addtoviewers(masterTripList,tripID,friendsUID)*/ }
-                                Users.child(friendsUID).child("trips").child("Trip $tripID").setValue(tripID)
-                                // send notification to friend
-                                createNotification(friendsUID)
-                                Toast.makeText(this, "Trip Shared", Toast.LENGTH_SHORT).show()
+                    curUser.get().addOnSuccessListener {
+                        if (it.exists()) {
+                            masterUserList.get().addOnSuccessListener {
+                                if (it.exists()) {
+                                    val friendsUID =
+                                        it.child(friendsIDStr).child("UID").value.toString()
+                                    Users.child(friendsUID).child("pending trips")
+                                        .child("Trip $tripID").setValue(tripID)
+                                    Users.child(friendsUID).child("trips").child("Trip $tripID")
+                                        .setValue(tripID)
+                                    // send notification to friend
+                                    createNotification(friendsUID)
+                                    Toast.makeText(this, "Trip Shared", Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
                     }
                 }
-            } else {
+            }
+            else {
                 Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    private fun addtoviewers(masterTripList: DatabaseReference, tripID: Int?, friendsUID: String) {
-        masterTripList.child(tripID.toString()).child("Viewers").child(friendsUID).child("uid").setValue(friendsUID)
-        masterTripList.child(tripID.toString()).child("Viewers").child(friendsUID).child("Perm").setValue(2)
     }
 
     private fun readData(userCount: Int) {

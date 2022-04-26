@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
+import com.example.itin.classes.Trip
 import com.example.itin.classes.User
 import com.example.itin.notifications.NotificationData
 import com.example.itin.notifications.PushNotification
@@ -34,10 +35,12 @@ private val TAG = "ShareAdapter"
 class ShareAdapter(
     private val context: Context,
     private val Friends: MutableList<User>,
-    private val tripID: Int?,
+    private val Curtrip: Trip,
 
     ) : RecyclerView.Adapter<ShareAdapter.ShareViewHolder>() {
 
+    val tripID = Curtrip.tripID
+    val Viewers = Curtrip.viewers
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var uid : String
     private lateinit var curUser: DatabaseReference
@@ -73,30 +76,33 @@ class ShareAdapter(
                 if (it.exists()) {
                     val friendsIDStr = it.value.toString()
 
-                    curUser.get().addOnSuccessListener {
-                        if (it.exists()) {
-                            masterUserList.get().addOnSuccessListener {
-                                if (it.exists()) {
-                                    val friendsUID = it.child(friendsIDStr).child("UID").value.toString()
-                                    Users.child(friendsUID).child("pending trips").child("Trip $tripID").setValue(2).addOnCompleteListener { /*addtoviewers(masterTripList,friendsUID)*/ }
-                                    Users.child(friendsUID).child("trips").child("Trip $tripID").setValue(tripID)
-                                    // send notification to friend
-                                    createNotification(friendsUID)
-                                    Toast.makeText(context, "Trip Shared", Toast.LENGTH_SHORT).show()
+                    if(!(it.child("trips").child("Trip $tripID").exists())) {
+                        curUser.get().addOnSuccessListener {
+                            if (it.exists()) {
+                                masterUserList.get().addOnSuccessListener {
+                                    if (it.exists()) {
+                                        val friendsUID =
+                                            it.child(friendsIDStr).child("UID").value.toString()
+                                        Users.child(friendsUID).child("pending trips")
+                                            .child("Trip $tripID").setValue(2)
+                                        Users.child(friendsUID).child("trips").child("Trip $tripID")
+                                            .setValue(tripID)
+                                        // send notification to friend
+                                        createNotification(friendsUID)
+                                        Toast.makeText(context, "Trip Shared", Toast.LENGTH_SHORT)
+                                            .show()
+                                    }
                                 }
                             }
                         }
                     }
-                } else {
+                }
+                else {
                     Toast.makeText(context, "User does not exist", Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
-        private fun addtoviewers(masterTripList: DatabaseReference, friendsUID: String) {
-            masterTripList.child(tripID.toString()).child("Viewers").child(friendsUID).child("uid").setValue(friendsUID)
-            masterTripList.child(tripID.toString()).child("Viewers").child(friendsUID).child("Perm").setValue(2)
-        }
 
         // function to make get the token of who we are sending the notification to
         // then fills out notification
@@ -143,6 +149,11 @@ class ShareAdapter(
 
         holder.itemView.apply {
 
+            if(Viewers.containsKey(curFriend.uid)){
+                ibShareFriend.isClickable = false
+                ibShareFriend.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
+            }
+
             var storageReference = FirebaseStorage.getInstance().getReference("Users/${curFriend.uid}.jpg")
             val localFile =
                 File.createTempFile("tempImage_${curFriend.uid}", "jpg")
@@ -153,8 +164,14 @@ class ShareAdapter(
             }.addOnFailureListener {
                 ivFriendPP.setImageResource(R.drawable.profile)
             }
+            if(curFriend.fullName.length > 15){
+                var shortname = curFriend.fullName.substring(0..11)
+                tvFriendFullName.text = shortname+"..."
+            }
+            else{
+                tvFriendFullName.text = curFriend.fullName
+            }
             tvFriendName.text = curFriend.username
-            tvFriendFullName.text = curFriend.fullName
         }
     }
 

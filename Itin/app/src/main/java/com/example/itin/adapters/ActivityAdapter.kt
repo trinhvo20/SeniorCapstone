@@ -68,7 +68,7 @@ class ActivityAdapter(
             val firebaseUser = firebaseAuth.currentUser
             val uid = firebaseUser!!.uid
 
-            if (viewers[uid] == 1){
+            if (viewers[uid] == 1 || viewers[uid] == 2){
                 val curActivity = Activities[adapterPosition]
 
                 val dialog = AlertDialog.Builder(context)
