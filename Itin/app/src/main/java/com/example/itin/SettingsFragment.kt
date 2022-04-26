@@ -63,8 +63,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 val cache = sp?.getBoolean(CACHE,false)
                 // if they changed it to true
                 if("$cache" == "true") {
-                    // clear the cache
+                    // clear the cache of extra stuff
                     context?.cacheDir?.deleteRecursively()
+                    // need this to recreate cache directory file
+                    context?.cacheDir
                     notifyUser("Cache cleared.")
                     //change back to false
                     val prefEditor = sp?.edit()

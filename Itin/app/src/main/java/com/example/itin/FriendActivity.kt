@@ -177,11 +177,10 @@ class FriendActivity : AppCompatActivity(), FriendAdapter.OnItemClickListener {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onItemClick(position: Int) {
         // jump to FriendInfoActivity if they are your friend
-        if(true){
-        //if(friends[position].second[0]) {
+        if(friends[position].second[0]) {
             Intent(this, FriendInfoActivity::class.java).also {
                 // pass the current trip object between activities
-                //it.putExtra("EXTRA_FRIEND", friends[position])
+                it.putExtra("EXTRA_FRIEND", friends[position].first)
                 // start ItineraryActivity
                 startActivity(it)
             }
@@ -312,13 +311,16 @@ class FriendActivity : AppCompatActivity(), FriendAdapter.OnItemClickListener {
                     if (it.exists()) {
                         val username = it.child("userInfo").child("username").value.toString()
                         val uid = it.child("userInfo").child("uid").value.toString()
+                        val fullName = it.child("userInfo").child("fullName").value.toString()
+                        val email = it.child("userInfo").child("email").value.toString()
+                        val phone = it.child("userInfo").child("phone").value.toString()
 
                         val user = User(
                             uid,
-                            "null",
+                            fullName,
                             username,
-                            "null",
-                            "null"
+                            email,
+                            phone
                         )
                         val booleans = listOf(friend, remove)
                         friends.add(Pair(user, booleans))

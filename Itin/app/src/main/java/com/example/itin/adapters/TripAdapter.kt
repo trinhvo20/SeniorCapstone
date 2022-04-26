@@ -229,12 +229,13 @@ class TripAdapter(
             val firebaseAuth = FirebaseAuth.getInstance()
             val firebaseUser = firebaseAuth.currentUser
             var curTrips: DatabaseReference? = null
+            var uid : String = ""
 
             // If the use is not current logged in:
             if (firebaseUser == null) {
 
             } else {
-                val uid = firebaseUser.uid
+                uid = firebaseUser.uid
                 val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
                 curTrips = curUser.child("trips")
             }
@@ -249,6 +250,8 @@ class TripAdapter(
             tripInstance.child("Deleted").setValue(trip.deleted)
             tripInstance.child("Active").setValue(trip.active)
             tripInstance.child("ID").setValue(trip.tripID)
+            tripInstance.child("EpochEnd").setValue(trip.epochEnd)
+            tripInstance.child("EpochStart").setValue(trip.epochStart)
 
             // create days folder
             // will be accessed later in itinerary activity
@@ -260,6 +263,11 @@ class TripAdapter(
             for (i in 0 until dayNum + 1) {
                 makeDayInstance(itineraryInstance,i.toInt(), trip)
             }
+
+            //create Viewers folder
+            tripInstance.child("Viewers").child(uid).child("uid").setValue(uid)
+            tripInstance.child("Viewers").child(uid).child("Perm").setValue(1)
+
 
             // Record trips in the individual user
             if (curTrips != null) {
@@ -279,14 +287,14 @@ class TripAdapter(
 
                 val activity = trip.days[dayNum].activities[i]
                 if (activity != null) {
-                    sendActivityToDB(trip.days[dayNum], activity)
+                    sendActivityToDB(trip.days[dayNum],trip, activity)
                 }
             }
         }
 
-        private fun sendActivityToDB(curDay: Day, activity: Activity) {
+        private fun sendActivityToDB(curDay: Day, trip: Trip, activity: Activity) {
             val dayInstance = FirebaseDatabase.getInstance().getReference("masterTripList")
-                .child(curDay.tripID.toString()).child("Days").child((curDay.dayInt-1).toString())
+                .child(trip.tripID.toString()).child("Days").child((curDay.dayInt-1).toString())
             dayInstance.child("ActivityCount").setValue(curDay.activities.size)
 
             val activityInstance = dayInstance.push()

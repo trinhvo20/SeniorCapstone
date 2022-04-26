@@ -18,6 +18,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.activity_profile_screen.*
 import java.io.File
+import java.io.IOException
 
 
 class ProfileScreen : AppCompatActivity() {
@@ -257,14 +258,15 @@ class ProfileScreen : AppCompatActivity() {
     }
 
     private fun getUserProfile() {
-        storageReference = FirebaseStorage.getInstance().getReference("Users/$uid.jpg")
-        val localFile = File.createTempFile("tempImage","jpg")
-        storageReference.getFile(localFile).addOnSuccessListener {
-            val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
-            profileImageIV.setImageBitmap(bitmap)
-        }.addOnFailureListener {
-            Log.d("ProfilePicture","Failed to retrieve image")
-        }
+            storageReference = FirebaseStorage.getInstance().getReference("Users/$uid.jpg")
+            val localFile = File.createTempFile("tempImage", "jpg")
+            localFile.deleteOnExit()
+            storageReference.getFile(localFile).addOnSuccessListener {
+                val bitmap = BitmapFactory.decodeFile(localFile.absolutePath)
+                profileImageIV.setImageBitmap(bitmap)
+            }.addOnFailureListener {
+                Log.d("ProfilePicture", "Failed to retrieve image")
+            }
     }
     // function to set up the bottom navigation bar
     private fun bottomNavBarSetup(){
