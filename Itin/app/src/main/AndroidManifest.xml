@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Itin">
         <activity
-            android:name=".FriendInfoActivity"
+            android:name=".FriendInfoActivity" />
         <activity
             android:name=".AboutUsActivity"
             android:exported="false" />
