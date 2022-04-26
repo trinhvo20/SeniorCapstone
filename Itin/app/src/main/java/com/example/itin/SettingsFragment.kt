@@ -57,28 +57,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     }
                 }
             }
-            if (key == CACHE){
-                // get the value for cache
-                val sp = context?.let { PreferenceManager.getDefaultSharedPreferences(it) }
-                val cache = sp?.getBoolean(CACHE,false)
-                // if they changed it to true
-                if("$cache" == "true") {
-                    // clear the cache of extra stuff
-                    context?.cacheDir?.deleteRecursively()
-                    // need this to recreate cache directory file
-                    context?.cacheDir
-                    notifyUser("Cache cleared.")
-                    //change back to false
-                    val prefEditor = sp?.edit()
-                    prefEditor?.putBoolean(CACHE, false)
-                    prefEditor?.commit()
-                    // refresh the page
-                    activity?.finish()
-                    activity?.overridePendingTransition(0, 0)
-                    activity?.startActivity(activity?.intent)
-                    activity?.overridePendingTransition(0, 0)
-                }
-            }
         }
     }
 
@@ -138,7 +116,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
     companion object {
         const val DARK_MODE = "dark_mode_key"
         const val FINGERPRINT = "fingerprint_key"
-        const val CACHE = "cache_key"
     }
 
 }

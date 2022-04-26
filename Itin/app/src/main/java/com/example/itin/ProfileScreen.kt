@@ -30,7 +30,6 @@ import kotlinx.android.synthetic.main.account.*
 import kotlinx.android.synthetic.main.activity_profile_screen.*
 import kotlinx.android.synthetic.main.activity_share_trip.view.*
 import java.io.File
-import java.io.IOException
 
 
 class ProfileScreen : AppCompatActivity() {
