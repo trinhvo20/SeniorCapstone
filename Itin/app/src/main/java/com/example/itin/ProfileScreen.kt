@@ -63,20 +63,9 @@ class ProfileScreen : AppCompatActivity() {
         firebaseAuth = FirebaseAuth.getInstance()
         checkUser()
 
-//        // Grabbing api client for phone number import
-//        mCredentialsApiClient = GoogleApiClient.Builder(this)
-////            .addConnectionCallbacks(this)
-////            .enableAutoManage(this, this)
-////            (Auth.CREDENTIALS_API)
-////            .build()
-
         mGoogleApiClient = GoogleApiClient.Builder(this)
             .addApi(Auth.CREDENTIALS_API)
             .build()
-//            .enableAutoManage(
-//                this /* FragmentActivity */,
-//                this /* OnConnectionFailedListener */
-//            )
 
         // Logout button
         logoutBtn.setOnClickListener {
@@ -127,8 +116,6 @@ class ProfileScreen : AppCompatActivity() {
         }
     }
 
-
-
     private fun checkUser() {
         val firebaseUser = firebaseAuth.currentUser
         // If the user is not currently logged in:
@@ -143,10 +130,6 @@ class ProfileScreen : AppCompatActivity() {
             readData(uid)
         }
     }
-
-//    private fun updateUserInfo() {
-//        showHint()
-//    }
 
     private fun updateUserInfo() {
 
@@ -170,10 +153,11 @@ class ProfileScreen : AppCompatActivity() {
                 if (it.exists()){
                     fullName = it.child("fullName").value.toString()
                     username = it.child("username").value.toString()
-                    //phoneNo =  it.child("phone").value.toString()
+                    phoneNo =  it.child("phone").value.toString()
 
                     fullNameInput.editText?.setText(fullName)
                     usernameInput.editText?.setText(username)
+                    phoneNumberInput.text = phoneNo
                 } else {
                     Log.d("print", "User does not exist")
                 }
@@ -310,16 +294,13 @@ class ProfileScreen : AppCompatActivity() {
     }
 
     private fun isPhoneNoChanged(phoneNumberInput: TextView): Boolean {
-        val newPhoneNo = phoneNumberInput.text.toString()
+        var newPhoneNo = phoneNumberInput.text.toString()
         Log.d("Phone Number Debugging", "$newPhoneNo")
         if (newPhoneNo == curUserInfo.child("phone").get().toString()) {
             return false
         }
-//        else if (newPhoneNo.length != 11) {
-//            phoneNumberInput.error = "Must contain 11 digits"
-//            return false
-//        }
         else {
+//            newPhoneNo = newPhoneNo.slice((2..12))
 //            val formattedPhoneNo = PhoneNumberUtils.formatNumber(newPhoneNo, "US")
             curUserInfo.child("phone").setValue(newPhoneNo)
             return true
