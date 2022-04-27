@@ -20,14 +20,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.android.synthetic.main.friend_item.view.*
 import kotlinx.android.synthetic.main.friend_share_item.view.*
-import kotlinx.android.synthetic.main.trip_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
-import java.util.*
 
 // Variable for error messages
 private val TAG = "ShareAdapter"
@@ -49,13 +46,13 @@ class ShareAdapter(
         private val ibShareFriend: ImageView = itemView.findViewById(R.id.ibShareFriend)
         init {
             ibShareFriend.setOnClickListener {
-                ShareByFriend(it)
+                ShareByFriend(3)
                 ibShareFriend.isClickable = false
                 ibShareFriend.backgroundTintList = ColorStateList.valueOf(Color.GRAY)
             }
         }
 
-        private fun ShareByFriend(view: View) {
+        private fun ShareByFriend(permlevel: Int) {
             val curFriend = Friends[adapterPosition].username
 
             // Base firebase variables
@@ -84,7 +81,7 @@ class ShareAdapter(
                                         val friendsUID =
                                             it.child(friendsIDStr).child("UID").value.toString()
                                         Users.child(friendsUID).child("pending trips")
-                                            .child("Trip $tripID").setValue(2)
+                                            .child("Trip $tripID").setValue(permlevel)
                                         Users.child(friendsUID).child("trips").child("Trip $tripID")
                                             .setValue(tripID)
                                         // send notification to friend

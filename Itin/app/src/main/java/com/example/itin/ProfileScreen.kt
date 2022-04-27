@@ -157,7 +157,7 @@ class ProfileScreen : AppCompatActivity() {
         val fullNameInput = view.findViewById<TextInputLayout>(R.id.fullNameInput)
         phoneNumberInput = view.findViewById<TextView>(R.id.phoneNumberInput)
 
-        val newDialog = AlertDialog.Builder(this)
+        val newDialog = AlertDialog.Builder(this,R.style.popup_Theme)
         newDialog.setView(view)
 
         phoneNumberInput.setOnClickListener{
