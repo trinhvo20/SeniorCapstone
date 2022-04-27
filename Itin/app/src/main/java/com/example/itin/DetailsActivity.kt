@@ -105,6 +105,7 @@ class DetailsActivity : AppCompatActivity() {
     }
 
     private fun clickAddress() {
+
         val address = activity.location.substringAfter("\n")
         val gmmIntentUri = Uri.parse("geo:0,0?q=$address")
         val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
