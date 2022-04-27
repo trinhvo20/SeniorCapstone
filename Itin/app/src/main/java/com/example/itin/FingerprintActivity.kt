@@ -46,7 +46,7 @@ class FingerprintActivity : AppCompatActivity() {
             val biometricPrompt : BiometricPrompt = BiometricPrompt.Builder(this)
                 .setTitle("Itin Security")
                 .setDescription("Fingerprint Authentication")
-                .setNegativeButton("Cancel", this.mainExecutor, DialogInterface.OnClickListener { dialog, which -> Log.d("beans","beans") }).build()
+                .setNegativeButton("Cancel", this.mainExecutor, DialogInterface.OnClickListener { dialog, which ->}).build()
             biometricPrompt.authenticate(getCancellationSignal(), mainExecutor, authenticationCallback)
         }
 
@@ -57,6 +57,7 @@ class FingerprintActivity : AppCompatActivity() {
     private fun getCancellationSignal(): CancellationSignal {
         cancellationSignal = CancellationSignal()
         cancellationSignal?.setOnCancelListener {
+            //do pin activity here
             notifyUser("Authentication was cancelled by the user")
         }
         return cancellationSignal as CancellationSignal
