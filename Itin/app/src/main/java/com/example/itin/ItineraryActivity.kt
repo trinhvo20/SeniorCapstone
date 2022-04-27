@@ -134,6 +134,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         var enddate = LocalDate.parse(trip.endDate, formatter)
 
         activitySort(days)
+        loadDaysFromDB()
         dayAdapter.notifyDataSetChanged()
 
         btExpandMenu.setOnClickListener { onExpandButtonClicked() }
