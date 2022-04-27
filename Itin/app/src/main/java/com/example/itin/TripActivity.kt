@@ -88,7 +88,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         // determine how items are arrange in our list
         rvTripList.layoutManager = LinearLayoutManager(this)
-        createTestTrip()
+        //createTestTrip()
 
         // what happen when click on AddTodo button -> call the addTrip function
         btAddTrip.setOnClickListener { addTrip() }
@@ -123,7 +123,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // It will clear the days list and load all days from the DB again
         tripsSwipeContainer.setOnRefreshListener {
             tripAdapter.clear()
-            createTestTrip()
+            //createTestTrip()
             readData(tripCount)
             tripsSwipeContainer.isRefreshing = false
         }
@@ -140,7 +140,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     override fun onRestart() {
         super.onRestart()
         tripAdapter.clear()
-        createTestTrip()
+        //createTestTrip()
         readData(tripCount)
     }
 
@@ -271,9 +271,10 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     active,
                     tripID = tripCount,
                     days = mutableListOf(),
-                    viewers = mutableMapOf(),
-                    epoch = tripEpoch.timeInMillis,
-                    pending = 0
+                    viewers = mutableMapOf(uid to 1),
+                    epochStart = startEpoch.timeInMillis,
+                    epochEnd = endEpoch.timeInMillis,
+                    pending=0
                 )
 
                 // Write to the database, then increment tripCount in the database
@@ -288,7 +289,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 }
 
                 supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-                scheduleNotification(year,month,day,"Trip Reminder", "$name")
+                scheduleNotification(startYear,startMonth,startDay,"Trip Reminder", "$name")
                 Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }
