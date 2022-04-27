@@ -131,6 +131,10 @@ class ProfileScreen : AppCompatActivity() {
         }
     }
 
+//    private fun updateUserInfo() {
+//        showHint()
+//    }
+
     private fun updateUserInfo() {
 
         val view = LayoutInflater.from(this).inflate(R.layout.account, null)
@@ -299,6 +303,10 @@ class ProfileScreen : AppCompatActivity() {
         if (newPhoneNo == curUserInfo.child("phone").get().toString()) {
             return false
         }
+//        else if (newPhoneNo.length != 11) {
+//            phoneNumberInput.error = "Must contain 11 digits"
+//            return false
+//        }
         else {
 //            newPhoneNo = newPhoneNo.slice((2..12))
 //            val formattedPhoneNo = PhoneNumberUtils.formatNumber(newPhoneNo, "US")
