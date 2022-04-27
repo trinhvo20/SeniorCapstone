@@ -94,7 +94,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp"
+                android:padding="35dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout">
@@ -104,6 +104,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
+                    android:textStyle="bold"
                     app:boxBackgroundColor="@color/transparent"
                     android:drawableLeft="@drawable/ic_person_outline"
                     android:drawablePadding="10dp"
@@ -116,10 +117,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
+                    android:textStyle="bold"
+                    android:autoLink="email"
                     app:boxBackgroundColor="@color/transparent"
                     android:drawableLeft="@drawable/ic_mail"
                     android:drawablePadding="10dp"
-                    android:text="Username">
+                    android:text="@string/email">
 
                 </TextView>
 
@@ -128,10 +131,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
+                    android:textStyle="bold"
+                    android:autoLink="phone"
                     app:boxBackgroundColor="@color/transparent"
                     android:drawableLeft="@drawable/ic_phone"
                     android:drawablePadding="10dp"
-                    android:text="123-456-7890">
+                    android:text="@string/phone">
 
                 </TextView>
 
