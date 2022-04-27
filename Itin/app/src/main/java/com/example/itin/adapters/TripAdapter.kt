@@ -241,7 +241,9 @@ class TripAdapter(
                         active = curTrip.active,
                         tripID = tripCount,
                         curTrip.days,
-                        epoch = curTrip.epoch
+                        epochEnd = curTrip.epochEnd,
+                        epochStart = curTrip.epochStart,
+
                     )
                     // when reading from DB, it does not correctly make the days list
                     // check that the heck out
