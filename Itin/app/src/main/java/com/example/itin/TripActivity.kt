@@ -36,6 +36,9 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
 import android.content.Context
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.EditorInfo.IME_ACTION_NEXT
+import kotlinx.android.synthetic.main.activity_friend.*
 
 // Toggle Debugging
 const val DEBUG_TOGGLE: Boolean = true
@@ -177,7 +180,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         var startYear = 0
         var startMonth = 0
         var startDay = 0
-
+        
         // Handle AutoComplete Places Search from GoogleAPI
         if (!Places.isInitialized()) {
             Places.initialize(this,getString(R.string.API_KEY))
@@ -209,9 +212,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 this,
                 { _, mYear, mMonth, mDay ->
                     etStartDate.text = "" + (mMonth + 1) + "/" + mDay + "/" + mYear
-                    startYear = mYear
-                    startMonth = mMonth
-                    startDay = mDay
                     startDateObj = LocalDate.parse(etStartDate.text.toString(), formatter)
                 }, year, month, day
             )
@@ -234,7 +234,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             datePickerDialog.show()
         }
 
-        val newDialog = AlertDialog.Builder(this)
+        val newDialog = AlertDialog.Builder(this,R.style.popup_Theme)
         newDialog.setView(view)
 
         newDialog.setPositiveButton("Add") { dialog, _ ->
@@ -268,7 +268,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 startEpoch.set(startYear,startMonth,startDay,0,0)
                 val endEpoch = Calendar.getInstance()
                 endEpoch.set(endYear,endMonth,endDay,23,59)
-
                 // Grab the initial values for database manipulation
                 val trip = Trip(
                     name,
@@ -359,6 +358,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 var tripId = it.child("ID").value.toString().toInt()
                 val epochEnd = it.child("EpochEnd").value.toString().toLong()
                 val epochStart = it.child("EpochStart").value.toString().toLong()
+
 
                 // get current time
                 val calendar = Calendar.getInstance()
@@ -642,8 +642,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 active = true,
                 tripID = -1,
                 days = daylist,
-                viewers = mutableMapOf("CNIyURFyEhRrb1sZNLJo47yMF4o2" to 1,"LW4U6jdzqqcdLvqMMdw7tt1M9b73" to 2,"dwJLMqs0Y5M65fmvS4lIJS5xFgf1" to 2,"eZuf0wlulMe64K6ZXgFPBXTlFJs1" to 2,"JFn2cxxk1xWl83eXDWsXf5fSwvu1" to 2,"uSWyidP8E2axSFnBf1WZgGlcUgF3" to 2),
-                epochStart = 0.toLong()
+                viewers = mutableMapOf("CNIyURFyEhRrb1sZNLJo47yMF4o2" to 1,"LW4U6jdzqqcdLvqMMdw7tt1M9b73" to 2,"dwJLMqs0Y5M65fmvS4lIJS5xFgf1" to 2,"eZuf0wlulMe64K6ZXgFPBXTlFJs1" to 2,"JFn2cxxk1xWl83eXDWsXf5fSwvu1" to 2,"uSWyidP8E2axSFnBf1WZgGlcUgF3" to 2)
             )
             trips.add(trip)
             tripAdapter.notifyDataSetChanged()

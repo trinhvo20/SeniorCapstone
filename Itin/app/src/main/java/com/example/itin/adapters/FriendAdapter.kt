@@ -21,8 +21,7 @@ import kotlinx.android.synthetic.main.friend_share_item.view.*
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.io.File
 class FriendAdapter(
-    private val friends: MutableList<Pair<User, List<Boolean>>>,
-    private val listener: FriendAdapter.OnItemClickListener
+    private val friends: MutableList<Pair<User, List<Boolean>>>
 ): RecyclerView.Adapter<FriendAdapter.FriendViewHolder>() {
 
     inner class FriendViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
@@ -182,12 +181,6 @@ class FriendAdapter(
                 }
             }
         }
-
-        // handle RecyclerView clickable
-        holder.itemView.setOnClickListener {
-            listener.onItemClick(position)
-        }
-
     }
 
     override fun getItemCount(): Int {
@@ -198,11 +191,6 @@ class FriendAdapter(
     fun clear() {
         friends.clear()
         notifyDataSetChanged()
-    }
-
-    // this interface will handle the RecyclerView clickable
-    interface OnItemClickListener {
-        fun onItemClick(position: Int)
     }
 
 }

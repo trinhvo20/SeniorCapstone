@@ -8,6 +8,7 @@ import android.preference.PreferenceManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -31,7 +32,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class FriendActivity : AppCompatActivity(), FriendAdapter.OnItemClickListener {
+class FriendActivity : AppCompatActivity() {
 
     // Variables for recycler view
     private lateinit var friends: MutableList<Pair<User, List<Boolean>>>
@@ -70,7 +71,7 @@ class FriendActivity : AppCompatActivity(), FriendAdapter.OnItemClickListener {
         loadSettings()
 
         friends = mutableListOf()
-        friendAdapter = FriendAdapter(friends, this)
+        friendAdapter = FriendAdapter(friends)
         rvFriends.adapter = friendAdapter
         rvFriends.layoutManager = LinearLayoutManager(this)
 
@@ -116,17 +117,17 @@ class FriendActivity : AppCompatActivity(), FriendAdapter.OnItemClickListener {
             }
         })
 
-//        // Sets up the text box to only allow you to send request if the textbox is not empty
-//        // This improves UI but also doubles as an easy way to check for null input
-//        friendsUsername.addTextChangedListener(object: TextWatcher {
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                if (typed == false) {
-//                    typed = true
-//                }
-//            }
-//            override fun afterTextChanged(s: Editable?) { }
-//        })
+        // Sets up the text box to only allow you to send request if the textbox is not empty
+        // This improves UI but also doubles as an easy way to check for null input
+        friendsUsername.addTextChangedListener(object: TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                if (typed == false) {
+                    typed = true
+                }
+            }
+            override fun afterTextChanged(s: Editable?) { }
+        })
 
         // Overwrites the initial value of 0 for numFriends if user has any friends
         masterUserList.get().addOnSuccessListener {
@@ -162,25 +163,30 @@ class FriendActivity : AppCompatActivity(), FriendAdapter.OnItemClickListener {
         bottomNavBarSetup()
     }
 
-    // This function handles RecyclerView that lead you to TripDetails page
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onItemClick(position: Int) {
-        // jump to FriendInfoActivity if they are your friend
-        if(friends[position].second[0]) {
-            Intent(this, FriendInfoActivity::class.java).also {
-                // pass the current trip object between activities
-                it.putExtra("EXTRA_FRIEND", friends[position].first)
-                // start ItineraryActivity
-                startActivity(it)
-            }
-        }
-    }
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onRestart() {
         super.onRestart()
         friendsList.clear()
         readData(userCount)
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if (currentFocus != null) {
+            friendsUsername.visibility = View.INVISIBLE
+
+            btExpandMenu.visibility = View.VISIBLE
+            btExpandMenu.isClickable = true
+            btExpandMenu.startAnimation(appear)
+            btExpandMenu.startAnimation(rotateClose)
+
+            bottomNavView_Bar.visibility = View.VISIBLE
+
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(friendsUsername.getWindowToken(), 0)
+
+            sent = true
+        }
+        return super.dispatchTouchEvent(ev)
     }
 
     private fun addFriendReq() {
@@ -313,16 +319,13 @@ class FriendActivity : AppCompatActivity(), FriendAdapter.OnItemClickListener {
                         val username = it.child("userInfo").child("username").value.toString()
                         val fullname = it.child("userInfo").child("fullName").value.toString()
                         val uid = it.child("userInfo").child("uid").value.toString()
-                        val fullName = it.child("userInfo").child("fullName").value.toString()
-                        val email = it.child("userInfo").child("email").value.toString()
-                        val phone = it.child("userInfo").child("phone").value.toString()
 
                         val user = User(
                             uid,
-                            fullName,
+                            fullname,
                             username,
-                            email,
-                            phone
+                            "null",
+                            "null"
                         )
                         val booleans = listOf(friend, remove)
                         friends.add(Pair(user, booleans))
