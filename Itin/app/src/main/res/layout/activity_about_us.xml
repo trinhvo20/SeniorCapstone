@@ -261,7 +261,7 @@
                         android:id="@+id/trinhPara"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Paragraph about yourself"
+                        android:text="Senior in Computer Science at Louisiana Tech University. Enjoy photography, foods, and traveling.  "
                         android:textSize="16sp"
                         android:layout_marginLeft="10dp"
                         app:layout_constraintEnd_toEndOf="parent"
