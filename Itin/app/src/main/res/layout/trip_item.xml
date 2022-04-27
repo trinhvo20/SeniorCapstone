@@ -27,7 +27,7 @@
         android:fontFamily="@font/candal"
         android:text="Name"
         android:textColor="@color/mint"
-        android:textSize="27dp"
+        android:textSize="25dp"
         android:includeFontPadding="false"
         android:layout_marginLeft="10dp"
         android:paddingBottom="2dp"
@@ -69,11 +69,11 @@
 
     <TextView
         android:id="@+id/tvCountdown"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="15dp"
+        android:layout_width="182dp"
+        android:layout_height="22dp"
         android:layout_marginLeft="10dp"
+        android:text="Countdown"
+        android:textSize="15dp"
         app:layout_constraintStart_toEndOf="@+id/tripImage"
         app:layout_constraintTop_toBottomOf="@+id/tvStartDate" />
 

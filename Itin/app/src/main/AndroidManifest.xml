@@ -17,7 +17,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Itin">
         <activity
-            android:name=".NotificationListActivity"
+            android:name=".NotificationListActivity" />
+        <activity
+            android:name=".FriendInfoActivity" />
+        <activity
+            android:name=".AboutUsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ViewerActivity"
             android:exported="false" />
         <activity
             android:name=".FingerprintActivity"

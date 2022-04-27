@@ -5,77 +5,77 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:id="@+id/friend"
-        android:layout_width="match_parent"
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/friendsPP"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_marginVertical="5dp"
+        android:src="@drawable/profile"
+        app:civ_circle_background_color="@color/LightGray"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/friendFullName"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        android:fontFamily="@font/aclonica"
+        android:includeFontPadding="false"
+        android:text="Full Name"
+        android:textSize="25sp"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintStart_toEndOf="@+id/friendsPP"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/friendsPP"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginVertical="5dp"
-            android:src="@drawable/profile"
-            app:civ_circle_background_color="@color/LightGray" />
+    <TextView
+        android:id="@+id/pendingReq"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:text="Pending Request"
+        android:visibility="invisible"
+        android:layout_marginLeft="10dp"
+        android:textColor="#F44336"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@+id/friendsPP"
+        app:layout_constraintTop_toBottomOf="@+id/friendFullName" />
 
-        <LinearLayout
-            android:layout_width="161dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@+id/profileImageIV"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:padding="5dp">
-
-            <TextView
-                android:id="@+id/friendFullName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@id/userNameTV"
-                android:fontFamily="@font/bungee"
-                android:includeFontPadding="false"
-                android:text="Full Name"
-                android:textSize="20sp" />
-
-            <TextView
-                android:id="@+id/pendingReq"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="bottom"
-                android:text="Pending Request"
-                android:textColor="#F44336"
-                android:textSize="13sp" />
-
-        </LinearLayout>
-
-    </LinearLayout>
+    <TextView
+        android:id="@+id/tvFriendsUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="bottom"
+        android:fontFamily="@font/aclonica"
+        android:text="Username"
+        android:layout_marginLeft="10dp"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@+id/friendsPP"
+        app:layout_constraintTop_toTopOf="@+id/pendingReq" />
 
     <Button
         android:id="@+id/acceptButton"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:text="Accept"
-        app:layout_constraintBottom_toBottomOf="@+id/friend"
-        app:layout_constraintEnd_toEndOf="@+id/friend"
         android:layout_marginBottom="17dp"
-        android:layout_marginRight="10dp"/>
-
+        android:clickable="false"
+        android:text="Accept"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/remButton"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:text="Remove"
-        app:layout_constraintBottom_toBottomOf="@+id/friend"
-        app:layout_constraintEnd_toEndOf="@+id/friend"
         android:layout_marginBottom="17dp"
-        android:layout_marginRight="10dp"
+        android:clickable="false"
+        android:text="Remove"
         android:visibility="invisible"
-        android:clickable="false"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/view2"
@@ -83,6 +83,7 @@
         android:layout_height="1dp"
         android:background="@color/DarkGray"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/friend" />
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/tvFriendsUsername"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,9 @@
     <array name="preloaded_fonts" translatable="false">
         <item>@font/</item>
         <item>@font/aclonica</item>
+        <item>@font/akronim</item>
+        <item>@font/architects_daughter</item>
+        <item>@font/arizonia</item>
         <item>@font/asset</item>
         <item>@font/bangers</item>
         <item>@font/candal</item>
