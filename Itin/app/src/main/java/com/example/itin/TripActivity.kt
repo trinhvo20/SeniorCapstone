@@ -36,6 +36,9 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.*
 import android.content.Context
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.EditorInfo.IME_ACTION_NEXT
+import kotlinx.android.synthetic.main.activity_friend.*
 
 // Toggle Debugging
 const val DEBUG_TOGGLE: Boolean = true
@@ -177,7 +180,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         var startYear = 0
         var startMonth = 0
         var startDay = 0
-
+        
         // Handle AutoComplete Places Search from GoogleAPI
         if (!Places.isInitialized()) {
             Places.initialize(this,getString(R.string.API_KEY))
@@ -234,7 +237,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             datePickerDialog.show()
         }
 
-        val newDialog = AlertDialog.Builder(this)
+        val newDialog = AlertDialog.Builder(this,R.style.popup_Theme)
         newDialog.setView(view)
 
         newDialog.setPositiveButton("Add") { dialog, _ ->
@@ -268,7 +271,6 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 startEpoch.set(startYear,startMonth,startDay,0,0)
                 val endEpoch = Calendar.getInstance()
                 endEpoch.set(endYear,endMonth,endDay,23,59)
-
                 // Grab the initial values for database manipulation
                 val trip = Trip(
                     name,

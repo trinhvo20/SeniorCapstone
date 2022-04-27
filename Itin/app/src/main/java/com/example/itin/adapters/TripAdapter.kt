@@ -117,7 +117,8 @@ class TripAdapter(
                                         context,
                                         "Trip Successfully Deleted",
                                         Toast.LENGTH_SHORT
-                                    ).show()
+                                    )
+                                        .show()
                                     dialog.dismiss()
                                 }
                                 .setNegativeButton("No") { dialog, _ ->
@@ -125,13 +126,8 @@ class TripAdapter(
                                 }
                                 .create()
                                 .show()
-                            val tripImageRef = FirebaseStorage.getInstance().getReference("Trips/${curTrip.tripID}.jpg")
-                            tripImageRef.delete().addOnSuccessListener {
-                                // File deleted successfully
-                            }.addOnFailureListener {
-                                // Uh-oh, an error occurred!
-                            }
                         }
+
                         else {
                             Toast.makeText(context, "You do not have permission to preform this action", Toast.LENGTH_SHORT).show()
                         }
@@ -246,8 +242,9 @@ class TripAdapter(
                         active = curTrip.active,
                         tripID = tripCount,
                         curTrip.days,
+                        epochEnd = curTrip.epochEnd,
                         epochStart = curTrip.epochStart,
-                        epochEnd = curTrip.epochEnd
+
                     )
                     // when reading from DB, it does not correctly make the days list
                     // check that the heck out
@@ -399,7 +396,7 @@ class TripAdapter(
             ivViewers2.visibility = View.INVISIBLE
             ivViewers3.visibility = View.INVISIBLE
             tvViewersE.visibility = View.INVISIBLE
-
+            
             if(curTrip.pending == 1){
                 btAccept.visibility = View.VISIBLE
                 btDeny.visibility = View.VISIBLE
