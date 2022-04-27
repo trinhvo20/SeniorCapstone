@@ -5,7 +5,7 @@
 
     <style name="popup.Theme" parent="ThemeOverlay.AppCompat.Dialog.Alert">
         <item name="android:windowBackground"> @drawable/popup_bg </item>
+        <item name="android:colorPrimaryDark"> @color/black </item>
     </style>
-
 
 </resources>

@@ -39,13 +39,17 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:hint="Full Name"
+            android:textColorHint="@color/black"
             app:boxBackgroundColor="@color/transparent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:backgroundTint="@color/transparent"
                 android:drawableLeft="@drawable/ic_person_outline"
                 android:drawablePadding="10dp"
+                android:drawableTint="@color/black"
+                android:textColor="@color/black"
                 android:text="Full Name" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -55,6 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
+            android:textColorHint="@color/black"
             android:hint="Username"
             app:boxBackgroundColor="@color/transparent">
 
@@ -63,6 +68,9 @@
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/ic_person"
                 android:drawablePadding="10dp"
+                android:backgroundTint="@color/transparent"
+                android:textColor="@color/black"
+                android:drawableTint="@color/black"
                 android:text="Username" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -72,8 +80,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"
             app:boxBackgroundColor="@color/transparent"
             android:drawableLeft="@drawable/ic_phone"
+            android:drawableTint="@color/black"
+            android:textSize="18dp"
             android:drawablePadding="10dp"
             android:fontFamily="serif">
 
