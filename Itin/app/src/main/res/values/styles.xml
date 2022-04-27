@@ -3,8 +3,9 @@
         <item name="android:background">@color/black_overlay</item>
     </style>
 
-    <style name="Widget.Theme.Itin.ButtonBar.Fullscreen" parent="">
-        <item name="android:background">@color/black_overlay</item>
-        <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
+    <style name="popup.Theme" parent="ThemeOverlay.AppCompat.Dialog.Alert">
+        <item name="android:windowBackground"> @drawable/popup_bg </item>
     </style>
+
+
 </resources>

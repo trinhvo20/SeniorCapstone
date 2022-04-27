@@ -186,7 +186,7 @@ class DetailsActivity : AppCompatActivity() {
                 tpd.show()
             }
 
-            val newDialog = AlertDialog.Builder(this)
+            val newDialog = AlertDialog.Builder(this,R.style.popup_Theme)
             newDialog.setView(view)
 
             newDialog.setPositiveButton("Edit") { dialog, _ ->

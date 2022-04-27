@@ -53,7 +53,7 @@ class ShareTripActivity : AppCompatActivity() {
 
         shareAdapter.notifyDataSetChanged()
 
-        ibShareUsername.setOnClickListener { ShareByUsername(etUsername.text.toString(),tripID) }
+        ibShareUsername.setOnClickListener { ShareByUsername(etUsername.text.toString(),tripID,3) }
 
         firebaseAuth = FirebaseAuth.getInstance()
         val firebaseUser = firebaseAuth.currentUser
@@ -79,7 +79,7 @@ class ShareTripActivity : AppCompatActivity() {
         backBtn.setOnClickListener{finish()}
     }
 
-    private fun ShareByUsername(Username: String, tripID: Int?) {
+    private fun ShareByUsername(Username: String, tripID: Int?, permlevel: Int) {
 
         // Base firebase variables
         val firebaseUser = firebaseAuth.currentUser
@@ -106,7 +106,7 @@ class ShareTripActivity : AppCompatActivity() {
                                     val friendsUID =
                                         it.child(friendsIDStr).child("UID").value.toString()
                                     Users.child(friendsUID).child("pending trips")
-                                        .child("Trip $tripID").setValue(tripID)
+                                        .child("Trip $tripID").setValue(permlevel)
                                     Users.child(friendsUID).child("trips").child("Trip $tripID")
                                         .setValue(tripID)
                                     // send notification to friend

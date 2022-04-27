@@ -491,7 +491,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
                     datePickerDialog.show()
                 }
 
-                val dialog = AlertDialog.Builder(this)
+                val dialog = AlertDialog.Builder(this,R.style.popup_Theme)
                 dialog.setView(view)
                     .setPositiveButton("OK") { dialog, _ ->
                         val name = etName.text.toString()

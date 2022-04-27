@@ -228,7 +228,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
             datePickerDialog.show()
         }
 
-        val newDialog = AlertDialog.Builder(this)
+        val newDialog = AlertDialog.Builder(this,R.style.popup_Theme)
         newDialog.setView(view)
 
         newDialog.setPositiveButton("Add") { dialog, _ ->
