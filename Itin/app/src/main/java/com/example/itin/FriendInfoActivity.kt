@@ -2,6 +2,7 @@ package com.example.itin
 
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.io.File
 import com.example.itin.classes.User
+import kotlinx.android.synthetic.main.activity_details.*
 import kotlinx.android.synthetic.main.activity_friend_info.*
 import kotlinx.android.synthetic.main.activity_friend_info.backBtn
 import kotlinx.android.synthetic.main.activity_profile_screen.userNameTV
