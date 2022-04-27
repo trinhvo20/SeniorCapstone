@@ -88,7 +88,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
 
         // determine how items are arrange in our list
         rvTripList.layoutManager = LinearLayoutManager(this)
-        createTestTrip()
+        //createTestTrip()
 
         // what happen when click on AddTodo button -> call the addTrip function
         btAddTrip.setOnClickListener { addTrip() }
@@ -123,7 +123,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // It will clear the days list and load all days from the DB again
         tripsSwipeContainer.setOnRefreshListener {
             tripAdapter.clear()
-            createTestTrip()
+            //createTestTrip()
             readData(tripCount)
             tripsSwipeContainer.isRefreshing = false
         }
@@ -140,7 +140,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
     override fun onRestart() {
         super.onRestart()
         tripAdapter.clear()
-        createTestTrip()
+        //createTestTrip()
         readData(tripCount)
     }
 

@@ -280,11 +280,12 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
-                        android:text="Itin Logo Attribution:\n<a href='https://www.flaticon.com/free-icons/travel' title='travel icons'>Travel icons created by Icon Pond - Flaticon</a>"
+                        android:text="Itin Logo Attribution:\n href='https://www.flaticon.com/free-icons/travel' title='travel icons'>Travel icons created by Icon Pond - Flaticon"
                         android:textSize="7sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        tools:layout_editor_absoluteY="10dp" />
+                        app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
 
