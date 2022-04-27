@@ -21,6 +21,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.ActivityAdapter
 import com.example.itin.classes.Activity
@@ -32,11 +33,13 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import kotlinx.android.synthetic.main.activity_details.*
 import kotlinx.android.synthetic.main.activity_itinerary.*
+import kotlinx.android.synthetic.main.activity_itinerary.backBtn
+import kotlinx.android.synthetic.main.activity_itinerary.tvName
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.time.LocalDate
@@ -64,6 +67,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
     private lateinit var storageReference: StorageReference
     private lateinit var imageUri: Uri
     private lateinit var startDateObj : LocalDate
+    private var totalCountViewers : Int = 0
 
     // Variables for floating button animations
     private val rotateOpen: Animation by lazy {
@@ -120,13 +124,21 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         getTripImage()
 
         days = trip.days
-
-        // initiate a new object of class DayAdapter, pass in days list as parameter
         dayAdapter = DayAdapter(this, days, this, trip.viewers)
-
-        // assign adapter for our RecyclerView
         rvActivityList.adapter = dayAdapter
         rvActivityList.layoutManager = LinearLayoutManager(this)
+
+        // get the total number of viewers in this trip from the database
+        val tripID = trip.tripID.toString()
+        databaseReference.child("masterTripList").child(tripID).child("Viewers")
+            .addValueEventListener(object: ValueEventListener {
+                override fun onDataChange(data: DataSnapshot) {
+                    totalCountViewers = data.childrenCount.toInt()
+                }
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+            })
 
         // need these for proper formatting from the DB
         formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
@@ -200,7 +212,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             it.putExtra("ACTIVITY", days[daypos][position])
             it.putExtra("DAY_ID", days[daypos].dayInt)
             it.putExtra("CUR_VIEWER", trip.viewers[uid])
-            it.putExtra("VIEWER_LIST", trip.viewers.size)
+            it.putExtra("VIEWER_LIST", totalCountViewers)
             startActivity(it)
         }
     }

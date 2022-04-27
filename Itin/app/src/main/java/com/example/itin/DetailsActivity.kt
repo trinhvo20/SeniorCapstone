@@ -67,12 +67,6 @@ class DetailsActivity : AppCompatActivity() {
         tvNotes.text = activity.notes
         tvAddress.paintFlags = tvAddress.paintFlags or Paint.UNDERLINE_TEXT_FLAG
 
-//        tvAddress.text = Html.fromHtml(
-//
-//                    "<a href=\"http://maps.google.com\">" +
-//                            activity.location.substringAfter("\n") +
-//                    "</a>");
-//        tvAddress.movementMethod = LinkMovementMethod.getInstance();
 
         checkInList = mutableListOf()
         checkInAdapter = CheckInAdapter(checkInList)
