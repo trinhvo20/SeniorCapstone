@@ -281,7 +281,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     days = mutableListOf(),
                     viewers = mutableMapOf(uid to 1),
                     epochStart = startEpoch.timeInMillis,
-                    epochEnd = endEpoch.timeInMillis
+                    epochEnd = endEpoch.timeInMillis,
                     pending=0
                 )
 
@@ -297,7 +297,7 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                 }
 
                 supportFragmentManager.beginTransaction().remove(autocompleteFragment).commit()
-                scheduleNotification(year,month,day,"Trip Reminder", "$name")
+                scheduleNotification(startYear,startMonth,startDay,"Trip Reminder", "$name")
                 Toast.makeText(this, "Added a new trip", Toast.LENGTH_SHORT).show()
                 dialog.dismiss()
             }

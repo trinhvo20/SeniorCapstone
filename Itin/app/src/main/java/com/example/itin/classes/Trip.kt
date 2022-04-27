@@ -19,7 +19,7 @@ class Trip (
     var days : MutableList<Day> = mutableListOf(),
     var viewers : MutableMap<String, Int> = mutableMapOf(),
     var epochStart : Long = 0,
-    var epochEnd : Long = 0
+    var epochEnd : Long = 0,
     var pending : Int = 0
 ): Serializable
 // objects of this class can be transferred between activities
