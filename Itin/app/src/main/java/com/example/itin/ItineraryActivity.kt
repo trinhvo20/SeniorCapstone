@@ -176,6 +176,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         swipeContainer.setOnRefreshListener {
             dayAdapter.clear()
             loadDaysFromDB()
+            dayAdapter.notifyDataSetChanged()
             swipeContainer.isRefreshing = false
         }
         // Configure the refreshing colors
@@ -256,6 +257,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
 
                 val day = Day(dayNumber, actList, dayInt, tripID)
                 days.add(day)
+                activitySort(days)
                 dayAdapter.notifyDataSetChanged()
             }
         }
