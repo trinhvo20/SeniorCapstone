@@ -2,7 +2,6 @@ package com.example.itin
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.ViewerAdapter
 import com.example.itin.classes.Trip
@@ -10,12 +9,11 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import kotlinx.android.synthetic.main.activity_itinerary.*
 import kotlinx.android.synthetic.main.activity_viewer.*
 
 class ViewerActivity : AppCompatActivity() {
 
-    private lateinit var viewerList : MutableList<String>
+    private lateinit var viewerList : MutableMap<String,Int>
     private lateinit var viewerAdapter: ViewerAdapter
     private lateinit var uid : String
     private lateinit var trip : Trip
@@ -27,7 +25,7 @@ class ViewerActivity : AppCompatActivity() {
         uid = intent.getStringExtra("uid").toString()
         trip = intent.getSerializableExtra("trip") as Trip
 
-        viewerList = mutableListOf()
+        viewerList = mutableMapOf()
         viewerAdapter = ViewerAdapter(viewerList)
         rvViewer.adapter = viewerAdapter
         rvViewer.layoutManager = LinearLayoutManager(this)
@@ -58,8 +56,11 @@ class ViewerActivity : AppCompatActivity() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     viewerList.clear()
                     for (child in snapshot.children) {
-                        val viewerUid = child.key.toString()
-                        viewerList.add(viewerUid)
+                        var perm = 3
+                        if(child.child("Perm").exists()){
+                            perm = child.child("Perm").value.toString().toInt()
+                        }
+                        viewerList[child.key.toString()] = perm
                     }
                     viewerAdapter.notifyDataSetChanged()
                 }

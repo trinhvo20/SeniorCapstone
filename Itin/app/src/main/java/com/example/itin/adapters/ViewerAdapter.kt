@@ -4,9 +4,7 @@ import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.ImageView
-import android.widget.Spinner
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
@@ -18,8 +16,8 @@ import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.viewer_item.view.*
 import java.io.File
 
-class ViewerAdapter (
-    private val viewerList : MutableList<String>
+class ViewerAdapter(
+    private val viewerList: MutableMap<String, Int>
 ) : RecyclerView.Adapter<ViewerAdapter.ViewerViewHolder>() {
     inner class ViewerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         private val ivSetPerm: ImageView = itemView.findViewById(R.id.ivSetPerm)
@@ -27,31 +25,35 @@ class ViewerAdapter (
         private val clOP1: ConstraintLayout = itemView.findViewById(R.id.clOP1)
         private val clOP2: ConstraintLayout = itemView.findViewById(R.id.clOP2)
         private val clOP3: ConstraintLayout = itemView.findViewById(R.id.clOP3)
+
         private var open = false
         init {
+            var curViewer = viewerList.keys.elementAt(adapterPosition)
+            var curViewerPerm = viewerList[curViewer]
+
             clDropdown.removeAllViews()
             ivSetPerm.setOnClickListener {
-                toggledropdown()
+                toggledropdown(curViewerPerm)
             }
         }
 
-        private fun toggledropdown() {
-            var params = clDropdown.getLayoutParams()
+        private fun toggledropdown(curViewerPerm: Int?) {
             if(!open) {
-//                params.height = -1
-//                clDropdown.setLayoutParams(params)
-//                open = true
+                if (curViewerPerm != 1 && curViewerPerm == 2 && curViewerPerm == 3) {
+                    clDropdown.addView(clOP1)
+                }
 
-                clDropdown.addView(clOP1)
-                clDropdown.addView(clOP2)
-                clDropdown.addView(clOP3)
+                if (curViewerPerm == 1 && curViewerPerm != 2 && curViewerPerm == 3) {
+                    clDropdown.addView(clOP2)
+                }
+
+                if ((curViewerPerm == 1 && curViewerPerm == 2 && curViewerPerm != 3) || (curViewerPerm != 1 && curViewerPerm != 2 && curViewerPerm != 3)) {
+                    clDropdown.addView(clOP3)
+                }
+
                 open = true
             }
             else{
-//                params.height = 0
-//                clDropdown.setLayoutParams(params)
-//                open = false
-
                 clDropdown.removeAllViews()
                 open = false
             }
@@ -65,8 +67,10 @@ class ViewerAdapter (
     }
 
     override fun onBindViewHolder(holder: ViewerViewHolder, position: Int) {
-        var curViewer = viewerList[position]
+        var curViewer = viewerList.keys.elementAt(position)
         holder.itemView.apply {
+
+            tvPerm1.visibility = View.GONE
 
 
             var storageReference = FirebaseStorage.getInstance().getReference("Users/$curViewer.jpg")
