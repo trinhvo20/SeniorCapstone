@@ -172,9 +172,9 @@
                         android:id="@+id/garrettPara"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Paragraph about yourself"
-                        android:textSize="16sp"
                         android:layout_marginLeft="10dp"
+                        android:text="Senior at Louisiana Tech University Graduating with a degree in Computer Science with a concentration in Cyber Security. Interests include building computers, videogames, anime, and cooking."
+                        android:textSize="16sp"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/garrettImg"
                         app:layout_constraintTop_toBottomOf="@+id/garrettName" />
