@@ -114,6 +114,7 @@ class GoogleLogin : AppCompatActivity() {
         // Links button to Google Sign In
         binding.GoogleIcon.setOnClickListener {
             Log.d(TAG, "onCreate: begin Google Sign In")
+            googleSignInClient.signOut()
             val intent = googleSignInClient.signInIntent
             startActivityForResult(intent, RC_SIGN_IN)
         }
