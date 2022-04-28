@@ -48,4 +48,8 @@
 
     <string name="API_KEY">AIzaSyCDem9vP86TKoWfzAn1QvEudD24zDLpGHM</string>
 
+    <!-- for friend info activity -->
+    <string name="email"><u>Email</u></string>
+    <string name="phone"><u>123-456-7890</u></string>
+
 </resources>

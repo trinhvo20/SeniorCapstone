@@ -57,6 +57,7 @@ class FingerprintActivity : AppCompatActivity() {
     private fun getCancellationSignal(): CancellationSignal {
         cancellationSignal = CancellationSignal()
         cancellationSignal?.setOnCancelListener {
+            //do pin activity here
             notifyUser("Authentication was cancelled by the user")
         }
         return cancellationSignal as CancellationSignal
