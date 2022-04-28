@@ -74,25 +74,6 @@ class GoogleLogin : AppCompatActivity() {
         binding.welcome2TV.animation = bottomAnim
         binding.GoogleIcon.animation = bottomAnim
 
-//        // gradiant for welcome page
-//        val paint = binding.welcomeTV.paint
-//        val width = paint.measureText(binding.welcomeTV.text.toString())
-//        val textShader: Shader = LinearGradient(0f, 0f, width, binding.welcomeTV.textSize, intArrayOf(
-//            Color.parseColor("#F97C3C"),
-//            Color.parseColor("#FDB54E"),
-//            Color.parseColor("#8446CC")
-//        ), null, Shader.TileMode.REPEAT)
-//        binding.welcomeTV.paint.shader = textShader
-//
-//        // gradiant for welcome page
-//        val paint2 = binding.welcome2TV.paint
-//        val width2 = paint2.measureText(binding.welcome2TV.text.toString())
-//        val textShader2: Shader = LinearGradient(0f, 0f, width2, binding.welcome2TV.textSize, intArrayOf(
-//            Color.parseColor("#D16BA5"),
-//            Color.parseColor("#86A8E7"),
-//            Color.parseColor("#5FFBF1")
-//        ), null, Shader.TileMode.REPEAT)
-//        binding.welcome2TV.paint.shader = textShader2
 
         // for biometric authentication
         val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
