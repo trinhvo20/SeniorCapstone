@@ -26,7 +26,7 @@ class ViewerActivity : AppCompatActivity() {
         trip = intent.getSerializableExtra("trip") as Trip
 
         viewerList = mutableMapOf()
-        viewerAdapter = ViewerAdapter(viewerList)
+        viewerAdapter = ViewerAdapter(viewerList,trip.tripID)
         rvViewer.adapter = viewerAdapter
         rvViewer.layoutManager = LinearLayoutManager(this)
         loadViewerFromDB()

@@ -125,7 +125,7 @@ class DetailsActivity : AppCompatActivity() {
     // function to edit the activity
     @RequiresApi(Build.VERSION_CODES.N)
     private fun editActivity(activity: Activity) {
-        if (cur_viewer == 1) {
+        if (cur_viewer == 1 || cur_viewer == 2) {
             val view = LayoutInflater.from(this).inflate(R.layout.edit_activity, null)
 
             var location = activity.location

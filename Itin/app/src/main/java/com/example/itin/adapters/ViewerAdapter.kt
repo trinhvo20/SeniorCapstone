@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -18,7 +19,8 @@ import kotlinx.android.synthetic.main.viewer_item.view.*
 import java.io.File
 
 class ViewerAdapter(
-    private val viewerList: MutableMap<String, Int>
+    private val viewerList: MutableMap<String, Int>,
+    private val tripID: Int
 ) : RecyclerView.Adapter<ViewerAdapter.ViewerViewHolder>() {
     inner class ViewerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
@@ -31,26 +33,45 @@ class ViewerAdapter(
     override fun onBindViewHolder(holder: ViewerViewHolder, position: Int) {
         var curViewer = viewerList.keys.elementAt(position)
         var open = false
+        val firebaseAuth = FirebaseAuth.getInstance()
+        val firebaseUser = firebaseAuth.currentUser
+        val uid = firebaseUser!!.uid
         holder.itemView.apply {
+
+            if(viewerList[uid] == 1){
+                ivSetPerm.visibility = View.VISIBLE
+                ivSetPerm.isClickable = true
+            }
+            else{
+                ivSetPerm.visibility = View.INVISIBLE
+                ivSetPerm.isClickable = false
+            }
 
             var curViewerPerm = viewerList[curViewer]
             clOP1.visibility = View.GONE
             clOP2.visibility = View.GONE
             clOP3.visibility = View.GONE
 
+            clOP1.isClickable = false
+            clOP2.isClickable = false
+            clOP3.isClickable = false
+
             ivSetPerm.setOnClickListener {
                 //Toast.makeText(context,"perm $curViewerPerm", Toast.LENGTH_LONG).show()
                 if(!open) {
                     if (curViewerPerm != 1 && (curViewerPerm == 2 || curViewerPerm == 3)) {
                         clOP1.visibility = View.VISIBLE
+                        clOP1.isClickable = true
                     }
 
                     if (curViewerPerm != 2 && (curViewerPerm == 1 || curViewerPerm == 3)) {
                         clOP2.visibility = View.VISIBLE
+                        clOP2.isClickable = true
                     }
 
-                    if ((curViewerPerm != 3 && (curViewerPerm == 1 || curViewerPerm == 2)) || (curViewerPerm != 1 && curViewerPerm != 2 && curViewerPerm != 3)) {
+                    if ((curViewerPerm != 3 && (curViewerPerm == 1 || curViewerPerm == 2))) {
                         clOP3.visibility = View.VISIBLE
+                        clOP3.isClickable = true
                     }
 
                     open = true
@@ -59,8 +80,50 @@ class ViewerAdapter(
                     clOP1.visibility = View.GONE
                     clOP2.visibility = View.GONE
                     clOP3.visibility = View.GONE
+                    clOP1.isClickable = false
+                    clOP2.isClickable = false
+                    clOP3.isClickable = false
                     open = false
                 }
+            }
+
+            clOP1.setOnClickListener {
+                clOP1.visibility = View.GONE
+                clOP2.visibility = View.GONE
+                clOP3.visibility = View.GONE
+                clOP1.isClickable = false
+                clOP2.isClickable = false
+                clOP3.isClickable = false
+                open = false
+                changeperm(curViewer,1)
+                viewerList[curViewer] = 1
+                Toast.makeText(context,"${viewerUsername.text} has been made an Owner", Toast.LENGTH_SHORT).show()
+            }
+
+            clOP2.setOnClickListener {
+                clOP1.visibility = View.GONE
+                clOP2.visibility = View.GONE
+                clOP3.visibility = View.GONE
+                clOP1.isClickable = false
+                clOP2.isClickable = false
+                clOP3.isClickable = false
+                open = false
+                changeperm(curViewer,2)
+                viewerList[curViewer] = 2
+                Toast.makeText(context,"${viewerUsername.text} has been made an Editor", Toast.LENGTH_SHORT).show()
+            }
+
+            clOP3.setOnClickListener {
+                clOP1.visibility = View.GONE
+                clOP2.visibility = View.GONE
+                clOP3.visibility = View.GONE
+                clOP1.isClickable = false
+                clOP2.isClickable = false
+                clOP3.isClickable = false
+                open = false
+                changeperm(curViewer,3)
+                viewerList[curViewer] = 3
+                Toast.makeText(context,"${viewerUsername.text} has been made a Viewer", Toast.LENGTH_SHORT).show()
             }
 
 
@@ -91,6 +154,11 @@ class ViewerAdapter(
                     }
                 })
         }
+    }
+
+    private fun changeperm(curViewer: String, newperm: Int) {
+        val curTrip = FirebaseDatabase.getInstance().getReference("masterTripList").child("$tripID")
+        curTrip.child("Viewers").child(curViewer).child("Perm").setValue(newperm)
     }
 
     override fun getItemCount(): Int {
