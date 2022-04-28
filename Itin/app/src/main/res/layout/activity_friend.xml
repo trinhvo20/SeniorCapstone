@@ -85,7 +85,7 @@
         android:layout_gravity="bottom|right"
         app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_add" />
+        app:srcCompat="@drawable/ic_expand" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/friendSwipeContainer"
@@ -123,7 +123,7 @@
         android:layout_height="53dp"
         android:layout_alignParentBottom="true"
         android:layout_weight="1"
-        android:background="#DDDDDD"
+        android:background="#878787"
         android:fontFamily="casual"
         android:gravity="center"
         android:hint="Friends Username"

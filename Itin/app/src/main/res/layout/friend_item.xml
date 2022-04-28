@@ -55,18 +55,35 @@
         app:layout_constraintStart_toEndOf="@+id/friendsPP"
         app:layout_constraintTop_toTopOf="@+id/pendingReq" />
 
-    <Button
+    <ImageButton
         android:id="@+id/acceptButton"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="17dp"
-        android:clickable="false"
-        android:fontFamily="serif"
-        android:text="Accept"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="8dp"
         android:visibility="invisible"
+        android:clickable="false"
+        android:background="@drawable/rounded_background2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/rejButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_add" />
+
+    <ImageButton
+        android:id="@+id/rejButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="invisible"
+        android:clickable="false"
+        android:background="@drawable/rounded_background2"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_remove" />
 
     <Button
         android:id="@+id/remButton"

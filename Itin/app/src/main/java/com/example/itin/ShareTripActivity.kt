@@ -1,9 +1,13 @@
 package com.example.itin
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.ShareAdapter
@@ -89,6 +93,14 @@ class ShareTripActivity : AppCompatActivity() {
             }
         }
     }
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        if (currentFocus != null) {
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(etUsername.getWindowToken(), 0)
+
+        }
+        return super.dispatchTouchEvent(ev)
+    }
 
     private fun ShareByUsername(Username: String, tripID: Int?, permlevel: Int) {
 
@@ -133,6 +145,8 @@ class ShareTripActivity : AppCompatActivity() {
                 Toast.makeText(this, "User does not exist", Toast.LENGTH_SHORT).show()
             }
         }
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(etUsername.getWindowToken(), 0)
     }
 
     private fun readData(userCount: Int) {

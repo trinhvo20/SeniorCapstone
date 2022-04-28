@@ -61,8 +61,6 @@ class FriendAdapter(
                 pendingReq.visibility = View.VISIBLE
                 acceptButton.visibility = View.INVISIBLE
                 acceptButton.isClickable = false
-                remButton.visibility = View.VISIBLE
-                remButton.isClickable = true
 
                 friendFullName.text = curFriend.fullName
                 tvFriendsUsername.text = curFriend.username
@@ -99,13 +97,54 @@ class FriendAdapter(
                 acceptButton.visibility = View.VISIBLE
                 friendFullName.text = curFriend.fullName
                 acceptButton.isClickable = true
-                remButton.visibility = View.INVISIBLE
-                remButton.isClickable = false
+                rejButton.visibility = View.VISIBLE
+                rejButton.isClickable = true
             }
         }
 
         holder.itemView.apply {
             remButton.setOnClickListener{
+                firebaseAuth = FirebaseAuth.getInstance()
+                val firebaseUser = firebaseAuth.currentUser
+                val uid = firebaseUser!!.uid
+                masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
+                curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+
+                val friendsID = masterUserList.child(curFriend.username) //masterUserList.child(userName)
+                var myID = ""
+                var myUsername = ""
+
+                friendsID.get().addOnSuccessListener {
+                    if (it.exists()) {
+                        val friendsIDStr = it.value.toString()
+
+                        curUser.get().addOnSuccessListener {
+                            if (it.exists()) {
+                                myUsername = it.child("userInfo").child("username").value.toString()
+
+                                masterUserList.get().addOnSuccessListener {
+                                    if (it.exists()) {
+                                        myID = it.child(myUsername).value.toString()
+                                        val friendsUID = it.child(friendsIDStr).child("UID").value.toString()
+
+                                        if (friend == true) {
+                                            curUser.child("friendsList").child("Friend $friendsIDStr").removeValue()
+                                            FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("friendsList").child("Friend $myID").removeValue()
+
+                                        } else {
+                                            curUser.child("reqList").child("Request $friendsIDStr").removeValue()
+                                            FirebaseDatabase.getInstance().getReference("users").child(friendsUID).child("reqList").child("Request $myID").removeValue()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        holder.itemView.apply {
+            rejButton.setOnClickListener{
                 firebaseAuth = FirebaseAuth.getInstance()
                 val firebaseUser = firebaseAuth.currentUser
                 val uid = firebaseUser!!.uid
