@@ -4,11 +4,14 @@ import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
+import com.example.itin.ViewerActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -20,7 +23,8 @@ import java.io.File
 
 class ViewerAdapter(
     private val viewerList: MutableMap<String, Int>,
-    private val tripID: Int
+    private val tripID: Int,
+    private val context: ViewerActivity
 ) : RecyclerView.Adapter<ViewerAdapter.ViewerViewHolder>() {
     inner class ViewerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
@@ -33,11 +37,14 @@ class ViewerAdapter(
     override fun onBindViewHolder(holder: ViewerViewHolder, position: Int) {
         var curViewer = viewerList.keys.elementAt(position)
         var open = false
+
+        val rotateOpen: Animation by lazy { AnimationUtils.loadAnimation(context, R.anim.rotate_open_anim) }
+        val rotateClose: Animation by lazy { AnimationUtils.loadAnimation(context, R.anim.rotate_close_anim) }
+
         val firebaseAuth = FirebaseAuth.getInstance()
         val firebaseUser = firebaseAuth.currentUser
         val uid = firebaseUser!!.uid
         holder.itemView.apply {
-
             if(viewerList[uid] == 1){
                 ivSetPerm.visibility = View.VISIBLE
                 ivSetPerm.isClickable = true
@@ -59,6 +66,8 @@ class ViewerAdapter(
             ivSetPerm.setOnClickListener {
                 //Toast.makeText(context,"perm $curViewerPerm", Toast.LENGTH_LONG).show()
                 if(!open) {
+                    ivSetPerm.startAnimation(rotateOpen)
+
                     if (curViewerPerm != 1 && (curViewerPerm == 2 || curViewerPerm == 3)) {
                         clOP1.visibility = View.VISIBLE
                         clOP1.isClickable = true
@@ -77,6 +86,7 @@ class ViewerAdapter(
                     open = true
                 }
                 else{
+                    ivSetPerm.startAnimation(rotateClose)
                     clOP1.visibility = View.GONE
                     clOP2.visibility = View.GONE
                     clOP3.visibility = View.GONE
