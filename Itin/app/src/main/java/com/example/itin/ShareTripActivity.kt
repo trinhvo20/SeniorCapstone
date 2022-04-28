@@ -3,6 +3,7 @@ package com.example.itin
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.inputmethod.EditorInfo
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.itin.adapters.ShareAdapter
@@ -14,6 +15,7 @@ import com.example.itin.notifications.RetrofitInstance
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.android.synthetic.main.activity_friend.*
 import kotlinx.android.synthetic.main.activity_share_trip.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,8 +55,6 @@ class ShareTripActivity : AppCompatActivity() {
 
         shareAdapter.notifyDataSetChanged()
 
-        ibShareUsername.setOnClickListener { ShareByUsername(etUsername.text.toString(),tripID) }
-
         firebaseAuth = FirebaseAuth.getInstance()
         val firebaseUser = firebaseAuth.currentUser
         uid = firebaseUser!!.uid
@@ -77,9 +77,20 @@ class ShareTripActivity : AppCompatActivity() {
         }
 
         backBtn.setOnClickListener{finish()}
+
+        // Allow te soft input's enter key to send the request
+        etUsername.setOnEditorActionListener { v, actionId, event ->
+            return@setOnEditorActionListener when (actionId) {
+                EditorInfo.IME_ACTION_SEND -> {
+                    ShareByUsername(etUsername.text.toString(),tripID,3)
+                    true
+                }
+                else -> false
+            }
+        }
     }
 
-    private fun ShareByUsername(Username: String, tripID: Int?) {
+    private fun ShareByUsername(Username: String, tripID: Int?, permlevel: Int) {
 
         // Base firebase variables
         val firebaseUser = firebaseAuth.currentUser
@@ -106,7 +117,7 @@ class ShareTripActivity : AppCompatActivity() {
                                     val friendsUID =
                                         it.child(friendsIDStr).child("UID").value.toString()
                                     Users.child(friendsUID).child("pending trips")
-                                        .child("Trip $tripID").setValue(tripID)
+                                        .child("Trip $tripID").setValue(permlevel)
                                     Users.child(friendsUID).child("trips").child("Trip $tripID")
                                         .setValue(tripID)
                                     // send notification to friend

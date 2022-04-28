@@ -117,7 +117,8 @@ class DayAdapter(
 
                     tpd.show()
                 }
-                val newDialog = AlertDialog.Builder(context)
+                val newDialog = AlertDialog.Builder(context,R.style.popup_Theme)
+
                 newDialog.setView(view)
 
                 newDialog.setPositiveButton("Add") { dialog, _ ->
@@ -206,8 +207,18 @@ class DayAdapter(
         val curDay = days[position]
 
         holder.itemView.apply{
+            firebaseAuth = FirebaseAuth.getInstance()
+            val firebaseUser = firebaseAuth.currentUser
+            val uid = firebaseUser!!.uid
             // get the data from our days list and put them in the corresponding TextView in trip_day_item.xml
             tvName.text = "Day " + curDay.daynumber
+
+            val perm = viewers[uid]
+            Log.d("perm","uid: $uid perm: $perm")
+            if (viewers[uid] == 3){
+                ivAdd.visibility =  View.INVISIBLE
+                ivAdd.isClickable = false
+            }
         }
 
         // makes the sub recyclerview work, not sure why but it does

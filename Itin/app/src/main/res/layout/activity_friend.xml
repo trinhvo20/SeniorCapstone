@@ -100,7 +100,9 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvFriends"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:paddingBottom="75dp"
+            android:clipToPadding="false"/>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <LinearLayout

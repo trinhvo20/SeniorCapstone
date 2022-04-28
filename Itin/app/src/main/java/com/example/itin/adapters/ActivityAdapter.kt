@@ -33,10 +33,19 @@ class ActivityAdapter(
     override fun onBindViewHolder(holder: ActivityViewHolder, position: Int) {
         val curActivity = Activities[position]
         holder.itemView.apply{
+            firebaseAuth = FirebaseAuth.getInstance()
+            val firebaseUser = firebaseAuth.currentUser
+            val uid = firebaseUser!!.uid
+
             // get the data from our Activities list and put them in the corresponding TextView in day_activity_item.xml
             if (curActivity != null) {
                 tvActivityName.text = curActivity.name
                 tvActivityTime.text = curActivity.time
+            }
+
+            if (viewers[uid] == 3){
+                removeBtn.visibility = View.INVISIBLE
+                removeBtn.isClickable = false
             }
         }
 
