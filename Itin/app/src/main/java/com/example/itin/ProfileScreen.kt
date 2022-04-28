@@ -1,16 +1,18 @@
 package com.example.itin
 
+import android.content.Context
 import android.content.Intent
 import android.content.IntentSender.SendIntentException
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.telephony.PhoneNumberUtils
-import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import android.widget.TextView.OnEditorActionListener
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -27,10 +29,10 @@ import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.account.*
+import kotlinx.android.synthetic.main.activity_friend.*
 import kotlinx.android.synthetic.main.activity_profile_screen.*
 import kotlinx.android.synthetic.main.activity_share_trip.view.*
 import java.io.File
-import java.io.IOException
 
 
 class ProfileScreen : AppCompatActivity() {
@@ -150,6 +152,17 @@ class ProfileScreen : AppCompatActivity() {
         phoneNumberInput.setOnClickListener{
             showHint()
         }
+//
+//        // Allow te soft input's enter key to send the request
+//        fullNameInput.setOnEditorActionListener { v, actionId, event ->
+//            return@setOnEditorActionListener when (actionId) {
+//                EditorInfo.IME_ACTION_SEND -> {
+//                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//                    imm.hideSoftInputFromWindow(usernameInput.getWindowToken(), 0)
+//                }
+//                else -> { false }
+//            }
+//        }
 
         Log.d("Phone Number Debugging", "$phoneNo")
 

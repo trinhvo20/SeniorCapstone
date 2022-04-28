@@ -45,7 +45,7 @@
         android:layout_height="53dp"
         android:layout_alignParentBottom="true"
         android:layout_weight="1"
-        android:background="#DDDDDD"
+        android:background="#878787"
         android:fontFamily="casual"
         android:gravity="center"
         android:hint="Add by Username"
