@@ -1,6 +1,6 @@
 # SeniorCapstone
 
-Itin is a collaborative trip planning android application. Our app offers the ability to add your family and friends to your trip where the can see live updates or edit the trip; depending on what permissions are allowed to them. 
+Itin is a collaborative trip planning android application. Our app offers the ability to add your family and friends to your trip where they can see live updates or edit the trip; depending on what permissions are allowed to them. 
 
 Trips:
 
