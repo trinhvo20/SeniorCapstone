@@ -104,6 +104,7 @@ class PreviousTripAdapter(
             tvName.text = curTrip.name
             tvStartDate.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
+            tvCountdown.text = countdown(curTrip.epochEnd)
 
             // display trips images
             val tripId = curTrip.tripID.toString()
@@ -135,5 +136,21 @@ class PreviousTripAdapter(
     fun clear() {
         previousTrips.clear()
         notifyDataSetChanged()
+    }
+
+    // calculates how many days since the trip ended
+    private fun countdown(endTime: Long): String{
+        val curTime = Calendar.getInstance().timeInMillis
+        val dif = curTime - endTime
+        val days = kotlin.math.floor((dif/86400000).toDouble())
+        Log.d("CUR: ", curTime.toString())
+        Log.d("END: ",endTime.toString())
+        Log.d("DIF: ",dif.toString())
+        if(days <= 0){
+        }
+        else if(days.toInt() == 1){
+            return "Your trip ended yesterday."
+        }
+        return "The trip is ${days.toInt()} days past."
     }
 }
