@@ -153,7 +153,7 @@
                         android:layout_height="70dp"
                         android:layout_marginVertical="5dp"
                         android:rotation="90"
-                        android:src="@drawable/GG_AB"
+                        android:src="@drawable/gg_ab"
                         app:civ_circle_background_color="@color/LightGray"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
