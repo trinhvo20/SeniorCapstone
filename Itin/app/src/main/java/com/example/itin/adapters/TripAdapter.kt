@@ -80,7 +80,7 @@ class TripAdapter(
             }
 
             masterTripList.child(curTrip.tripID.toString()).child("Viewers").child(uid).child("uid").setValue(uid)
-            masterTripList.child(curTrip.tripID.toString()).child("Viewers").child(uid).child("Perm").setValue(curTrip.viewers[uid])
+            masterTripList.child(curTrip.tripID.toString()).child("Viewers").child(uid).child("Perm").setValue(3)
 
             curUser.child("pending trips").child("Trip ${curTrip.tripID}").removeValue()
             curTrip.pending = 0
@@ -407,6 +407,7 @@ class TripAdapter(
                 tvHyphen.visibility = View.INVISIBLE
                 ivMenu.visibility = View.INVISIBLE
                 ivMenu.isClickable = false
+                tvCountdown.visibility = View.INVISIBLE
             }
 
             // display trips images

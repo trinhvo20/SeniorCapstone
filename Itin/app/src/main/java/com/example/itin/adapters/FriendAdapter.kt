@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.friend_item.view.*
 import kotlinx.android.synthetic.main.friend_item.view.friendFullName
 import kotlinx.android.synthetic.main.friend_share_item.view.*
 import kotlinx.android.synthetic.main.trip_item.view.*
+import kotlinx.android.synthetic.main.viewer_item.view.*
 import java.io.File
 class FriendAdapter(
     private val friends: MutableList<Pair<User, List<Boolean>>>,
@@ -74,7 +75,14 @@ class FriendAdapter(
                 remButton.visibility = View.VISIBLE
                 remButton.isClickable = true
 
-                friendFullName.text = curFriend.fullName
+                if(curFriend.fullName.length > 13){
+                    var shortname = curFriend.fullName.substring(0..10)
+                    friendFullName.text = shortname+"..."
+                }
+                else{
+                    friendFullName.text = curFriend.fullName
+                }
+
                 tvFriendsUsername.text = curFriend.username
                 tvFriendsUsername.visibility = View.VISIBLE
             }
@@ -86,7 +94,14 @@ class FriendAdapter(
                 remButton.visibility = View.INVISIBLE
                 remButton.isClickable = false
 
-                friendFullName.text = curFriend.fullName
+                if(curFriend.fullName.length > 15){
+                    var shortname = curFriend.fullName.substring(0..13)
+                    friendFullName.text = shortname+"..."
+                }
+                else{
+                    friendFullName.text = curFriend.fullName
+                }
+
                 tvFriendsUsername.text = curFriend.username
                 tvFriendsUsername.visibility = View.VISIBLE
             }
@@ -95,7 +110,15 @@ class FriendAdapter(
                 tvFriendsUsername.visibility = View.INVISIBLE
                 pendingReq.visibility = View.VISIBLE
                 acceptButton.visibility = View.VISIBLE
-                friendFullName.text = curFriend.fullName
+
+                if(curFriend.fullName.length > 11){
+                    var shortname = curFriend.fullName.substring(0..8)
+                    friendFullName.text = shortname+"..."
+                }
+                else{
+                    friendFullName.text = curFriend.fullName
+                }
+
                 acceptButton.isClickable = true
                 rejButton.visibility = View.VISIBLE
                 rejButton.isClickable = true
@@ -145,11 +168,18 @@ class FriendAdapter(
         }
         holder.itemView.apply {
             rejButton.setOnClickListener{
+                rejButton.visibility = View.INVISIBLE
+                rejButton.isClickable = false
+                acceptButton.visibility = View.INVISIBLE
+                acceptButton.isClickable = false
                 firebaseAuth = FirebaseAuth.getInstance()
                 val firebaseUser = firebaseAuth.currentUser
                 val uid = firebaseUser!!.uid
                 masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
                 curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+
+                friends.removeAt(position)
+                notifyItemChanged(position)
 
                 val friendsID = masterUserList.child(curFriend.username) //masterUserList.child(userName)
                 var myID = ""
@@ -187,6 +217,10 @@ class FriendAdapter(
 
         holder.itemView.apply {
             acceptButton.setOnClickListener {
+                rejButton.visibility = View.INVISIBLE
+                rejButton.isClickable = false
+                acceptButton.visibility = View.INVISIBLE
+                acceptButton.isClickable = false
                 firebaseAuth = FirebaseAuth.getInstance()
                 val firebaseUser = firebaseAuth.currentUser
                 val uid = firebaseUser!!.uid
