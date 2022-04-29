@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.android.synthetic.main.friend_share_item.view.*
 import kotlinx.android.synthetic.main.viewer_item.view.*
 import java.io.File
 
@@ -154,8 +155,16 @@ class ViewerAdapter(
                             if (user.key == curViewer) {
                                 val username = user.child("userInfo").child("username").value.toString()
                                 val fullname = user.child("userInfo").child("fullName").value.toString()
+
+                                if(fullname.length > 15){
+                                    var shortname = fullname.substring(0..11)
+                                    viewerFullName.text = shortname+"..."
+                                }
+                                else{
+                                    viewerFullName.text = fullname
+                                }
+
                                 viewerUsername.text = username
-                                viewerFullName.text = fullname
                             }
                         }
                     }
