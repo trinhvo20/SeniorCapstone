@@ -28,6 +28,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.android.synthetic.main.activity_friend.*
+import kotlinx.android.synthetic.main.activity_share_trip.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -197,6 +198,7 @@ class FriendActivity : AppCompatActivity(), FriendAdapter.OnItemClickListener {
 
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(friendsUsername.getWindowToken(), 0)
+            friendsUsername.text?.clear()
 
             sent = true
         }
