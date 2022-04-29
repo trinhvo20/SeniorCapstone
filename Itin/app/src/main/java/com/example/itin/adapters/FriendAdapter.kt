@@ -217,6 +217,10 @@ class FriendAdapter(
 
         holder.itemView.apply {
             acceptButton.setOnClickListener {
+                rejButton.visibility = View.INVISIBLE
+                rejButton.isClickable = false
+                acceptButton.visibility = View.INVISIBLE
+                acceptButton.isClickable = false
                 firebaseAuth = FirebaseAuth.getInstance()
                 val firebaseUser = firebaseAuth.currentUser
                 val uid = firebaseUser!!.uid

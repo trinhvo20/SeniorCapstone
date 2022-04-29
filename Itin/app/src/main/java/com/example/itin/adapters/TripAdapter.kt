@@ -80,7 +80,7 @@ class TripAdapter(
             }
 
             masterTripList.child(curTrip.tripID.toString()).child("Viewers").child(uid).child("uid").setValue(uid)
-            masterTripList.child(curTrip.tripID.toString()).child("Viewers").child(uid).child("Perm").setValue(curTrip.viewers[uid])
+            masterTripList.child(curTrip.tripID.toString()).child("Viewers").child(uid).child("Perm").setValue(3)
 
             curUser.child("pending trips").child("Trip ${curTrip.tripID}").removeValue()
             curTrip.pending = 0
