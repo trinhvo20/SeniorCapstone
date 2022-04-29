@@ -76,7 +76,20 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         checkToken()
 
         // check to see if any notifications and set bell accordingly
-        isNotifPresent()
+        // will automatically change
+        val firebaseUser = firebaseAuth.currentUser
+        if (firebaseUser != null) {
+            uid = firebaseUser.uid
+        }
+        curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+        curUser.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                isNotifPresent(curUser)
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                Toast.makeText(applicationContext, databaseError.message, Toast.LENGTH_SHORT).show()
+            }
+        })
 
         formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
 
@@ -652,12 +665,8 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         }
     }
 
-    private fun isNotifPresent(){
-        val firebaseUser = firebaseAuth.currentUser
-        if(firebaseUser != null){
-            uid = firebaseUser.uid
-            curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
-            curUser.get().addOnSuccessListener {
+    private fun isNotifPresent(user: DatabaseReference){
+            user.get().addOnSuccessListener {
                 if (it.hasChild("notifications")) {
                     notificationButton.setImageResource(R.drawable.ic_new_notification)
                 }
@@ -665,6 +674,5 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
                     notificationButton.setImageResource(R.drawable.ic_notifications)
                 }
             }
-        }
     }
 }
