@@ -388,7 +388,7 @@ class TripAdapter(
             tvName.text = curTrip.name
             tvStartDate.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
-            tvCountdown.text = "${countdown(curTrip.epochStart).toInt().toString()} days until trip."
+            tvCountdown.text = countdown(curTrip.epochStart)
 
             //initial image sets
             tripImage.setImageResource(R.drawable.beach)
@@ -569,14 +569,17 @@ class TripAdapter(
     }
 
     // calculates how many days until trip starts
-    private fun countdown(startTime: Long): Double{
+    private fun countdown(startTime: Long): String{
         val curTime = Calendar.getInstance().timeInMillis
         val dif = startTime - curTime
         val days = kotlin.math.floor((dif/86400000).toDouble())
-        if(days < 0){
-            return 0.toDouble()
+        if(days <= 0){
+            return "Your trip is today!"
         }
-        return days
+        if(days.toInt() == 1){
+            return "Your trip is tomorrow!"
+        }
+        return "${days.toInt()} days until trip."
     }
 
     fun clear() {
