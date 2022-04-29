@@ -145,6 +145,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         startdate = LocalDate.parse(trip.startDate, formatter)
         var enddate = LocalDate.parse(trip.endDate, formatter)
 
+        dayAdapter.clear()
         activitySort(days)
         loadDaysFromDB()
         dayAdapter.notifyDataSetChanged()
