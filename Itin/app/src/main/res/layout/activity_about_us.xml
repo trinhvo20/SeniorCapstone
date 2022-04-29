@@ -282,7 +282,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:text="Itin Logo Attribution:\n href='https://www.flaticon.com/free-icons/travel' title='travel icons'>Travel icons created by Icon Pond - Flaticon"
-                        android:textSize="7sp"
+                        android:textSize="10dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -301,6 +301,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
 
                 <LinearLayout
+                    android:id="@+id/linearLayout5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -318,7 +319,9 @@
                         android:layout_marginLeft="10dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Contact us"
+                        android:text="Contact Us"
+                        android:id="@+id/contactUs"
+
                         android:textSize="20sp"/>
 
                 </LinearLayout>
