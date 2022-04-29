@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
@@ -54,6 +55,7 @@ class ProfileScreen : AppCompatActivity() {
     private lateinit var username: String
     private lateinit var email: String
     private lateinit var phoneNo: String
+    private lateinit var curPhone: String
 
     private val RC_HINT = 1000
     private val PICK_IMAGE = 100
@@ -172,6 +174,7 @@ class ProfileScreen : AppCompatActivity() {
                     fullName = it.child("fullName").value.toString()
                     username = it.child("username").value.toString()
                     phoneNo =  it.child("phone").value.toString()
+                    curPhone = it.child("phone").value.toString()
 
                     fullNameInput.editText?.setText(fullName)
                     usernameInput.editText?.setText(username)
@@ -185,7 +188,6 @@ class ProfileScreen : AppCompatActivity() {
 
         newDialog.setPositiveButton("Update") { dialog, _ ->
             update(usernameInput, fullNameInput, phoneNumberInput)
-            Toast.makeText(this, "Updated", Toast.LENGTH_SHORT).show()
             dialog.dismiss()
         }
         newDialog.setNegativeButton("Cancel") { dialog, _ ->
@@ -210,6 +212,7 @@ class ProfileScreen : AppCompatActivity() {
                 username = it.child("username").value.toString()
                 email = it.child("email").value.toString()
                 phoneNo = it.child("phone").value.toString()
+                curPhone = it.child("phone").value.toString()
 
                 // Show user info
                 userNameTV.text = username
@@ -314,7 +317,7 @@ class ProfileScreen : AppCompatActivity() {
     private fun isPhoneNoChanged(phoneNumberInput: TextView): Boolean {
         var newPhoneNo = phoneNumberInput.text.toString()
         Log.d("Phone Number Debugging", "$newPhoneNo")
-        if (newPhoneNo == curUserInfo.child("phone").get().toString()) {
+        if (newPhoneNo == curPhone) {
             return false
         }
 //        else if (newPhoneNo.length != 11) {
@@ -346,7 +349,8 @@ class ProfileScreen : AppCompatActivity() {
                     //getValues()
                 }
             } else {
-                //getValues()
+//                customPhoneNo.visibility = View.VISIBLE
+//                phoneNo = customPhoneNo.editText?.text.toString()
             }
         }
         else if (resultCode == RESULT_OK && requestCode == PICK_IMAGE){
