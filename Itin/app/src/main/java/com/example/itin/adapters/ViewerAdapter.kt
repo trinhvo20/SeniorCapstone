@@ -46,7 +46,8 @@ class ViewerAdapter(
         val firebaseUser = firebaseAuth.currentUser
         val uid = firebaseUser!!.uid
         holder.itemView.apply {
-            if(viewerList[uid] == 1){
+
+            if(viewerList[uid] == 1 && viewerList.keys.size > 1){
                 ivSetPerm.visibility = View.VISIBLE
                 ivSetPerm.isClickable = true
             }
