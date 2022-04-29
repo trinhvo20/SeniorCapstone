@@ -31,7 +31,7 @@
             android:layout_marginLeft="-20dp"
             android:fontFamily="@font/bungee"
             android:includeFontPadding="false"
-            android:text="Viewers of the Trip"
+            android:text="Viewers"
             android:textSize="27dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

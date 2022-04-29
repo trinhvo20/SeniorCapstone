@@ -407,6 +407,7 @@ class TripAdapter(
                 tvHyphen.visibility = View.INVISIBLE
                 ivMenu.visibility = View.INVISIBLE
                 ivMenu.isClickable = false
+                tvCountdown.visibility = View.INVISIBLE
             }
 
             // display trips images
