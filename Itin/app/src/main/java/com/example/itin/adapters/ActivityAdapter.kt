@@ -101,7 +101,7 @@ class ActivityAdapter(
                     .show()
                 }
             else{
-                Toast.makeText(context, "You do not have permission to preform this action", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "You do not have permission to perform this action", Toast.LENGTH_SHORT).show()
             }
         }
 
