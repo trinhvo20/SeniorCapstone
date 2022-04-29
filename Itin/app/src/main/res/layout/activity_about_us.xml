@@ -72,11 +72,14 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="serif"
+                    android:fontFamily="@font/bangers"
+                    android:textAlignment="center"
                     android:text="ITIN"
-                    android:textSize="30dp"
+                    android:textSize="40dp"
+                    android:padding="10dp"
+                    android:includeFontPadding="false"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/imageView2" />
@@ -262,7 +265,7 @@
                         android:id="@+id/trinhPara"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Senior in Computer Science at Louisiana Tech University. Enjoy photography, foods, and traveling.  "
+                        android:text="Senior in Computer Science at Louisiana Tech University. I enjoy photography, foods, and traveling. My favorite quote is &quot;A journey of a thousand miles begins with a single step&quot;--Laozi, If you want to achieve your goal, you must first start it."
                         android:textSize="16sp"
                         android:layout_marginLeft="10dp"
                         app:layout_constraintEnd_toEndOf="parent"

@@ -22,16 +22,15 @@
         android:id="@+id/ItinTV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
         android:fontFamily="@font/bangers"
         android:text="ITIN"
-        android:textColor="@color/mint"
         android:textAlignment="center"
+        android:textColor="@color/mint"
         android:textSize="70dp"
+        app:layout_constraintBottom_toTopOf="@+id/IntroTV"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/LogoIV" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/IntroTV"
@@ -39,13 +38,14 @@
         android:layout_height="wrap_content"
         android:fontFamily="casual"
         android:text="Let's Travel Together"
+        android:layout_marginBottom="70dp"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ItinTV" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
