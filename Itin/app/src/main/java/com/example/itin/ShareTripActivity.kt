@@ -87,6 +87,7 @@ class ShareTripActivity : AppCompatActivity() {
             return@setOnEditorActionListener when (actionId) {
                 EditorInfo.IME_ACTION_SEND -> {
                     ShareByUsername(etUsername.text.toString(),tripID,3)
+                    etUsername.text?.clear()
                     true
                 }
                 else -> false
@@ -97,6 +98,7 @@ class ShareTripActivity : AppCompatActivity() {
         if (currentFocus != null) {
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(etUsername.getWindowToken(), 0)
+            etUsername.text?.clear()
 
         }
         return super.dispatchTouchEvent(ev)

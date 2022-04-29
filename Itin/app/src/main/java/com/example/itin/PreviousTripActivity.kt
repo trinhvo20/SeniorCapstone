@@ -165,6 +165,7 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
                 val deleted = it.child("Deleted").value.toString()
                 var active = it.child("Active").value.toString()
                 var tripId = it.child("ID").value.toString().toInt()
+                var endEpoch = it.child("EpochEnd").value.toString().toLong()
 
                 formatter = DateTimeFormatter.ofPattern("M/d/yyyy")
                 startdate = LocalDate.parse(stDate, formatter)
@@ -177,7 +178,8 @@ class PreviousTripActivity : AppCompatActivity(), PreviousTripAdapter.OnItemClic
                     stringToBoolean(deleted),
                     stringToBoolean(active),
                     tripId,
-                    days = mutableListOf()
+                    days = mutableListOf(),
+                    epochEnd = endEpoch
                 )
                 if (deleted == "false" && active == "false") {
                     previousTrips.add(trip)
