@@ -93,6 +93,7 @@ class FriendAdapter(
                 acceptButton.isClickable = false
                 remButton.visibility = View.INVISIBLE
                 remButton.isClickable = false
+                nextArrow.visibility = View.VISIBLE
 
                 if(curFriend.fullName.length > 15){
                     var shortname = curFriend.fullName.substring(0..13)
