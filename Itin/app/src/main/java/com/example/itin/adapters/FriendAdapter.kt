@@ -179,7 +179,7 @@ class FriendAdapter(
                 curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
 
                 friends.removeAt(position)
-                notifyItemChanged(position)
+                notifyDataSetChanged()
 
                 val friendsID = masterUserList.child(curFriend.username) //masterUserList.child(userName)
                 var myID = ""
