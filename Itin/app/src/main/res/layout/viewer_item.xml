@@ -6,6 +6,21 @@
     android:layout_height="wrap_content"
     android:animateLayoutChanges="true">
 
+    <TextView
+        android:id="@+id/viewerPerm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:fontFamily="serif"
+        android:text="Perm"
+        android:textSize="18dp"
+        android:textStyle="normal"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/clDropdown"
+        app:layout_constraintEnd_toStartOf="@+id/ivSetPerm"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/viewerPP"
         android:layout_width="70dp"

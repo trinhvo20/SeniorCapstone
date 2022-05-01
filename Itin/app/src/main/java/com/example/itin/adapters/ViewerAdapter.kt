@@ -154,11 +154,24 @@ class ViewerAdapter(
                     override fun onDataChange(snapshot: DataSnapshot) {
                         for (user in snapshot.children) {
                             if (user.key == curViewer) {
+
+                                viewerPerm.visibility = View.INVISIBLE
+
                                 val username = user.child("userInfo").child("username").value.toString()
                                 val fullname = user.child("userInfo").child("fullName").value.toString()
 
-                                if(fullname.length > 15){
-                                    var shortname = fullname.substring(0..11)
+                                if(viewerList[user.child("userInfo").child("uid").value.toString()] == 1){
+                                    viewerPerm.text = "Owner"
+                                    viewerPerm.visibility = View.VISIBLE
+                                }
+
+                                if(viewerList[user.child("userInfo").child("uid").value.toString()] == 2){
+                                    viewerPerm.text = "Editor"
+                                    viewerPerm.visibility = View.VISIBLE
+                                }
+
+                                if(fullname.length > 12){
+                                    var shortname = fullname.substring(0..9)
                                     viewerFullName.text = shortname+"..."
                                 }
                                 else{
