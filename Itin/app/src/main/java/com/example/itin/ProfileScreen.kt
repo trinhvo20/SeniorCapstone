@@ -1,6 +1,7 @@
 package com.example.itin
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentSender.SendIntentException
 import android.graphics.BitmapFactory
@@ -136,73 +137,6 @@ class ProfileScreen : AppCompatActivity() {
         }
     }
 
-//    private fun updateUserInfo() {
-//        showHint()
-//    }
-
-    private fun updateUserInfo() {
-
-        val view = LayoutInflater.from(this).inflate(R.layout.account, null)
-
-        val usernameInput = view.findViewById<TextInputLayout>(R.id.usernameInput)
-        val fullNameInput = view.findViewById<TextInputLayout>(R.id.fullNameInput)
-        phoneNumberInput = view.findViewById<TextView>(R.id.phoneNumberInput)
-
-        val newDialog = AlertDialog.Builder(this,R.style.popup_Theme)
-        newDialog.setView(view)
-
-        phoneNumberInput.setOnClickListener{
-            showHint()
-        }
-//
-//        // Allow te soft input's enter key to send the request
-//        fullNameInput.setOnEditorActionListener { v, actionId, event ->
-//            return@setOnEditorActionListener when (actionId) {
-//                EditorInfo.IME_ACTION_SEND -> {
-//                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//                    imm.hideSoftInputFromWindow(usernameInput.getWindowToken(), 0)
-//                }
-//                else -> { false }
-//            }
-//        }
-
-        Log.d("Phone Number Debugging", "$phoneNo")
-
-        FirebaseDatabase.getInstance().getReference("users").child(uid).child("userInfo")
-            .get().addOnSuccessListener {
-                if (it.exists()){
-                    fullName = it.child("fullName").value.toString()
-                    username = it.child("username").value.toString()
-                    phoneNo =  it.child("phone").value.toString()
-                    curPhone = it.child("phone").value.toString()
-
-                    fullNameInput.editText?.setText(fullName)
-                    usernameInput.editText?.setText(username)
-                    phoneNumberInput.text = phoneNo
-                } else {
-                    Log.d("print", "User does not exist")
-                }
-            }.addOnCanceledListener {
-                Log.d("print", "Failed to fetch the user")
-            }
-
-        newDialog.setPositiveButton("Update") { dialog, _ ->
-            update(usernameInput, fullNameInput, phoneNumberInput)
-            dialog.dismiss()
-        }
-        newDialog.setNegativeButton("Cancel") { dialog, _ ->
-            Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
-            dialog.dismiss()
-        }
-        newDialog.setOnCancelListener {
-            Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
-        }
-
-        newDialog.create()
-        newDialog.show()
-    }
-
-    // function to read data from Realtime Database
     private fun readData(uid: String) {
         curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
         curUserInfo = curUser.child("userInfo")
@@ -226,9 +160,58 @@ class ProfileScreen : AppCompatActivity() {
         }
     }
 
+    private fun updateUserInfo() {
+        val view = LayoutInflater.from(this).inflate(R.layout.account, null)
+
+        val usernameInput = view.findViewById<TextInputLayout>(R.id.usernameInput)
+        val fullNameInput = view.findViewById<TextInputLayout>(R.id.fullNameInput)
+        phoneNumberInput = view.findViewById<TextView>(R.id.phoneNumberInput)
+
+        val newDialog = AlertDialog.Builder(this,R.style.popup_Theme)
+        newDialog.setView(view)
+
+        phoneNumberInput.setOnClickListener{
+            showHint()
+        }
+
+        Log.d("Phone Number Debugging", "$phoneNo")
+
+        FirebaseDatabase.getInstance().getReference("users").child(uid).child("userInfo")
+            .get().addOnSuccessListener {
+                if (it.exists()){
+                    fullName = it.child("fullName").value.toString()
+                    username = it.child("username").value.toString()
+                    phoneNo =  it.child("phone").value.toString()
+                    curPhone = it.child("phone").value.toString()
+
+                    fullNameInput.editText?.setText(fullName)
+                    usernameInput.editText?.setText(username)
+                    phoneNumberInput.text = phoneNo
+                } else {
+                    Log.d("print", "User does not exist")
+                }
+            }.addOnCanceledListener {
+                Log.d("print", "Failed to fetch the user")
+            }
+
+        newDialog.setPositiveButton("Update") { dialog, _ ->
+            update(dialog, usernameInput, fullNameInput, phoneNumberInput)
+        }
+        newDialog.setNegativeButton("Cancel") { _, _ ->
+            Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
+        }
+        newDialog.setOnCancelListener {
+            Toast.makeText(this, "Canceled", Toast.LENGTH_SHORT).show()
+        }
+        newDialog.create()
+        newDialog.show()
+    }
+
     // function to update user info
-    private fun update(usernameInput: TextInputLayout, fullNameInput: TextInputLayout, phoneNumberInput: TextView) {
+    private fun update(dialog: DialogInterface, usernameInput: TextInputLayout, fullNameInput: TextInputLayout, phoneNumberInput: TextView) {
+        val newName = fullNameInput.editText?.text.toString()
         val newUsername = usernameInput.editText?.text.toString()
+        var newPhoneNo = phoneNumberInput.text.toString()
         val usernameQuery = FirebaseDatabase.getInstance().reference.child("users")
         usernameQuery.addListenerForSingleValueEvent(object : ValueEventListener {
             var isExist = false
@@ -249,8 +232,10 @@ class ProfileScreen : AppCompatActivity() {
 
                 if (isNameChanged(fullNameInput) || isUsernameChanged(isExist, usernameInput) || isPhoneNoChanged(phoneNumberInput)) {
                     Toast.makeText(this@ProfileScreen,"Updated", Toast.LENGTH_SHORT).show()
-                } else{
+                } else if (newName == fullName && newUsername == username && newPhoneNo == curPhone) {
                     Toast.makeText(this@ProfileScreen,"Update at least one field", Toast.LENGTH_SHORT).show()
+                } else {
+
                 }
                     readData(uid)
             }
@@ -279,16 +264,19 @@ class ProfileScreen : AppCompatActivity() {
 
         if (isExist) {
             usernameInput.error = "Username exists"
+            Toast.makeText(this@ProfileScreen,"Username already exists", Toast.LENGTH_SHORT).show()
             return false
         }
         else if (newUsername == username) {
             return false
         }
         else if (newUsername.length < 4 || newUsername.length > 14) {
+            Toast.makeText(this@ProfileScreen,"Username must contain 4 to 14 characters", Toast.LENGTH_SHORT).show()
             usernameInput.error = "Username must be between 4 to 14 characters"
             return false
         }
         else if (newUsername.matches(noWhiteSpace)) {
+            Toast.makeText(this@ProfileScreen,"Username cannot contain whitespaces", Toast.LENGTH_SHORT).show()
             usernameInput.error = "Cannot contain whitespaces"
             return false
         }

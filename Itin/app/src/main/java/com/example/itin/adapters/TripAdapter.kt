@@ -59,11 +59,16 @@ class TripAdapter(
             val uid = firebaseUser!!.uid
             val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
 
+            btAccept.visibility = View.INVISIBLE
+            btDeny.visibility = View.INVISIBLE
+            btAccept.isClickable = false
+            btDeny.isClickable = false
+
+            trips.removeAt(position)
+            notifyDataSetChanged()
+
             curUser.child("trips").child("Trip ${curTrip.tripID}").removeValue()
             curUser.child("pending trips").child("Trip ${curTrip.tripID}").removeValue()
-
-            trips.removeAt(adapterPosition)
-            notifyItemChanged(adapterPosition)
         }
 
         private fun accepttrip(it: View?) {
@@ -72,6 +77,11 @@ class TripAdapter(
             val firebaseUser = firebaseAuth.currentUser
             val uid = firebaseUser!!.uid
             val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+
+            btAccept.visibility = View.INVISIBLE
+            btDeny.visibility = View.INVISIBLE
+            btAccept.isClickable = false
+            btDeny.isClickable = false
 
             curUser.child("pending trips").get().addOnSuccessListener {
                 if(it.child("Trip ${curTrip.tripID}").exists()){
@@ -84,7 +94,7 @@ class TripAdapter(
 
             curUser.child("pending trips").child("Trip ${curTrip.tripID}").removeValue()
             curTrip.pending = 0
-            notifyItemChanged(adapterPosition)
+            notifyDataSetChanged()
         }
 
         // this function handles the popup menu for each item in the trips list
