@@ -193,6 +193,7 @@ class ProfileScreen : AppCompatActivity() {
             }.addOnCanceledListener {
                 Log.d("print", "Failed to fetch the user")
             }
+
         newDialog.setPositiveButton("Update") { dialog, _ ->
             update(dialog, usernameInput, fullNameInput, phoneNumberInput)
         }
@@ -208,7 +209,9 @@ class ProfileScreen : AppCompatActivity() {
 
     // function to update user info
     private fun update(dialog: DialogInterface, usernameInput: TextInputLayout, fullNameInput: TextInputLayout, phoneNumberInput: TextView) {
+        val newName = fullNameInput.editText?.text.toString()
         val newUsername = usernameInput.editText?.text.toString()
+        var newPhoneNo = phoneNumberInput.text.toString()
         val usernameQuery = FirebaseDatabase.getInstance().reference.child("users")
         usernameQuery.addListenerForSingleValueEvent(object : ValueEventListener {
             var isExist = false
@@ -229,8 +232,10 @@ class ProfileScreen : AppCompatActivity() {
 
                 if (isNameChanged(fullNameInput) || isUsernameChanged(isExist, usernameInput) || isPhoneNoChanged(phoneNumberInput)) {
                     Toast.makeText(this@ProfileScreen,"Updated", Toast.LENGTH_SHORT).show()
-                } else{
+                } else if (newName == fullName && newUsername == username && newPhoneNo == curPhone) {
                     Toast.makeText(this@ProfileScreen,"Update at least one field", Toast.LENGTH_SHORT).show()
+                } else {
+
                 }
                     readData(uid)
             }
@@ -259,17 +264,19 @@ class ProfileScreen : AppCompatActivity() {
 
         if (isExist) {
             usernameInput.error = "Username exists"
+            Toast.makeText(this@ProfileScreen,"Username already exists", Toast.LENGTH_SHORT).show()
             return false
         }
         else if (newUsername == username) {
             return false
         }
         else if (newUsername.length < 4 || newUsername.length > 14) {
+            Toast.makeText(this@ProfileScreen,"Username must contain 4 to 14 characters", Toast.LENGTH_SHORT).show()
             usernameInput.error = "Username must be between 4 to 14 characters"
-            Toast.makeText(this@ProfileScreen,"Here", Toast.LENGTH_SHORT).show()
             return false
         }
         else if (newUsername.matches(noWhiteSpace)) {
+            Toast.makeText(this@ProfileScreen,"Username cannot contain whitespaces", Toast.LENGTH_SHORT).show()
             usernameInput.error = "Cannot contain whitespaces"
             return false
         }
