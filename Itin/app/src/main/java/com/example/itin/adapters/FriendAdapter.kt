@@ -15,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.activity_friend.*
+import kotlinx.android.synthetic.main.activity_profile_screen.view.*
 import kotlinx.android.synthetic.main.friend_item.view.*
 import kotlinx.android.synthetic.main.friend_item.view.friendFullName
 import kotlinx.android.synthetic.main.friend_share_item.view.*
@@ -62,6 +63,7 @@ class FriendAdapter(
                 pendingReq.visibility = View.VISIBLE
                 acceptButton.visibility = View.INVISIBLE
                 acceptButton.isClickable = false
+                nextArrow.visibility = View.INVISIBLE
 
                 friendFullName.text = curFriend.fullName
                 tvFriendsUsername.text = curFriend.username
@@ -74,6 +76,7 @@ class FriendAdapter(
                 acceptButton.isClickable = false
                 remButton.visibility = View.VISIBLE
                 remButton.isClickable = true
+                nextArrow.visibility = View.INVISIBLE
 
                 if(curFriend.fullName.length > 13){
                     var shortname = curFriend.fullName.substring(0..10)
@@ -111,6 +114,7 @@ class FriendAdapter(
                 tvFriendsUsername.visibility = View.INVISIBLE
                 pendingReq.visibility = View.VISIBLE
                 acceptButton.visibility = View.VISIBLE
+                nextArrow.visibility = View.INVISIBLE
 
                 if(curFriend.fullName.length > 11){
                     var shortname = curFriend.fullName.substring(0..8)

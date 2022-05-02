@@ -109,7 +109,7 @@ class PreviousTripAdapter(
             tvStartDate.visibility = View.VISIBLE
             tvEndDate.visibility = View.VISIBLE
             tvCountdown.visibility = View.VISIBLE
-            
+
             // display trips images
             val tripId = curTrip.tripID.toString()
             var storageReferenceTrip = FirebaseStorage.getInstance().getReference("Trips/$tripId.jpg")
