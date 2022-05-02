@@ -418,6 +418,17 @@ class TripAdapter(
                 ivMenu.visibility = View.INVISIBLE
                 ivMenu.isClickable = false
                 tvCountdown.visibility = View.INVISIBLE
+            } else {
+                btAccept.visibility = View.INVISIBLE
+                btDeny.visibility = View.INVISIBLE
+                btAccept.isClickable = false
+                btDeny.isClickable = false
+                tvStartDate.visibility = View.VISIBLE
+                tvEndDate.visibility = View.VISIBLE
+                tvHyphen.visibility = View.VISIBLE
+                ivMenu.visibility = View.VISIBLE
+                ivMenu.isClickable = true
+                tvCountdown.visibility = View.VISIBLE
             }
 
             // display trips images
