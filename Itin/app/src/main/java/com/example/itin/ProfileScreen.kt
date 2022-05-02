@@ -260,7 +260,9 @@ class ProfileScreen : AppCompatActivity() {
 
     private fun isUsernameChanged(isExist:Boolean, usernameInput: TextInputLayout): Boolean {
         val newUsername = usernameInput.editText?.text.toString()
+        val oldUsername = username
         val noWhiteSpace = Regex("^(.*\\s+.*)+\$")
+        Log.d("username stuffs", "$newUsername, $username")
 
         if (isExist) {
             usernameInput.error = "Username exists"
@@ -289,8 +291,8 @@ class ProfileScreen : AppCompatActivity() {
             masterUserList = FirebaseDatabase.getInstance().getReference("masterUserList")
             masterUserList.get().addOnSuccessListener {
                 if (it.exists()) {
-                    ID = it.child("$username").value.toString()
-                    masterUserList.child(username).removeValue()
+                    ID = it.child("$oldUsername").value.toString()
+                    masterUserList.child("$oldUsername").removeValue()
                     masterUserList.child(ID).child("UID").removeValue()
                     masterUserList.child(newUsername).setValue("$ID")
                     masterUserList.child(ID).child("UID").setValue(uid)
