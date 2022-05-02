@@ -45,6 +45,7 @@ class ViewerAdapter(
         val firebaseAuth = FirebaseAuth.getInstance()
         val firebaseUser = firebaseAuth.currentUser
         val uid = firebaseUser!!.uid
+
         holder.itemView.apply {
 
             if(viewerList[uid] == 1 && viewerList.keys.size > 1){
@@ -60,10 +61,12 @@ class ViewerAdapter(
             clOP1.visibility = View.GONE
             clOP2.visibility = View.GONE
             clOP3.visibility = View.GONE
+            removeFromTrip.visibility = View.GONE
 
             clOP1.isClickable = false
             clOP2.isClickable = false
             clOP3.isClickable = false
+            removeFromTrip.isClickable = false
 
             ivSetPerm.setOnClickListener {
                 //Toast.makeText(context,"perm $curViewerPerm", Toast.LENGTH_LONG).show()
@@ -85,16 +88,26 @@ class ViewerAdapter(
                         clOP3.isClickable = true
                     }
 
-                    open = true
+                    if (curViewer == uid) {
+                        removeFromTrip.visibility = View.GONE
+                        removeFromTrip.isClickable = false
+                        open = true
+                    } else {
+                        removeFromTrip.visibility = View.VISIBLE
+                        removeFromTrip.isClickable = true
+                        open = true
+                    }
                 }
                 else{
                     ivSetPerm.startAnimation(rotateClose)
                     clOP1.visibility = View.GONE
                     clOP2.visibility = View.GONE
                     clOP3.visibility = View.GONE
+                    removeFromTrip.visibility = View.GONE
                     clOP1.isClickable = false
                     clOP2.isClickable = false
                     clOP3.isClickable = false
+                    removeFromTrip.isClickable = false
                     open = false
                 }
             }
@@ -138,6 +151,19 @@ class ViewerAdapter(
                 Toast.makeText(context,"${viewerUsername.text} has been made a Viewer", Toast.LENGTH_SHORT).show()
             }
 
+            removeFromTrip.setOnClickListener {
+                clOP1.visibility = View.GONE
+                clOP2.visibility = View.GONE
+                clOP3.visibility = View.GONE
+                clOP1.isClickable = false
+                clOP2.isClickable = false
+                clOP3.isClickable = false
+                open = false
+
+                FirebaseDatabase.getInstance().getReference("users").child(curViewer).child("trips").child("Trip $tripID").removeValue()
+                FirebaseDatabase.getInstance().getReference("masterTripList").child(tripID.toString()).child("Viewers").child(curViewer).removeValue()
+
+          }
 
 
             var storageReference = FirebaseStorage.getInstance().getReference("Users/$curViewer.jpg")
