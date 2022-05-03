@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.adapters.ActivityAdapter
 import com.example.itin.classes.Activity
 import com.example.itin.classes.Day
+import com.example.itin.classes.Trip
 import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
@@ -33,16 +34,19 @@ class DayAdapter(
     private val context: Context,
     private val days: MutableList<Day>, // parameter: a mutable list of day items
     private val listener: ActivityAdapter.OnItemClickListener,
-    private val viewers: MutableMap<String, Int>,
+    private val curTrip: Trip,
 ) : RecyclerView.Adapter<DayAdapter.DayViewHolder>() {
 
     private lateinit var firebaseAuth: FirebaseAuth
+    private val viewers = curTrip.viewers
+
     // create a view holder: holds a layout of a specific item
     //-----> Needs to be inner class for shit to work Remember that if you copy this code for later <-----
     @RequiresApi(Build.VERSION_CODES.O)
     inner class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
         val recyclerView : RecyclerView = itemView.rvActivities
         private var ivAdd: ImageView = itemView.findViewById(R.id.ivAdd)
+
 
         init {
             ivAdd.setOnClickListener { addAnActivity(it) }
@@ -215,7 +219,7 @@ class DayAdapter(
 
             val perm = viewers[uid]
             Log.d("perm","uid: $uid perm: $perm")
-            if (viewers[uid] == 3){
+            if (viewers[uid] == 3 || !curTrip.active){
                 ivAdd.visibility =  View.INVISIBLE
                 ivAdd.isClickable = false
             }
@@ -224,7 +228,7 @@ class DayAdapter(
         // makes the sub recyclerview work, not sure why but it does
         holder.recyclerView.apply{
             layoutManager = LinearLayoutManager(holder.recyclerView.context,RecyclerView.VERTICAL,false)
-            adapter = ActivityAdapter(context,curDay.activities,listener,position,viewers)
+            adapter = ActivityAdapter(context,curDay.activities,listener,position,curTrip)
         }
 
 

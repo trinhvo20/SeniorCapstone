@@ -43,6 +43,7 @@ class DetailsActivity : AppCompatActivity() {
     private var countCheckIn : Int = 0
     private var countViewers : Int = 0
     private var cur_viewer:Int = 2
+    private var active : Boolean = true
 
     @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +58,8 @@ class DetailsActivity : AppCompatActivity() {
         cur_viewer = intent.getIntExtra("CUR_VIEWER",2)
         countViewers = intent.getIntExtra("VIEWER_LIST", 0)
         countTotal.text = countViewers.toString()
+        active = intent.getBooleanExtra("ACTIVE",true)
+
 
         //filling in information
         tvName.text = activity.name
@@ -120,7 +123,7 @@ class DetailsActivity : AppCompatActivity() {
     // function to edit the activity
     @RequiresApi(Build.VERSION_CODES.N)
     private fun editActivity(activity: Activity) {
-        if (cur_viewer == 1 || cur_viewer == 2) {
+        if ((cur_viewer == 1 || cur_viewer == 2) && active) {
             val view = LayoutInflater.from(this).inflate(R.layout.edit_activity, null)
 
             var location = activity.location

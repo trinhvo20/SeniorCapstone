@@ -124,7 +124,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         getTripImage()
 
         days = trip.days
-        dayAdapter = DayAdapter(this, days, this, trip.viewers)
+        dayAdapter = DayAdapter(this, days, this, trip)
         rvActivityList.adapter = dayAdapter
         rvActivityList.layoutManager = LinearLayoutManager(this)
 
@@ -151,7 +151,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
         dayAdapter.notifyDataSetChanged()
 
         btExpandMenu.setOnClickListener { onExpandButtonClicked() }
-        shareBtn.setOnClickListener { onShareClicked() }
+        shareBtn.setOnClickListener { if(trip.active) {onShareClicked()}}
         editBtn.setOnClickListener { editTrip(trip) }
 
         backBtn.setOnClickListener {
@@ -216,6 +216,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
             it.putExtra("DAY_ID", days[daypos].dayInt)
             it.putExtra("CUR_VIEWER", trip.viewers[uid])
             it.putExtra("VIEWER_LIST", totalCountViewers)
+            it.putExtra("ACTIVE",trip.active)
             startActivity(it)
         }
     }
@@ -302,7 +303,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
     }
 
     private fun openGallery() {
-        if (trip.viewers[uid] == 1) {
+        if (trip.viewers[uid] == 1 && trip.active) {
             val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
             startActivityForResult(gallery, PICK_IMAGE)
         }
@@ -430,7 +431,7 @@ class ItineraryActivity : AppCompatActivity(), ActivityAdapter.OnItemClickListen
     @RequiresApi(Build.VERSION_CODES.O)
     private fun editTrip(curTrip: Trip) {
             //TODO: "Add epoch restraints for previous trip to current trip"
-            if (curTrip.viewers[uid] == 1) {
+            if (curTrip.viewers[uid] == 1 && curTrip.active) {
                 val view = LayoutInflater.from(this).inflate(R.layout.edit_trip, null)
 
                 val etName = view.findViewById<EditText>(R.id.etName)
