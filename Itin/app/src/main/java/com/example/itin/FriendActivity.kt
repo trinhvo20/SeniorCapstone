@@ -460,6 +460,8 @@ class FriendActivity : AppCompatActivity(), FriendAdapter.OnItemClickListener {
         bottomNavView_Bar.visibility = View.INVISIBLE
 
         friendsUsername.visibility = View.VISIBLE
+        friendsUsername.isClickable = true
+
         clicked = !clicked
         sent = false
         typed = false

@@ -2,9 +2,6 @@
 package com.example.itin
 
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.LinearGradient
-import android.graphics.Shader
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -12,10 +9,8 @@ import android.util.Log
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import com.example.itin.classes.NotificationInstance
 import com.example.itin.classes.User
 import com.example.itin.databinding.GoogleLoginBinding
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -195,7 +190,6 @@ class GoogleLogin : AppCompatActivity() {
                 }
                 else {
                     Log.d(TAG, "firebaseAuthWithGoogleAccount: Existing user... \n$email")
-                    Toast.makeText( this@GoogleLogin, "Logged In... \n@email", Toast.LENGTH_LONG).show()
                 }
 
                 // Opening the Trip page after log in
@@ -204,7 +198,6 @@ class GoogleLogin : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 Log.d(TAG, "firebaseAuthWithGoogleAccount: Loggin Failed due to ${e.message}")
-                Toast.makeText(this@GoogleLogin, "Login failed due to ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
