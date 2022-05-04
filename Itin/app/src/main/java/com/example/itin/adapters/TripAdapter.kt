@@ -274,7 +274,6 @@ class TripAdapter(
                         tripsort(trips)
                         notifyDataSetChanged()
                     }
-
                 }
             }
         }

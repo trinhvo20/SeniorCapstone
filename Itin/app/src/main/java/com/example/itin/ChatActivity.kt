@@ -114,6 +114,10 @@ class ChatActivity : AppCompatActivity() {
                         messageList.add(message!!)
                     }
                     messageAdapter.notifyDataSetChanged()
+
+                    chatRV.post(Runnable {
+                        chatRV.smoothScrollToPosition(messageList.count() - 1)
+                    })
                 }
 
                 override fun onCancelled(error: DatabaseError) {

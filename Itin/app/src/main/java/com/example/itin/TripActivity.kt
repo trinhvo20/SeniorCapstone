@@ -139,9 +139,27 @@ class TripActivity : AppCompatActivity(), TripAdapter.OnItemClickListener {
         // It will clear the days list and load all days from the DB again
         tripsSwipeContainer.setOnRefreshListener {
             tripAdapter.clear()
-            //createTestTrip()
-            readData(tripCount)
-            tripsSwipeContainer.isRefreshing = false
+
+            // This here checks the value in the database to overwrite the initial value of 0
+            masterTripList = FirebaseDatabase.getInstance().getReference("masterTripList")
+            masterTripList.get().addOnSuccessListener {
+                if (it.exists()) {
+                    // Try to grab the value from the DB for tripCount, if it doesn't exist, create the child
+                    try {
+                        tripCount = it.child("tripCount").value.toString().toInt()
+                        tripAdapter.clear()
+
+                        //createTestTrip()
+                        readData(tripCount)
+                        tripsSwipeContainer.isRefreshing = false
+
+                    } catch (e: NumberFormatException) {
+                        masterTripList.child("tripCount").setValue(0)
+                    }
+                } else {
+                    Log.d("TripActivity", "There is no MasterTripList")
+                }
+            }
         }
         // Configure the refreshing colors
         tripsSwipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
