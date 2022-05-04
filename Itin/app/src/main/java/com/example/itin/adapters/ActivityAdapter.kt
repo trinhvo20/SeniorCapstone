@@ -8,6 +8,7 @@ import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
 import com.example.itin.classes.Activity
+import com.example.itin.classes.Trip
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -20,10 +21,12 @@ class ActivityAdapter(
     private val Activities: MutableList<Activity?>, // parameter: a mutable list of Activity items
     private val listener: OnItemClickListener,
     private val dayPos: Int,
-    private val viewers: MutableMap<String, Int>,
+    private val curTrip: Trip,
 ) : RecyclerView.Adapter<ActivityAdapter.ActivityViewHolder>() {
 
     private lateinit var firebaseAuth: FirebaseAuth
+    private val viewers = curTrip.viewers
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ActivityViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val v  = inflater.inflate(R.layout.day_activity_item,parent,false)
@@ -43,7 +46,7 @@ class ActivityAdapter(
                 tvActivityTime.text = curActivity.time
             }
 
-            if (viewers[uid] == 3){
+            if (viewers[uid] == 3 || !curTrip.active){
                 removeBtn.visibility = View.INVISIBLE
                 removeBtn.isClickable = false
             }

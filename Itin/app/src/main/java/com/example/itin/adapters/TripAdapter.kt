@@ -243,6 +243,10 @@ class TripAdapter(
                 if (it.exists()) {
                     var tripCount = it.child("tripCount").value.toString().toInt()
 
+                    firebaseAuth = FirebaseAuth.getInstance()
+                    val firebaseUser = firebaseAuth.currentUser
+                    val uid = firebaseUser!!.uid
+
                     val dupeTrip = Trip(
                         "Copy of " + curTrip.name,
                         curTrip.location,
@@ -251,7 +255,8 @@ class TripAdapter(
                         deleted = curTrip.deleted,
                         active = curTrip.active,
                         tripID = tripCount,
-                        curTrip.days,
+                        viewers = mutableMapOf(uid to 1),
+                        days = curTrip.days,
                         epochEnd = curTrip.epochEnd,
                         epochStart = curTrip.epochStart,
 
@@ -269,7 +274,6 @@ class TripAdapter(
                         tripsort(trips)
                         notifyDataSetChanged()
                     }
-
                 }
             }
         }

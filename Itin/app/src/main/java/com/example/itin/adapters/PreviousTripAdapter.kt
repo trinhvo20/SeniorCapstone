@@ -14,19 +14,26 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.itin.R
+import com.example.itin.classes.Activity
+import com.example.itin.classes.Day
 import com.example.itin.classes.Trip
 import com.google.android.gms.common.api.Status
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.trip_item.view.*
 import java.io.File
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.time.temporal.Temporal
 import java.util.*
 
 class PreviousTripAdapter(
@@ -37,11 +44,13 @@ class PreviousTripAdapter(
 
 ) : RecyclerView.Adapter<PreviousTripAdapter.PreviousTripViewHolder>() {
 
+    private lateinit var firebaseAuth: FirebaseAuth
     @RequiresApi(Build.VERSION_CODES.O)
     inner class PreviousTripViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val ivMenu: ImageView = itemView.findViewById(R.id.ivMenu)
         private var formatter : DateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy")
         private lateinit var startDateObj : LocalDate
+        private var masterTripList: DatabaseReference = FirebaseDatabase.getInstance().getReference("masterTripList")
 
         init {
             ivMenu.setOnClickListener { popupMenu(it) }
@@ -53,7 +62,7 @@ class PreviousTripAdapter(
             val curTrip = previousTrips[adapterPosition]
 
             val popupMenu = PopupMenu(context, view)
-            popupMenu.inflate(R.menu.show_menu)
+            popupMenu.inflate(R.menu.previous_show_menu)
             popupMenu.setOnMenuItemClickListener {
                 when(it.itemId) {
 
@@ -79,6 +88,7 @@ class PreviousTripAdapter(
                             .show()
                         true
                     }
+
                     else -> true
                 }
             }
@@ -88,6 +98,7 @@ class PreviousTripAdapter(
             val menu = popup.get(popupMenu)
             menu.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.java).invoke(menu, true)
         }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -101,6 +112,11 @@ class PreviousTripAdapter(
 
         // access to trip_item.xml
         holder.itemView.apply {
+            firebaseAuth = FirebaseAuth.getInstance()
+            val firebaseUser = firebaseAuth.currentUser
+            val uid = firebaseUser!!.uid
+            val curUser = FirebaseDatabase.getInstance().getReference("users").child(uid)
+
             tvName.text = curTrip.name
             tvStartDate.text = curTrip.startDate
             tvEndDate.text = curTrip.endDate
@@ -109,6 +125,8 @@ class PreviousTripAdapter(
             tvStartDate.visibility = View.VISIBLE
             tvEndDate.visibility = View.VISIBLE
             tvCountdown.visibility = View.VISIBLE
+            ivMenu.visibility = View.VISIBLE
+            ivMenu.isClickable = true
 
             // display trips images
             val tripId = curTrip.tripID.toString()

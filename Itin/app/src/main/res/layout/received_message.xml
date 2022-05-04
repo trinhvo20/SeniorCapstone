@@ -5,14 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginEnd="100dp"
-    android:paddingHorizontal="5dp"
     android:paddingTop="5dp">
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="10dp"
-        android:background="@drawable/message_box_background2"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -22,7 +21,6 @@
             android:layout_height="wrap_content"
             android:text="Name"
             android:textStyle="bold"
-            android:textColor="@color/white"
             android:textSize="15sp" />
 
         <TextView
@@ -30,7 +28,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/senderNameTV"
+            android:background="@drawable/message_box_background2"
+            android:paddingVertical="10dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="20dp"
             android:text="This is received message"
+            android:textColor="@color/white"
             android:textSize="18sp" />
 
         <TextView
@@ -38,8 +41,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/receivedMessage"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="5dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="20dp"
             android:textSize="12sp"
             android:text="Time"/>
 
