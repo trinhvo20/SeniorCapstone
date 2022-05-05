@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "705975384357",
+    "firebase_url": "https://itin-338217-default-rtdb.firebaseio.com",
     "project_id": "itin-338217",
     "storage_bucket": "itin-338217.appspot.com"
   },
@@ -14,11 +15,128 @@
       },
       "oauth_client": [
         {
+          "client_id": "705975384357-30esm77knun32rkjnvqtiie40bk6g3eb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.itin",
+            "certificate_hash": "df6112c76abe6aeb7836664813ddaa1a8e24cd8b"
+          }
+        },
+        {
+          "client_id": "705975384357-36gg21l3o3mb3p5sm4cmmncar9e4au6j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.itin",
+            "certificate_hash": "17307ec342f614adbd11c9a2570b355a19e2d1c6"
+          }
+        },
+        {
+          "client_id": "705975384357-ee7nv2eiqrm9epormt1at208rc8egs1b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.itin",
+            "certificate_hash": "4c6df8842146d7883b9f3004327618d0412ce56f"
+          }
+        },
+        {
           "client_id": "705975384357-epf66k4vvibk16pe0oomf2p7n1utmjd0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.itin",
             "certificate_hash": "5e8be6ee5cf5f488cf74f4016a3ef281c8f1010a"
+          }
+        },
+        {
+          "client_id": "705975384357-m6u0iuccn5prbt61321f69kfe2u6i2dk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.itin",
+            "certificate_hash": "66f36b79cee94249c3cc1f4e41338bd751b1c7b7"
+          }
+        },
+        {
+          "client_id": "705975384357-pq18susa4rq21btfl11l16c81328qid6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.itin",
+            "certificate_hash": "50b8c8b173243f1dc73eae03812b635d42771058"
+          }
+        },
+        {
+          "client_id": "705975384357-8h6t6oanpua3fi3edmhmqav8v8ihf66a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD8aos5UDRM2mtJ_itR7FDrDs8el5PnXQI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "705975384357-8h6t6oanpua3fi3edmhmqav8v8ihf66a.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:705975384357:android:d4e9af2ceb43589e1642cc",
+        "android_client_info": {
+          "package_name": "com.itin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "705975384357-1prh64csdmrpleh80lria617tjmcd8rh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.itin",
+            "certificate_hash": "66f36b79cee94249c3cc1f4e41338bd751b1c7b7"
+          }
+        },
+        {
+          "client_id": "705975384357-6hgvu2a9f1cnlbq0qktvbgo621h8337i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.itin",
+            "certificate_hash": "df6112c76abe6aeb7836664813ddaa1a8e24cd8b"
+          }
+        },
+        {
+          "client_id": "705975384357-e3rabiq5sea45ot81dd0ao84vfqa1qtb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.itin",
+            "certificate_hash": "5e8be6ee5cf5f488cf74f4016a3ef281c8f1010a"
+          }
+        },
+        {
+          "client_id": "705975384357-fq73gl65pv85ug77gbt00t0c8f5shoj6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.itin",
+            "certificate_hash": "50b8c8b173243f1dc73eae03812b635d42771058"
+          }
+        },
+        {
+          "client_id": "705975384357-r69gmihsbtet7lohnadqd6std23h3nuc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.itin",
+            "certificate_hash": "17307ec342f614adbd11c9a2570b355a19e2d1c6"
+          }
+        },
+        {
+          "client_id": "705975384357-vveohl5jek1ob6uru183mt2sahfv55v2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.itin",
+            "certificate_hash": "4c6df8842146d7883b9f3004327618d0412ce56f"
           }
         },
         {
