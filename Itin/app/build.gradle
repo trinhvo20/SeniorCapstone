@@ -10,7 +10,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId 'com.itin'
+        applicationId 'com.roomadventure.itin'
         minSdk 21
         targetSdk 31
         versionCode 1

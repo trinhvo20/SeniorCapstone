@@ -85,58 +85,58 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:705975384357:android:d4e9af2ceb43589e1642cc",
+        "mobilesdk_app_id": "1:705975384357:android:e3aa0b8cda537af41642cc",
         "android_client_info": {
-          "package_name": "com.itin"
+          "package_name": "com.roomadventure.itin"
         }
       },
       "oauth_client": [
         {
-          "client_id": "705975384357-1prh64csdmrpleh80lria617tjmcd8rh.apps.googleusercontent.com",
+          "client_id": "705975384357-ck6hhtcu0hqedf6uj2jcqotumc5k2emk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.itin",
-            "certificate_hash": "66f36b79cee94249c3cc1f4e41338bd751b1c7b7"
-          }
-        },
-        {
-          "client_id": "705975384357-6hgvu2a9f1cnlbq0qktvbgo621h8337i.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.itin",
-            "certificate_hash": "df6112c76abe6aeb7836664813ddaa1a8e24cd8b"
-          }
-        },
-        {
-          "client_id": "705975384357-e3rabiq5sea45ot81dd0ao84vfqa1qtb.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.itin",
+            "package_name": "com.roomadventure.itin",
             "certificate_hash": "5e8be6ee5cf5f488cf74f4016a3ef281c8f1010a"
           }
         },
         {
-          "client_id": "705975384357-fq73gl65pv85ug77gbt00t0c8f5shoj6.apps.googleusercontent.com",
+          "client_id": "705975384357-f2nh5lc258k7jqdqsv6tihls6o0vhie2.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.itin",
-            "certificate_hash": "50b8c8b173243f1dc73eae03812b635d42771058"
+            "package_name": "com.roomadventure.itin",
+            "certificate_hash": "df6112c76abe6aeb7836664813ddaa1a8e24cd8b"
           }
         },
         {
-          "client_id": "705975384357-r69gmihsbtet7lohnadqd6std23h3nuc.apps.googleusercontent.com",
+          "client_id": "705975384357-f5sn8fq3n7ofinluj5j4ib7k3v77g46b.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.itin",
+            "package_name": "com.roomadventure.itin",
+            "certificate_hash": "66f36b79cee94249c3cc1f4e41338bd751b1c7b7"
+          }
+        },
+        {
+          "client_id": "705975384357-l38f2tj5msp9kde2a0nqssksk7rgpde6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.roomadventure.itin",
             "certificate_hash": "17307ec342f614adbd11c9a2570b355a19e2d1c6"
           }
         },
         {
-          "client_id": "705975384357-vveohl5jek1ob6uru183mt2sahfv55v2.apps.googleusercontent.com",
+          "client_id": "705975384357-sn6kh939fkeh79j4215kk2jvogo1d91d.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.itin",
+            "package_name": "com.roomadventure.itin",
             "certificate_hash": "4c6df8842146d7883b9f3004327618d0412ce56f"
+          }
+        },
+        {
+          "client_id": "705975384357-uo26lv5pl8hl6hc0uq7fimi0pe6umuhu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.roomadventure.itin",
+            "certificate_hash": "50b8c8b173243f1dc73eae03812b635d42771058"
           }
         },
         {
