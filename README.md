@@ -2,13 +2,21 @@
 
 Itin is a collaborative trip planning android application. Our app offers the ability to add your family and friends to your trip where they can see live updates or edit the trip; depending on what permissions are allowed to them. 
 
-## Trips:
+## Homepage - Trips:
 
   Users are able to document in as much detail as they would like for each hour of each day of their trip. This can include adding specific activities for each day,    filled with the adress of the activity, expected price, time, and any other notes you would like to add. Also when you show up you can check in on the app to let your friends know you are there!
+<div>
+  <img src="https://github.com/trinhvo20/SeniorCapstone/blob/main/Itin/app/src/main/res/images/IMG_8247.PNG"  style="height:725px; max-width:500px;width: expression(this.width > 500 ? 500: true);"> 
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="https://github.com/trinhvo20/SeniorCapstone/blob/main/Itin/app/src/main/res/images/IMG_8246.PNG"  style="height:725px ;max-width:500px;width: expression(this.width > 500 ? 500: true);">
+</div>  
+
   
-## Profile:
+## Profile Page:
 
   You are able to customize your experience by either using the data provided by your gmail or setting custom usernames that others on the app will see you by. You can also set notification settings as well as some other basic security settings that there are to explore. 
+
+  <img src="https://github.com/trinhvo20/SeniorCapstone/blob/main/Itin/app/src/main/res/images/IMG_8248.PNG" style="height:725px; max-width:500px;width: expression(this.width > 500 ? 500: true);">
   
 ## Social:
 
